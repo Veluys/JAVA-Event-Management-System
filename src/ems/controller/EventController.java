@@ -21,13 +21,18 @@ public class EventController {
             option = inputGetter.getPositiveInt(6);
         }while(option == -1);
 
+        System.out.println();
         switch (option){
             case 1 -> addEvent();
             case 2 -> viewEvents();
             case 3 -> searchEvent();
             case 4 -> updateEvents();
             case 5 -> deleteEvent();
+            case 6 -> {
+                return;
+            }
         }
+        System.out.println();
     }
 
     private void EventMenu(){
@@ -56,19 +61,26 @@ public class EventController {
     }
 
     private void viewEvents(){
-        System.out.println();
-        ArrayList<ArrayList<String>> events = EventDAO.show();
+        if(EventDAO.getNumRecords() == 0){
+            System.out.println("There are no events yet!");
+            return;
+        }
 
-        if(events==null) return;
+        ArrayList<ArrayList<String>> events = EventDAO.show();
 
         displayer.centerAlignRow(new ArrayList<>(Arrays.asList("event_id", "event_name", "date", "venue")));
         for(ArrayList<String> event : events){
+            if(event == events.getFirst()) System.out.println();
             displayer.centerAlignRow(event);
         }
-        System.out.println();
     }
 
     private void searchEvent(){
+        if(EventDAO.getNumRecords() == 0){
+            System.out.println("There are no events yet!");
+            return;
+        }
+
         displayer.showPrompt("Enter event name: ");
         String eventName = inputGetter.getLine();
 
@@ -77,7 +89,10 @@ public class EventController {
 
         ArrayList<String> matchedEvent = EventDAO.search(condition);
 
-        if(matchedEvent==null) return;
+        if(matchedEvent==null){
+            System.out.println("There are no events that matched the given event name!");
+            return;
+        }
 
         for(int i = 0; i < matchedEvent.size(); i++){
             displayer.rightAlignRecord(new ArrayList<>(Arrays.asList(tableColumns[i], matchedEvent.get(i))));
@@ -85,6 +100,11 @@ public class EventController {
     }
 
     private void updateEvents(){
+        if(EventDAO.getNumRecords() == 0){
+            System.out.println("There are no events yet!");
+            return;
+        }
+
         displayer.showPrompt("Enter event name: ");
         int option;
 
@@ -133,6 +153,11 @@ public class EventController {
     }
 
     private void deleteEvent(){
+        if(EventDAO.getNumRecords() == 0){
+            System.out.println("There are no events yet!");
+            return;
+        }
+
         displayer.showPrompt("Enter event name. : ");
         String event_name = inputGetter.getLine();
 
