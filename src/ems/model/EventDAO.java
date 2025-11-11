@@ -51,6 +51,20 @@ public class EventDAO {
         }
     }
 
+    public static int getNumRecords(){
+        String countQuery = "SELECT COUNT(*) FROM events";
+
+        try{
+            Statement stmt = connection.createStatement();
+            ResultSet resultSet = stmt.executeQuery(countQuery);
+
+            resultSet.next();
+            return resultSet.getInt("count");
+        }catch (SQLException e){
+            return -1;
+        }
+    }
+
     public static ArrayList<String> search(String condition){
         String searchQuery = "SELECT * FROM events WHERE " + condition;
         ArrayList<String> event = new ArrayList<>();
