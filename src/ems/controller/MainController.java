@@ -21,6 +21,8 @@ public class MainController {
                 option = inputGetter.getPositiveInt(mainMenuOptions.length);
             }while(option == -1);
 
+            System.out.println();
+
             EventController eventController = new EventController();
 
             switch (option){

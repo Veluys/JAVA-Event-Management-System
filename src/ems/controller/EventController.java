@@ -57,6 +57,7 @@ public class EventController {
             }
         }
         String eventDetails = String.join(",", event.values());
+        System.out.println();
         EventDAO.insert(eventDetails);
     }
 
