@@ -1,6 +1,6 @@
 package ems.view;
 
-public class Display {
+public class Displayer {
     private final int displayWidth = 120;
 
     public void displayHeader(final String message){
