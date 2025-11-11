@@ -1,7 +1,7 @@
 package ems.view;
 
 public class Displayer {
-    private final int displayWidth = 120;
+    protected final int displayWidth = 120;
 
     public void displayHeader(final String message){
         final int padding = (displayWidth - message.length()) / 2;
