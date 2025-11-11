@@ -5,7 +5,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class DBConnection {
-    Connection getConnection(){
+    static Connection getConnection(){
         final String username = "postgres";
         final String password = "byte";
         final String url = "jdbc:postgresql://localhost:5432/event_mgmt";
