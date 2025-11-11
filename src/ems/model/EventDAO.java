@@ -34,8 +34,8 @@ public class EventDAO {
             Statement stmt = connection.createStatement();
             ResultSet eventsSet = stmt.executeQuery(selectQuery);
 
-            //centerAlignRow(viewColumns.split(","));
-            while(eventsSet.next()){
+            if(!eventsSet.next()) return null;
+            do{
                 ArrayList<String> event = new ArrayList<>();
 
                 event.add(eventsSet.getString("event_id"));
@@ -44,7 +44,8 @@ public class EventDAO {
                 event.add(eventsSet.getString("venue"));
 
                 events.add(event);
-            }
+            } while(eventsSet.next());
+
             return events;
         }catch (SQLException e){
             System.out.println("SELECT operation unsuccessful!");
@@ -74,12 +75,12 @@ public class EventDAO {
             Statement eventStatement = connection.createStatement();
             ResultSet eventResult = eventStatement.executeQuery(searchQuery);
 
-            if(eventResult.next()){
-                event.add(eventResult.getString("event_id"));
-                event.add(eventResult.getString("event_name"));
-                event.add(eventResult.getString("date"));
-                event.add(eventResult.getString("venue"));
-            }
+            if(!eventResult.next()) return null;
+
+            event.add(eventResult.getString("event_id"));
+            event.add(eventResult.getString("event_name"));
+            event.add(eventResult.getString("date"));
+            event.add(eventResult.getString("venue"));
 
             return event;
         }catch (SQLException e){
