@@ -26,8 +26,8 @@ public class EventDAO {
         }
     }
 
-    public static ArrayList<ArrayList<String>> show(String viewColumns){
-        String selectQuery = String.format("SELECT %s FROM events", viewColumns);
+    public static ArrayList<ArrayList<String>> show(){
+        String selectQuery = "SELECT event_id, event_name, date, venue FROM events";
         ArrayList<ArrayList<String>> events = new ArrayList<>();
 
         try{
