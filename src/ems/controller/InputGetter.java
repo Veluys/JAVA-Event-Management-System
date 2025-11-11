@@ -31,8 +31,9 @@ public class InputGetter {
     }
 
     public String getLine(boolean allowBlank){
+        String text;
         while(true){
-            String text = scanner.nextLine();
+            text = scanner.nextLine();
 
             if(!allowBlank){
                 if(!text.isBlank()) return text;
