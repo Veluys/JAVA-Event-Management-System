@@ -1,5 +1,7 @@
 package ems.view;
 
+import java.util.ArrayList;
+
 public class Displayer {
     protected final int displayWidth = 120;
 
@@ -29,12 +31,12 @@ public class Displayer {
         showPrompt("Enter the number of your option: ");
     }
 
-    public void centerAlignRow(String[] columnValues) {
+    public void centerAlignRow(final ArrayList<String> columnValues) {
         final int tableWidth = displayWidth - 4;
         final int columnWidth = tableWidth / 4;
 
-        for (int i = 0; i < columnValues.length; i++) {
-            String columnValue = columnValues[i];
+        for (int i = 0; i < columnValues.size(); i++) {
+            String columnValue = columnValues.get(i);
             int totalPadding = columnWidth - columnValue.length();
             int paddingStart = totalPadding / 2;
             int paddingEnd = totalPadding - paddingStart;
@@ -46,10 +48,10 @@ public class Displayer {
         System.out.println("-".repeat(120));
     }
 
-    public void rightAlignRecord(String[] columnValues){
+    public void rightAlignRecord(final ArrayList<String> columnValues){
         final int labelWidth = 15;
-        String attributeLabel = columnValues[0];
-        String attributeValue = columnValues[1];
+        String attributeLabel = columnValues.get(0);
+        String attributeValue = columnValues.get(1);
 
         int paddingRight = labelWidth - attributeLabel.length();
 
