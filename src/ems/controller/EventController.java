@@ -43,4 +43,20 @@ public class EventController {
         }
         System.out.println();
     }
+
+    private void searchEvent(){
+        displayer.showPrompt("Enter event name: ");
+        String eventName = inputGetter.getLine();
+
+        String condition = "event_name = '" + eventName + "'";
+        String[] tableColumns = {"Event ID", "Event Name", "Date", "Start Time", "End Time", "Venue"};
+
+        ArrayList<String> matchedEvent = EventDAO.search(condition);
+
+        if(matchedEvent==null) return;
+
+        for(int i = 0; i < matchedEvent.size(); i++){
+            displayer.rightAlignRecord(new ArrayList<>(Arrays.asList(tableColumns[i], matchedEvent.get(i))));
+        }
+    }
 }
