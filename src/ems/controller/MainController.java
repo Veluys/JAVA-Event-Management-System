@@ -10,12 +10,23 @@ public class MainController {
         displayer.displayHeader("Welcome to Event Management System");
 
         String[] mainMenuOptions = {"Events", "Registration", "Participants", "Attendance", "Exit"};
-        displayer.showMenu("What do you want to do or work with today?", mainMenuOptions);
 
-        int option;
-        do{
-            displayer.numberedMenuPrompt();
-            option = inputGetter.getPositiveInt(mainMenuOptions.length);
-        }while(option == -1);
+        while(true){
+            displayer.displayHeader("Main Menu");
+            displayer.showMenu("What do you want to do or work with today?", mainMenuOptions);
+
+            int option;
+            do{
+                displayer.numberedMenuPrompt();
+                option = inputGetter.getPositiveInt(mainMenuOptions.length);
+            }while(option == -1);
+
+            EventController eventController = new EventController();
+
+            switch (option){
+                case 1 -> eventController.execute();
+                case 5 -> System.exit(0);
+            }
+        }
     }
 }
