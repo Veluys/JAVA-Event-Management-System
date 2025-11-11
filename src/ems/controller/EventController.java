@@ -12,6 +12,24 @@ public class EventController {
     InputGetter inputGetter = new InputGetter();
     private final String[] event_attributes = {"Event Name", "Date", "Start Time", "End Time", "Venue"};
 
+    public void execute(){
+        EventMenu();
+        int option;
+
+        do{
+            displayer.numberedMenuPrompt();
+            option = inputGetter.getPositiveInt(6);
+        }while(option == -1);
+
+        switch (option){
+            case 1 -> addEvent();
+            case 2 -> viewEvents();
+            case 3 -> searchEvent();
+            case 4 -> updateEvents();
+            case 5 -> deleteEvent();
+        }
+    }
+
     private void EventMenu(){
         displayer.displayHeader("Events");
         String[] operations = {"Add Events", "View Events", "Search Events", "Update Events", "Delete Events", "Exit"};
@@ -120,6 +138,6 @@ public class EventController {
 
         String condition = "event_name = '" + event_name + "'";
 
-        EventDAO.delete(, condition);
+        EventDAO.delete(condition);
     }
 }
