@@ -88,7 +88,7 @@ public class EventDAO {
         }
     }
 
-    public static void update(ArrayList<String> changes, int event_id, String condition){
+    public static void update(ArrayList<String> changes, String condition){
         String updateQuery = "UPDATE events " +
                             " SET " + String.join(", ", changes) +
                             " WHERE " + condition;
