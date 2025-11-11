@@ -12,6 +12,12 @@ public class EventController {
     InputGetter inputGetter = new InputGetter();
     private final String[] event_attributes = {"Event Name", "Date", "Start Time", "End Time", "Venue"};
 
+    private void EventMenu(){
+        displayer.displayHeader("Events");
+        String[] operations = {"Add Events", "View Events", "Search Events", "Update Events", "Delete Events", "Exit"};
+        displayer.showMenu("Select an operation:", operations);
+    }
+
     private void addEvent(){
         LinkedHashMap<String, String> event = new LinkedHashMap<>();
 
