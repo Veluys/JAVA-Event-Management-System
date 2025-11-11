@@ -27,7 +27,8 @@ public class EventDAO {
     }
 
     public static ArrayList<ArrayList<String>> show(){
-        String selectQuery = "SELECT event_id, event_name, date, venue FROM events";
+        String[] columns = {"event_id", "event_name", "date", "venue"};
+        String selectQuery = "SELECT " + String.join(", ", columns) + " FROM events";
         ArrayList<ArrayList<String>> events = new ArrayList<>();
 
         try{
@@ -38,11 +39,9 @@ public class EventDAO {
             do{
                 ArrayList<String> event = new ArrayList<>();
 
-                event.add(eventsSet.getString("event_id"));
-                event.add(eventsSet.getString("event_name"));
-                event.add(eventsSet.getString("date"));
-                event.add(eventsSet.getString("venue"));
-
+                for(String column : columns){
+                    event.add(eventsSet.getString(column));
+                }
                 events.add(event);
             } while(eventsSet.next());
 
@@ -68,6 +67,7 @@ public class EventDAO {
     }
 
     public static ArrayList<String> search(String condition){
+        String[] columns = {"event_id", "event_name", "date", "start_time", "end_time", "venue"};
         String searchQuery = "SELECT * FROM events WHERE " + condition;
         ArrayList<String> event = new ArrayList<>();
 
@@ -77,11 +77,9 @@ public class EventDAO {
 
             if(!eventResult.next()) return null;
 
-            event.add(eventResult.getString("event_id"));
-            event.add(eventResult.getString("event_name"));
-            event.add(eventResult.getString("date"));
-            event.add(eventResult.getString("venue"));
-
+            for(String column : columns){
+                event.add(eventResult.getString(column));
+            }
             return event;
         }catch (SQLException e){
             System.out.println("Search operation unsuccessful!");
@@ -90,6 +88,10 @@ public class EventDAO {
     }
 
     public static void update(ArrayList<String> changes, String condition){
+        if(changes.isEmpty()){
+            return;
+        }
+
         String updateQuery = "UPDATE events " +
                             " SET " + String.join(", ", changes) +
                             " WHERE " + condition;
