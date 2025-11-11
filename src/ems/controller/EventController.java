@@ -59,4 +59,52 @@ public class EventController {
             displayer.rightAlignRecord(new ArrayList<>(Arrays.asList(tableColumns[i], matchedEvent.get(i))));
         }
     }
+
+    private void updateEvents(){
+        displayer.showPrompt("Enter event name: ");
+        int option;
+
+        do{
+            option = inputGetter.getPositiveInt(EventDAO.getNumRecords());
+        }while (option == -1);
+
+        String condition = "event_name = '" + option + "'";
+
+
+        ArrayList<String> changes = new ArrayList<>();
+
+        System.out.println("Simply press enter to not update that field.");
+
+        displayer.showPrompt("New Event Name: ");
+        String eventName = inputGetter.getLine(true);
+        if(!eventName.isBlank()){
+            changes.add("event_name = '" + eventName + "'");
+        }
+
+        displayer.showPrompt("New Event Date: ");
+        String date = inputGetter.getDate(true);
+        if(!date.isBlank()){
+            changes.add("date = '" + date + "'");
+        }
+
+        displayer.showPrompt("New Start Time: ");
+        String start_time = inputGetter.getTime(true);
+        if(!start_time.isBlank()){
+            changes.add("start_time = '" + start_time + "'");
+        }
+
+        displayer.showPrompt("New End Time: ");
+        String end_time = inputGetter.getTime(true);
+        if(!end_time.isBlank()){
+            changes.add("end_time = '" + end_time + "'");
+        }
+
+        displayer.showPrompt("New Event Venue: ");
+        String venue = inputGetter.getLine(true);
+        if(!venue.isBlank()){
+            changes.add("event_name = '" + venue + "'");
+        }
+
+        EventDAO.update(changes, condition);
+    }
 }
