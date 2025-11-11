@@ -46,10 +46,10 @@ public class EventController {
 
         for(String eventDetailName : event_attributes){
             if(eventDetailName.equals("Date")){
-                displayer.showPrompt(eventDetailName + "(Ex: January 1, 2001): ");
+                displayer.showPrompt(eventDetailName + " (Ex: January 1, 2001): ");
                 event.put("Date", String.format("'%s'", inputGetter.getDate()));
             }else if(eventDetailName.contains("Time")){
-                displayer.showPrompt(eventDetailName + "(Ex. 9:00 a.m.): ");
+                displayer.showPrompt(eventDetailName + " (Ex. 9:00 a.m.): ");
                 event.put(eventDetailName, String.format("'%s'", inputGetter.getTime()));
             }else{
                 displayer.showPrompt(eventDetailName + ": ");
@@ -84,6 +84,7 @@ public class EventController {
 
         displayer.showPrompt("Enter event name: ");
         String eventName = inputGetter.getLine();
+        System.out.println();
 
         String condition = "event_name = '" + eventName + "'";
         String[] tableColumns = {"Event ID", "Event Name", "Date", "Start Time", "End Time", "Venue"};
@@ -107,13 +108,10 @@ public class EventController {
         }
 
         displayer.showPrompt("Enter event name: ");
-        int option;
+        String event_name = inputGetter.getLine();
+        System.out.println();
 
-        do{
-            option = inputGetter.getPositiveInt(EventDAO.getNumRecords());
-        }while (option == -1);
-
-        String condition = "event_name = '" + option + "'";
+        String condition = "event_name = '" + event_name + "'";
 
 
         ArrayList<String> changes = new ArrayList<>();
@@ -147,9 +145,10 @@ public class EventController {
         displayer.showPrompt("New Event Venue: ");
         String venue = inputGetter.getLine(true);
         if(!venue.isBlank()){
-            changes.add("event_name = '" + venue + "'");
+            changes.add("venue = '" + venue + "'");
         }
 
+        System.out.println();
         EventDAO.update(changes, condition);
     }
 
@@ -164,6 +163,7 @@ public class EventController {
 
         String condition = "event_name = '" + event_name + "'";
 
+        System.out.println();
         EventDAO.delete(condition);
     }
 }
