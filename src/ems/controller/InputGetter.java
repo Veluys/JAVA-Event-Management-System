@@ -1,5 +1,11 @@
 package ems.controller;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.time.format.ResolverStyle;
+import java.util.Locale;
 import java.util.Scanner;
 
 public class InputGetter {
@@ -40,4 +46,31 @@ public class InputGetter {
         return getLine(false);
     }
 
+    public String getDate(){
+        DateTimeFormatter inputFormat = DateTimeFormatter.ofPattern("MMMM dd, uuuu")
+                .withResolverStyle(ResolverStyle.STRICT);
+
+        while (true) {
+            String input = scanner.nextLine();
+            try {
+                return LocalDate.parse(input, inputFormat).toString();
+            } catch (DateTimeParseException e) {
+                System.out.println("Invalid date, please try again.");
+            }
+        }
+    }
+
+    public String getTime(){
+        DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("h:mm a", Locale.ENGLISH)
+                .withResolverStyle(ResolverStyle.STRICT);
+
+        while (true) {
+            String input = scanner.nextLine().toUpperCase().replace(".", "");
+            try {
+                return LocalTime.parse(input, timeFormat).toString();
+            } catch (DateTimeParseException e) {
+                System.out.println("Invalid time format, please try again.");
+            }
+        }
+    }
 }
