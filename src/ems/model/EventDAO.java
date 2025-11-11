@@ -9,8 +9,9 @@ import java.util.ArrayList;
 public class EventDAO {
     final static Connection connection = DBConnection.getConnection();
 
-    public static void insert(String columns, String values){
-        String insertQuery = String.format("INSERT INTO events (%s) VALUES (%s)", columns, values);
+    public static void insert(String values){
+        String insertQuery = String.format("INSERT INTO events (event_name, date, start_time, end_time, venue) " +
+                                            "VALUES (%s)", values);
 
         try{
             Statement insertStatement = connection.createStatement();
