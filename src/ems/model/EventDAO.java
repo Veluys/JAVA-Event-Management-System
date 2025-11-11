@@ -7,9 +7,9 @@ import java.sql.Statement;
 import java.util.ArrayList;
 
 public class EventDAO {
-    final Connection connection = DBConnection.getConnection();
+    final static Connection connection = DBConnection.getConnection();
 
-    public void insert(String columns, String values){
+    public static void insert(String columns, String values){
         String insertQuery = String.format("INSERT INTO events (%s) VALUES (%s)", columns, values);
 
         try{
@@ -25,7 +25,7 @@ public class EventDAO {
         }
     }
 
-    public ArrayList<ArrayList<String>> show(String viewColumns){
+    public static ArrayList<ArrayList<String>> show(String viewColumns){
         String selectQuery = String.format("SELECT %s FROM events", viewColumns);
         ArrayList<ArrayList<String>> events = new ArrayList<>();
 
@@ -51,7 +51,7 @@ public class EventDAO {
         }
     }
 
-    public ArrayList<String> search(String condition){
+    public static ArrayList<String> search(String condition){
         String searchQuery = "SELECT * FROM events WHERE " + condition;
         ArrayList<String> event = new ArrayList<>();
 
@@ -73,7 +73,7 @@ public class EventDAO {
         }
     }
 
-    public void update(ArrayList<String> changes, int event_id, String condition){
+    public static void update(ArrayList<String> changes, int event_id, String condition){
         String updateQuery = "UPDATE events " +
                             " SET " + String.join(", ", changes) +
                             " WHERE " + condition;
@@ -91,7 +91,7 @@ public class EventDAO {
         }
     }
 
-    public void delete(String condition){
+    public static void delete(String condition){
         String deleteQuery = "DELETE FROM events WHERE " + condition;
 
         try{
