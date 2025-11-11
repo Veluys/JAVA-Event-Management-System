@@ -46,12 +46,15 @@ public class InputGetter {
         return getLine(false);
     }
 
-    public String getDate(){
+    public String getDate(boolean allowBlank){
         DateTimeFormatter inputFormat = DateTimeFormatter.ofPattern("MMMM dd, uuuu")
                 .withResolverStyle(ResolverStyle.STRICT);
 
         while (true) {
             String input = scanner.nextLine();
+
+            if(allowBlank) return input;
+
             try {
                 return LocalDate.parse(input, inputFormat).toString();
             } catch (DateTimeParseException e) {
@@ -60,17 +63,28 @@ public class InputGetter {
         }
     }
 
-    public String getTime(){
+    public String getDate(){
+        return getDate(false);
+    }
+
+    public String getTime(boolean allowBlank){
         DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("h:mm a", Locale.ENGLISH)
                 .withResolverStyle(ResolverStyle.STRICT);
 
         while (true) {
             String input = scanner.nextLine().toUpperCase().replace(".", "");
+
+            if(allowBlank) return input;
+
             try {
                 return LocalTime.parse(input, timeFormat).toString();
             } catch (DateTimeParseException e) {
                 System.out.println("Invalid time format, please try again.");
             }
         }
+    }
+
+    public String getTime(){
+        return getTime(false);
     }
 }
