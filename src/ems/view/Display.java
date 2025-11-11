@@ -3,7 +3,7 @@ package ems.view;
 public class Display {
     private final int displayWidth = 120;
 
-    void displayHeader(final String message){
+    public void displayHeader(final String message){
         final int padding = (displayWidth - message.length()) / 2;
         final String centered = " ".repeat(padding) + message;
         final String border = "+" + "-".repeat(displayWidth - 2) + "+";
@@ -13,7 +13,7 @@ public class Display {
         System.out.println(border);
     }
 
-    void showMenu(final String initialPrompt, final String[] options){
+    public void showMenu(final String initialPrompt, final String[] options){
         System.out.println(initialPrompt);
 
         for(int i = 0; i< options.length; i++){
@@ -21,11 +21,11 @@ public class Display {
         }
     }
 
-    void showPrompt(final String prompt){
+    public void showPrompt(final String prompt){
         System.out.print(prompt);
     }
 
-    void numberedMenuPrompt(){
+    public void numberedMenuPrompt(){
         showPrompt("Enter the number of your option: ");
     }
 }
