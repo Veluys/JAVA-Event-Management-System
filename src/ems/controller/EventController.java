@@ -107,4 +107,13 @@ public class EventController {
 
         EventDAO.update(changes, condition);
     }
+
+    private void deleteEvent(){
+        displayer.showPrompt("Enter event name. : ");
+        String event_name = inputGetter.getLine();
+
+        String condition = "event_name = '" + event_name + "'";
+
+        EventDAO.delete(, condition);
+    }
 }
