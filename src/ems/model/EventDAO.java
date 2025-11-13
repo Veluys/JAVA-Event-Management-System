@@ -66,6 +66,19 @@ public class EventDAO {
         }
     }
 
+    public static boolean eventExist(String condition){
+        String searchQuery = "SELECT COUNT(*) FROM events WHERE " + condition;
+
+        try{
+            Statement eventStatement = connection.createStatement();
+            ResultSet eventResult = eventStatement.executeQuery(searchQuery);
+            return eventResult.next();
+        }catch (SQLException e){
+            System.out.println("Search operation unsuccessful!");
+            return false;
+        }
+    }
+
     public static ArrayList<String> search(String condition){
         String[] columns = {"event_id", "event_name", "date", "start_time", "end_time", "venue"};
         String searchQuery = "SELECT * FROM events WHERE " + condition;
