@@ -62,7 +62,7 @@ public class EventController {
     }
 
     private void viewEvents(){
-        if(EventDAO.getNumRecords() == 0){
+        if(EventDAO.getLatestEventId() == 0){
             System.out.println("There are no events yet!");
             return;
         }
@@ -77,7 +77,7 @@ public class EventController {
     }
 
     private void searchEvent(){
-        if(EventDAO.getNumRecords() == 0){
+        if(EventDAO.getLatestEventId() == 0){
             System.out.println("There are no events yet!");
             return;
         }
@@ -102,7 +102,7 @@ public class EventController {
     }
 
     private void updateEvents(){
-        if(EventDAO.getNumRecords() == 0){
+        if(EventDAO.getLatestEventId() == 0){
             System.out.println("There are no events yet!");
             return;
         }
@@ -153,7 +153,7 @@ public class EventController {
     }
 
     private void deleteEvent(){
-        if(EventDAO.getNumRecords() == 0){
+        if(EventDAO.getLatestEventId() == 0){
             System.out.println("There are no events yet!");
             return;
         }

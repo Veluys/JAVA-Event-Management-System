@@ -52,15 +52,15 @@ public class EventDAO {
         }
     }
 
-    public static int getNumRecords(){
-        String countQuery = "SELECT COUNT(*) FROM events";
+    public static int getLatestEventId(){
+        String countQuery = "SELECT COALESCE(MAX(event_id), 0) AS latest_event_id FROM events";
 
         try{
             Statement stmt = connection.createStatement();
             ResultSet resultSet = stmt.executeQuery(countQuery);
 
             resultSet.next();
-            return resultSet.getInt("count");
+            return resultSet.getInt("latest_event_id");
         }catch (SQLException e){
             return -1;
         }
