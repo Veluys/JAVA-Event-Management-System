@@ -24,9 +24,11 @@ public class MainController {
             System.out.println();
 
             EventController eventController = new EventController();
+            RegController regController = new RegController();
 
             switch (option){
                 case 1 -> eventController.execute();
+                case 2 -> regController.execute();
                 case 5 -> System.exit(0);
             }
         }
