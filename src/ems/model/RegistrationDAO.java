@@ -96,4 +96,20 @@ public class RegistrationDAO {
         }
     }
 
+    public static void delete(String condition){
+        String deleteQuery = "DELETE FROM registration WHERE " + condition;
+
+        try{
+            Statement delStatement = connection.createStatement();
+
+            if(delStatement.executeUpdate(deleteQuery) == 1){
+                System.out.println("Delete operation successful");
+            }else{
+                throw new SQLException();
+            }
+        }catch (SQLException e){
+            System.out.println("Delete operation unsuccessful!");
+        }
+    }
+
 }
