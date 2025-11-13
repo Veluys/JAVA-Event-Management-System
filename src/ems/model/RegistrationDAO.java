@@ -56,4 +56,18 @@ public class RegistrationDAO {
             return null;
         }
     }
+
+    public static int getNumRecords(){
+        String countQuery = "SELECT COUNT(*) FROM registration";
+
+        try{
+            Statement stmt = connection.createStatement();
+            ResultSet resultSet = stmt.executeQuery(countQuery);
+
+            resultSet.next();
+            return resultSet.getInt("count");
+        }catch (SQLException e){
+            return -1;
+        }
+    }
 }
