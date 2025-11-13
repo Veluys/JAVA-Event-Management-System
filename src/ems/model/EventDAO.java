@@ -72,7 +72,9 @@ public class EventDAO {
         try{
             Statement eventStatement = connection.createStatement();
             ResultSet eventResult = eventStatement.executeQuery(searchQuery);
-            return eventResult.next();
+
+            eventResult.next();
+            return eventResult.getInt("count") != 0;
         }catch (SQLException e){
             System.out.println("Search operation unsuccessful!");
             return false;
