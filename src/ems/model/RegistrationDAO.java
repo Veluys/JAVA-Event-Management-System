@@ -70,4 +70,30 @@ public class RegistrationDAO {
             return -1;
         }
     }
+
+    public static ArrayList<String> search(String condition){
+        String[] columns = {"registration_id", "participant_id", "last_name", "first_name", "has_attended"};
+        String searchQuery = "SELECT r.registration_id, r.participant_id, p.last_name, p.first_name, r.has_attended" +
+                             "FROM registration AS r " +
+                             "LEFT JOIN participants AS p " +
+                                "ON r.participant_id = p.participant_i " +
+                             "WHERE " + condition;
+        ArrayList<String> event = new ArrayList<>();
+
+        try{
+            Statement eventStatement = connection.createStatement();
+            ResultSet eventResult = eventStatement.executeQuery(searchQuery);
+
+            if(!eventResult.next()) return null;
+
+            for(String column : columns){
+                event.add(eventResult.getString(column));
+            }
+            return event;
+        }catch (SQLException e){
+            System.out.println("Search operation unsuccessful!");
+            return null;
+        }
+    }
+
 }
