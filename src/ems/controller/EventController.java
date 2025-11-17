@@ -113,6 +113,11 @@ public class EventController {
         String event_name = inputGetter.getLine("Enter event name: ");
         System.out.println();
 
+        if(EventDAO.eventExist("event_name = '" + event_name + "'")){
+            System.out.println("Event name of '" + event_name + "' already exists!");
+            return;
+        }
+
         String condition = "event_name = '" + event_name + "'";
 
         ArrayList<String> changes = new ArrayList<>();
