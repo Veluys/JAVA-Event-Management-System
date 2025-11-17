@@ -13,25 +13,27 @@ public class EventController {
     private final String[] event_attributes = {"Event Name", "Date", "Start Time", "End Time", "Venue"};
 
     public void execute(){
-        displayer.displayHeader("Events");
-        ArrayList<String> operations = new ArrayList<>(
-                Arrays.asList("Add Events", "View Events", "Search Events", "Update Events", "Delete Events", "Exit")
-        );
+        while(true){
+            displayer.displayHeader("Events");
+            ArrayList<String> operations = new ArrayList<>(
+                    Arrays.asList("Add Events", "View Events", "Search Events", "Update Events", "Delete Events", "Exit")
+            );
 
-        displayer.showMenu("Select an operation:", operations);
-        int option = inputGetter.getNumberOption(operations.size());
+            displayer.showMenu("Select an operation:", operations);
+            int option = inputGetter.getNumberOption(operations.size());
 
-        switch (option){
-            case 1 -> addEvent();
-            case 2 -> viewEvents();
-            case 3 -> searchEvent();
-            case 4 -> updateEvents();
-            case 5 -> deleteEvent();
-            case 6 -> {
-                return;
+            switch (option){
+                case 1 -> addEvent();
+                case 2 -> viewEvents();
+                case 3 -> searchEvent();
+                case 4 -> updateEvents();
+                case 5 -> deleteEvent();
+                case 6 -> {
+                    return;
+                }
             }
+            System.out.println();
         }
-        System.out.println();
     }
 
     private void addEvent(){
