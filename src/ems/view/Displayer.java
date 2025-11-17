@@ -15,20 +15,16 @@ public class Displayer {
         System.out.println(border);
     }
 
-    public void showMenu(final String initialPrompt, final String[] options){
+    public void showMenu(final String initialPrompt, final ArrayList<String> options){
         System.out.println(initialPrompt);
 
-        for(int i = 0; i< options.length; i++){
-            System.out.println("\t[" + (i+1) + "] " + options[i]);
+        for(int i = 0; i< options.size(); i++){
+            System.out.println("\t[" + (i+1) + "] " + options.get(i));
         }
     }
 
     public void showPrompt(final String prompt){
         System.out.print(prompt);
-    }
-
-    public void numberedMenuPrompt(){
-        showPrompt("Enter the number of your option: ");
     }
 
     public void centerAlignRow(final ArrayList<String> columnValues) {
