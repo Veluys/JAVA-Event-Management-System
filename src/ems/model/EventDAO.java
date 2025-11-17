@@ -28,10 +28,16 @@ public class EventDAO {
 
     public static ArrayList<ArrayList<String>> show(){
         String[] columns = {"event_name", "event_date", "start_time", "end_time", "venue_name"};
-        String selectQuery = "SELECT " + String.join(", ", columns) +
-                            " FROM events AS e" +
-                            " INNER JOIN venues AS v" +
-                                " ON e.venue_id = v.venue_id";
+        String selectQuery = "SELECT " +
+                                "event_name, " +
+                                "TO_CHAR(event_date, 'Mon DD, YYYY') AS event_date, " +
+                                "LOWER(TO_CHAR(start_time, 'FMHH12:MI AM')) AS start_time, " +
+                                "LOWER(TO_CHAR(end_time, 'FMHH12:MI AM')) AS end_time, " +
+                                "venue_name " +
+                             "FROM events AS e " +
+                             "INNER JOIN venues AS v " +
+                                 "ON e.venue_id = v.venue_id";
+
         ArrayList<ArrayList<String>> events = new ArrayList<>();
 
         try{
