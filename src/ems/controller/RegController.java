@@ -26,13 +26,16 @@ public class RegController {
             return;
         }
 
-        switch (mainMenu()){
-            case 1 -> addRegistration();
-            case 2 -> viewRegistered();
-            case 3 -> searchRegistered();
-            case 4 -> removeRegistered();
+        while (true){
+            switch (mainMenu()){
+                case 1 -> addRegistration();
+                case 2 -> viewRegistered();
+                case 3 -> searchRegistered();
+                case 4 -> removeRegistered();
+                case 5 -> {return;}
+            }
+            System.out.println();
         }
-        System.out.println();
     }
 
     private int eventSelection(){
@@ -43,6 +46,7 @@ public class RegController {
     }
 
     private int mainMenu(){
+        displayer.displayHeader("Registration");
         ArrayList<String> operations = new ArrayList<>(
                 Arrays.asList("Add Participant", "View Participants", "Search Participant", "Remove Participants", "Exit")
         );

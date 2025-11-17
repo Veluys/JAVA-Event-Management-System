@@ -28,9 +28,7 @@ public class EventController {
                 case 3 -> searchEvent();
                 case 4 -> updateEvents();
                 case 5 -> deleteEvent();
-                case 6 -> {
-                    return;
-                }
+                case 6 -> {return;}
             }
             System.out.println();
         }
