@@ -1,5 +1,7 @@
 package ems.controller;
 
+import ems.view.Displayer;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -10,78 +12,85 @@ import java.util.Scanner;
 
 public class InputGetter {
     private final Scanner scanner = new Scanner(System.in);
+    private final Displayer displayer = new Displayer();
 
-    public int getInt(final int lowest, final int highest){
-        int num;
+    public int getNumberOption(final int highest){
+        while (true){
+            try{
+                displayer.showPrompt("Enter the number of your option: ");
+                int num = Integer.parseInt(scanner.nextLine());
+                System.out.println();
 
-        try{
-            num = Integer.parseInt(scanner.nextLine());
-            if(num < lowest || num > highest){
-                throw new NumberFormatException();
+                if(num < 1 || num > highest){
+                    throw new NumberFormatException();
+                }
+                return num;
+            }catch (NumberFormatException e){
+                System.out.println("Invalid input! Valid inputs are whole numbers including and between 1 and " + highest + "\n");
             }
-            return num;
-        }catch (NumberFormatException e){
-            System.out.println("Invalid input! Valid inputs are whole numbers including and between " + lowest + " and " + highest + "\n");
-            return -1;
         }
     }
 
-    public int getPositiveInt(final int highest){
-        return getInt(1, highest);
-    }
-
-    public String getLine(boolean allowBlank){
-        String text = scanner.nextLine();
-
-        if(!allowBlank){
-            if(!text.isBlank()) return text;
-            else return null;
-        }else{
-            return text;
+    public String getLine(String prompt, boolean allowBlank) {
+        while (true) {
+            displayer.showPrompt(prompt);
+            String text = scanner.nextLine();
+            if (text.isBlank()) {
+                if (allowBlank) return null;
+            } else {
+                return text;
+            }
         }
     }
 
-    public String getLine(){
-        return getLine(false);
+    public String getLine(String prompt){
+        return getLine(prompt,false);
     }
 
-    public String getDate(boolean allowBlank){
-        DateTimeFormatter inputFormat = DateTimeFormatter.ofPattern("MMMM dd, uuuu")
+    public String getDate(String prompt, boolean allowBlank){
+        DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("MMMM dd, uuuu")
                 .withResolverStyle(ResolverStyle.STRICT);
 
-        String input = scanner.nextLine();
-
-        if(allowBlank) return input;
-
-        try {
-            return LocalDate.parse(input, inputFormat).toString();
-        } catch (DateTimeParseException e) {
-            System.out.println("Invalid date, please try again.");
-            return null;
+        while (true) {
+            displayer.showPrompt(prompt + " (Ex. January 1, 2001): ");
+            String date = scanner.nextLine();
+            if (date.isBlank()) {
+                if (allowBlank) return "";
+            } else {
+                try {
+                    return LocalDate.parse(date, dateFormat).toString();
+                } catch (DateTimeParseException e) {
+                    System.out.println("Invalid date, please try again.");
+                }
+            }
         }
     }
 
-    public String getDate(){
-        return getDate(false);
+    public String getDate(String prompt){
+        return getDate(prompt,false);
     }
 
-    public String getTime(boolean allowBlank){
+    public String getTime(String prompt, boolean allowBlank){
         DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("h:mm a", Locale.ENGLISH)
                 .withResolverStyle(ResolverStyle.STRICT);
 
-        String input = scanner.nextLine().toUpperCase().replace(".", "");
+        while (true) {
+            displayer.showPrompt(prompt + " (Ex. 7:00 a.m.): ");
+            String time = scanner.nextLine().toUpperCase().replace(".", "");
 
-        if(allowBlank) return input;
-
-        try {
-            return LocalTime.parse(input, timeFormat).toString();
-        } catch (DateTimeParseException e) {
-            System.out.println("Invalid time format, please try again.");
-            return null;
+            if (time.isBlank()) {
+                if (allowBlank) return "";
+            } else {
+                try {
+                    return LocalTime.parse(time, timeFormat).toString();
+                } catch (DateTimeParseException e) {
+                    System.out.println("Invalid time, please try again.\n");
+                }
+            }
         }
     }
 
-    public String getTime(){
-        return getTime(false);
+    public String getTime(String prompt){
+        return getTime(prompt,false);
     }
 }
