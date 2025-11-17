@@ -28,7 +28,7 @@ public class RegController {
 
         switch (mainMenu()){
             case 1 -> addRegistration();
-//            case 2 -> viewEvents();
+            case 2 -> viewRegistered();
 //            case 3 -> searchEvent();
 //            case 4 -> updateEvents();
 //            case 5 -> deleteEvent();
@@ -75,5 +75,23 @@ public class RegController {
         System.out.println();
         ParticipantDAO.insert(participantDetails);
         RegistrationDAO.insert(regDetails);
+    }
+
+    private void viewRegistered(){
+        ArrayList<ArrayList<String>> participants = RegistrationDAO.show(eventIdSelected);
+
+        if(RegistrationDAO.isEmpty() || participants==null){
+            System.out.println("There are no participants yet!");
+            return;
+        }
+        ArrayList<String> columnHeaders = new ArrayList<>(
+                Arrays.asList("Sr-Code", "Department", "Last Name", "First Name", "Attended")
+        );
+
+        displayer.centerAlignRow(columnHeaders);
+        for(ArrayList<String> event : participants){
+            if(event == participants.getFirst()) System.out.println();
+            displayer.centerAlignRow(event);
+        }
     }
 }

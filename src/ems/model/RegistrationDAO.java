@@ -26,13 +26,20 @@ public class RegistrationDAO {
         }
     }
 
-    public static ArrayList<ArrayList<String>> show(){
-        String[] columns = {"registration_id", "participant_id", "last_name", "first_name", "has_attended"};
-        String selectQuery = "SELECT r.registration_id, r.participant_id, p.last_name, p.first_name, r.has_attended " +
-                             "FROM registration AS r " +
-                             "LEFT JOIN participants AS p " +
-                                "ON r.participant_id = p.participant_i " +
-                             "ORDER BY registration_id DESC;";
+    public static ArrayList<ArrayList<String>> show(int event_id){
+        String[] columns = {"participant_id", "dept_shortname", "last_name", "first_name", "attended"};
+        String selectQuery = "SELECT p.participant_id, dept_shortname, last_name, first_name, " +
+                             "CASE " +
+                                "WHEN attended IS NULL THEN 'N/A' " +
+                                "WHEN attended = TRUE THEN 'Y' " +
+                                "WHEN attended = FALSE THEN 'N' " +
+                             "END AS attended " +
+                             "FROM participants AS p " +
+                             "INNER JOIN registration AS r " +
+                             "  ON p.participant_id = r.participant_id " +
+                             "  AND r.event_id = " + event_id + " " +
+                             "INNER JOIN departments AS d " +
+                             "  ON p.dept_id = d.dept_id";
 
         ArrayList<ArrayList<String>> events = new ArrayList<>();
 
@@ -57,17 +64,17 @@ public class RegistrationDAO {
         }
     }
 
-    public static int getNumRecords(){
-        String countQuery = "SELECT COUNT(*) FROM registration";
+    public static boolean isEmpty(){
+        String checkQuery = "SELECT COALESCE(MAX(reg_id), 0) AS count FROM registration";
 
         try{
             Statement stmt = connection.createStatement();
-            ResultSet resultSet = stmt.executeQuery(countQuery);
+            ResultSet resultSet = stmt.executeQuery(checkQuery);
 
             resultSet.next();
-            return resultSet.getInt("count");
+            return resultSet.getInt("count") == 0;
         }catch (SQLException e){
-            return -1;
+            return false;
         }
     }
 
