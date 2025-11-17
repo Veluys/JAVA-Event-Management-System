@@ -14,13 +14,18 @@ public class InputGetter {
     private final Scanner scanner = new Scanner(System.in);
     private final Displayer displayer = new Displayer();
 
-    public int getNumberOption(final int highest){
+    public int getNumberOption(final int highest, boolean allowBlank){
         while (true){
             try{
                 displayer.showPrompt("Enter the number of your option: ");
-                int num = Integer.parseInt(scanner.nextLine());
+                String input = scanner.nextLine();
                 System.out.println();
 
+                if(allowBlank && input.isBlank()){
+                    return -1;
+                }
+
+                int num = Integer.parseInt(input);
                 if(num < 1 || num > highest){
                     throw new NumberFormatException();
                 }
@@ -31,12 +36,16 @@ public class InputGetter {
         }
     }
 
+    public int getNumberOption(final int highest){
+        return getNumberOption(highest, false);
+    }
+
     public String getLine(String prompt, boolean allowBlank) {
         while (true) {
             displayer.showPrompt(prompt);
             String text = scanner.nextLine();
             if (text.isBlank()) {
-                if (allowBlank) return null;
+                if (allowBlank) return "";
             } else {
                 return text;
             }
