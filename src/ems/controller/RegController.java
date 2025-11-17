@@ -29,7 +29,7 @@ public class RegController {
         switch (mainMenu()){
             case 1 -> addRegistration();
             case 2 -> viewRegistered();
-//            case 3 -> searchEvent();
+            case 3 -> searchRegistered();
 //            case 4 -> updateEvents();
 //            case 5 -> deleteEvent();
         }
@@ -80,7 +80,7 @@ public class RegController {
     private void viewRegistered(){
         ArrayList<ArrayList<String>> participants = RegistrationDAO.show(eventIdSelected);
 
-        if(RegistrationDAO.isEmpty() || participants==null){
+        if(RegistrationDAO.isEmpty(eventIdSelected) || participants==null){
             System.out.println("There are no participants yet!");
             return;
         }
@@ -89,9 +89,32 @@ public class RegController {
         );
 
         displayer.centerAlignRow(columnHeaders);
-        for(ArrayList<String> event : participants){
-            if(event == participants.getFirst()) System.out.println();
-            displayer.centerAlignRow(event);
+        for(ArrayList<String> participant : participants){
+            if(participant == participants.getFirst()) System.out.println();
+            displayer.centerAlignRow(participant);
+        }
+    }
+    private void searchRegistered(){
+        if(RegistrationDAO.isEmpty(eventIdSelected)){
+            System.out.println("There are no registered participants yet!");
+            return;
+        }
+
+        String participant_id = inputGetter.getLine("Enter Sr-Code: ");
+        System.out.println();
+
+        String[] tableColumns = {"Sr-Code", "Department", "Last Name", "First Name", "Attended"};
+
+        ArrayList<String> matchedParticipant = RegistrationDAO.search(eventIdSelected, participant_id);
+
+        if(matchedParticipant==null){
+            System.out.println("There are no participants that matched the given Sr-code!");
+            return;
+        }
+
+        for(int i = 0; i < matchedParticipant.size(); i++){
+            ArrayList<String> record = new ArrayList<>(Arrays.asList(tableColumns[i], matchedParticipant.get(i)));
+            displayer.rightAlignRecord(record);
         }
     }
 }

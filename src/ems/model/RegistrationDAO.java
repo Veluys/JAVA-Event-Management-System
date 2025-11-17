@@ -64,8 +64,9 @@ public class RegistrationDAO {
         }
     }
 
-    public static boolean isEmpty(){
-        String checkQuery = "SELECT COALESCE(MAX(reg_id), 0) AS count FROM registration";
+    public static boolean isEmpty(final int event_id){
+        String checkQuery = "SELECT COALESCE(MAX(reg_id), 0) AS count FROM registration " +
+                            "WHERE event_id = " + event_id;
 
         try{
             Statement stmt = connection.createStatement();
@@ -78,13 +79,22 @@ public class RegistrationDAO {
         }
     }
 
-    public static ArrayList<String> search(String condition){
-        String[] columns = {"registration_id", "participant_id", "last_name", "first_name", "has_attended"};
-        String searchQuery = "SELECT r.registration_id, r.participant_id, p.last_name, p.first_name, r.has_attended" +
-                             "FROM registration AS r " +
-                             "LEFT JOIN participants AS p " +
-                                "ON r.participant_id = p.participant_i " +
-                             "WHERE " + condition;
+    public static ArrayList<String> search(int event_id, String participant_id){
+        String[] columns = {"participant_id", "dept_shortname", "last_name", "first_name", "attended"};
+        String searchQuery = "SELECT p.participant_id, dept_shortname, last_name, first_name, " +
+                             "CASE " +
+                                "WHEN attended IS NULL THEN 'N/A' " +
+                                "WHEN attended = TRUE THEN 'Y' " +
+                                "WHEN attended = FALSE THEN 'N' " +
+                             "END AS attended " +
+                             "FROM participants AS p " +
+                             "INNER JOIN registration AS r " +
+                             "  ON p.participant_id = r.participant_id " +
+                             "  AND r.event_id = " + event_id + " " +
+                             "  AND r.participant_id = '" + participant_id + "' " +
+                             "INNER JOIN departments AS d " +
+                             "  ON p.dept_id = d.dept_id ";
+
         ArrayList<String> event = new ArrayList<>();
 
         try{
