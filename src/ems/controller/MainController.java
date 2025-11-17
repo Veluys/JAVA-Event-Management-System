@@ -2,6 +2,9 @@ package ems.controller;
 
 import ems.view.Displayer;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 public class MainController {
     public static void execute(){
         Displayer displayer = new Displayer();
@@ -9,19 +12,14 @@ public class MainController {
 
         displayer.displayHeader("Welcome to Event Management System");
 
-        String[] mainMenuOptions = {"Events", "Registration", "Participants", "Attendance", "Exit"};
+        ArrayList<String> mainMenuOptions = new ArrayList<>(
+                Arrays.asList("Events", "Registration", "Participants", "Attendance", "Exit")
+        );
 
         while(true){
             displayer.displayHeader("Main Menu");
             displayer.showMenu("What do you want to do or work with today?", mainMenuOptions);
-
-            int option;
-            do{
-                displayer.numberedMenuPrompt();
-                option = inputGetter.getPositiveInt(mainMenuOptions.length);
-            }while(option == -1);
-
-            System.out.println();
+            int option = inputGetter.getNumberOption(mainMenuOptions.size());
 
             EventController eventController = new EventController();
             RegController regController = new RegController();
