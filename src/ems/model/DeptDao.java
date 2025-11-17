@@ -11,7 +11,7 @@ public class DeptDao {
 
     public static ArrayList<String> getDeptShortNames(){
         String selectQuery = "SELECT dept_shortname " +
-                "FROM department " +
+                "FROM departments " +
                 "ORDER BY dept_id";
 
         ArrayList<String> venueNames = new ArrayList<>();
@@ -34,7 +34,7 @@ public class DeptDao {
     }
 
     public static int getLatestDeptId(){
-        String countQuery = "SELECT COALESCE(MAX(dept_id), 0) AS latest_dept_id FROM department";
+        String countQuery = "SELECT COALESCE(MAX(dept_id), 0) AS latest_dept_id FROM departments";
 
         try{
             Statement stmt = connection.createStatement();
@@ -48,7 +48,7 @@ public class DeptDao {
     }
 
     public static int getDeptId(String dept_shortname){
-        String searchQuery = String.format("SELECT dept_id FROM venues WHERE dept_shortname = '%s'", dept_shortname);
+        String searchQuery = String.format("SELECT dept_id FROM departments WHERE dept_shortname = '%s'", dept_shortname);
 
         try{
             Statement eventStatement = connection.createStatement();

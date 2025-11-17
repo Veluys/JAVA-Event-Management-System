@@ -3,6 +3,7 @@ package ems.controller;
 import ems.model.DeptDao;
 import ems.model.EventDAO;
 import ems.model.ParticipantDAO;
+import ems.model.RegistrationDAO;
 import ems.view.Displayer;
 
 import java.util.ArrayList;
@@ -60,6 +61,7 @@ public class RegController {
         }
 
         System.out.println("Please provide all of the following information.");
+        String participant_id = String.format("'%s'", inputGetter.getLine("Sr-Code: "));
         String last_name = String.format("'%s'", inputGetter.getLine("Last Name: "));
         String first_name = String.format("'%s'", inputGetter.getLine("First Name: "));
 
@@ -67,11 +69,11 @@ public class RegController {
         int option = inputGetter.getNumberOption(deptShortNames.size());
         int deptId = DeptDao.getDeptId(deptShortNames.get(option - 1));
 
-        String participantDetails = String.format("%d, %s, %s", deptId, last_name, first_name);
-        String regDetails = eventIdSelected + ", " + ParticipantDAO.getLastParticipantId();
+        String participantDetails = String.format("%s, %d, %s, %s", participant_id, deptId, last_name, first_name);
+        String regDetails = eventIdSelected + ", " + participant_id;
 
         System.out.println();
         ParticipantDAO.insert(participantDetails);
-        EventDAO.insert(regDetails);
+        RegistrationDAO.insert(regDetails);
     }
 }
