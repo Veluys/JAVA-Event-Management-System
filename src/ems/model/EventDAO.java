@@ -10,7 +10,7 @@ public class EventDAO {
     final static Connection connection = DBConnection.getConnection();
 
     public static void insert(String values){
-        String insertQuery = String.format("INSERT INTO events (event_name, date, start_time, end_time, venue) " +
+        String insertQuery = String.format("INSERT INTO events (event_name, event_date, start_time, end_time, venue_id) " +
                                             "VALUES (%s)", values);
 
         try{
@@ -27,8 +27,11 @@ public class EventDAO {
     }
 
     public static ArrayList<ArrayList<String>> show(){
-        String[] columns = {"event_id", "event_name", "date", "venue"};
-        String selectQuery = "SELECT " + String.join(", ", columns) + " FROM events";
+        String[] columns = {"event_name", "event_date", "start_time", "end_time", "venue_name"};
+        String selectQuery = "SELECT " + String.join(", ", columns) +
+                            " FROM events AS e" +
+                            " INNER JOIN venues AS v" +
+                                " ON e.venue_id = v.venue_id";
         ArrayList<ArrayList<String>> events = new ArrayList<>();
 
         try{
