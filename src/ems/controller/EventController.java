@@ -1,11 +1,11 @@
 package ems.controller;
 
 import ems.model.EventDAO;
+import ems.model.VenueDAO;
 import ems.view.Displayer;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedHashMap;
 
 public class EventController {
     Displayer displayer = new Displayer();
@@ -13,21 +13,20 @@ public class EventController {
     private final String[] event_attributes = {"Event Name", "Date", "Start Time", "End Time", "Venue"};
 
     public void execute(){
-        EventMenu();
-        int option;
+        displayer.displayHeader("Events");
+        ArrayList<String> operations = new ArrayList<>(
+                Arrays.asList("Add Events", "View Events", "Search Events", "Update Events", "Delete Events", "Exit")
+        );
 
-        do{
-            displayer.numberedMenuPrompt();
-            option = inputGetter.getPositiveInt(6);
-        }while(option == -1);
+        displayer.showMenu("Select an operation:", operations);
+        int option = inputGetter.getNumberOption(operations.size());
 
-        System.out.println();
         switch (option){
             case 1 -> addEvent();
-            case 2 -> viewEvents();
-            case 3 -> searchEvent();
-            case 4 -> updateEvents();
-            case 5 -> deleteEvent();
+//            case 2 -> viewEvents();
+//            case 3 -> searchEvent();
+//            case 4 -> updateEvents();
+//            case 5 -> deleteEvent();
             case 6 -> {
                 return;
             }
@@ -35,33 +34,35 @@ public class EventController {
         System.out.println();
     }
 
-    private void EventMenu(){
-        displayer.displayHeader("Events");
-        String[] operations = {"Add Events", "View Events", "Search Events", "Update Events", "Delete Events", "Exit"};
-        displayer.showMenu("Select an operation:", operations);
-    }
-
     private void addEvent(){
-        LinkedHashMap<String, String> event = new LinkedHashMap<>();
+        String eventName = String.format("'%s'", inputGetter.getLine("Event Name: "));
+        String date = String.format("'%s'", inputGetter.getDate("Event Date"));
+        String start_time = String.format("'%s'", inputGetter.getTime("Start Time"));
+        String end_time = String.format("'%s'", inputGetter.getTime("End Time"));
 
-        for(String eventDetailName : event_attributes){
-            if(eventDetailName.equals("Date")){
-                displayer.showPrompt(eventDetailName + " (Ex: January 1, 2001): ");
-                event.put("Date", String.format("'%s'", inputGetter.getDate()));
-            }else if(eventDetailName.contains("Time")){
-                displayer.showPrompt(eventDetailName + " (Ex. 9:00 a.m.): ");
-                event.put(eventDetailName, String.format("'%s'", inputGetter.getTime()));
-            }else{
-                displayer.showPrompt(eventDetailName + ": ");
-                event.put(eventDetailName, String.format("'%s'", inputGetter.getLine()));
-            }
+        ArrayList<String> venueNames = VenueDAO.getVenueNames();
+        int venue_id;
+
+        if(venueNames != null){
+            displayer.showMenu("Venues", venueNames);
+            int option = inputGetter.getNumberOption(venueNames.size());
+            venue_id = VenueDAO.getVenueId(venueNames.get(option - 1));
+        }else{
+            String venue = inputGetter.getLine("Venue: ");
+            VenueDAO.insert(venue);
+            venue_id = VenueDAO.getLatestVenueId();
         }
-        String eventDetails = String.join(",", event.values());
+
+        ArrayList<String> eventDetails = new ArrayList<>(
+                Arrays.asList(eventName, date, start_time, end_time, String.format("'%s'", venue_id))
+        );
+
         System.out.println();
-        EventDAO.insert(eventDetails);
+        EventDAO.insert(String.join(",", eventDetails));
+
     }
 
-    private void viewEvents(){
+    /*private void viewEvents(){
         if(EventDAO.getLatestEventId() == 0){
             System.out.println("There are no events yet!");
             return;
@@ -82,8 +83,7 @@ public class EventController {
             return;
         }
 
-        displayer.showPrompt("Enter event name: ");
-        String eventName = inputGetter.getLine();
+        String eventName = inputGetter.getLine("Enter event name: ");
         System.out.println();
 
         String condition = "event_name = '" + eventName + "'";
@@ -165,5 +165,5 @@ public class EventController {
 
         System.out.println();
         EventDAO.delete(condition);
-    }
+    }*/
 }
