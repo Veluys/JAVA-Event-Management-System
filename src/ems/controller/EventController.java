@@ -126,7 +126,7 @@ public class EventController {
 
         String date = inputGetter.getDate("New Event Date: ",true);
         if(!date.isBlank()){
-            changes.add("date = '" + date + "'");
+            changes.add("event_date = '" + date + "'");
         }
 
         String start_time = inputGetter.getTime("New Start Time: ",true);
