@@ -25,7 +25,7 @@ public class EventController {
             case 1 -> addEvent();
             case 2 -> viewEvents();
             case 3 -> searchEvent();
-//            case 4 -> updateEvents();
+            case 4 -> updateEvents();
 //            case 5 -> deleteEvent();
             case 6 -> {
                 return;
@@ -35,23 +35,20 @@ public class EventController {
     }
 
     private void addEvent(){
+        ArrayList<String> venueNames = VenueDAO.getVenueNames();
+        if(venueNames == null){
+            System.out.println("There are no available venues yet!");
+            return;
+        }
+
         String eventName = String.format("'%s'", inputGetter.getLine("Event Name: "));
         String date = String.format("'%s'", inputGetter.getDate("Event Date"));
         String start_time = String.format("'%s'", inputGetter.getTime("Start Time"));
         String end_time = String.format("'%s'", inputGetter.getTime("End Time"));
 
-        ArrayList<String> venueNames = VenueDAO.getVenueNames();
-        int venue_id;
-
-        if(venueNames != null){
-            displayer.showMenu("Venues", venueNames);
-            int option = inputGetter.getNumberOption(venueNames.size());
-            venue_id = VenueDAO.getVenueId(venueNames.get(option - 1));
-        }else{
-            String venue = inputGetter.getLine("Venue: ");
-            VenueDAO.insert(venue);
-            venue_id = VenueDAO.getLatestVenueId();
-        }
+        displayer.showMenu("Venues", venueNames);
+        int option = inputGetter.getNumberOption(venueNames.size());
+        int venue_id = VenueDAO.getVenueId(venueNames.get(option - 1));
 
         ArrayList<String> eventDetails = new ArrayList<>(
                 Arrays.asList(eventName, date, start_time, end_time, String.format("'%s'", venue_id))
@@ -63,12 +60,12 @@ public class EventController {
     }
 
     private void viewEvents(){
-        if(EventDAO.getLatestEventId() == 0){
+        ArrayList<ArrayList<String>> events = EventDAO.show();
+
+        if(EventDAO.getLatestEventId() == 0 || events==null){
             System.out.println("There are no events yet!");
             return;
         }
-
-        ArrayList<ArrayList<String>> events = EventDAO.show();
 
         displayer.centerAlignRow(new ArrayList<>(Arrays.asList(event_attributes)));
         for(ArrayList<String> event : events){
@@ -100,58 +97,61 @@ public class EventController {
             displayer.rightAlignRecord(new ArrayList<>(Arrays.asList(tableColumns[i], matchedEvent.get(i))));
         }
     }
-    /*
+
     private void updateEvents(){
         if(EventDAO.getLatestEventId() == 0){
             System.out.println("There are no events yet!");
             return;
         }
 
-        displayer.showPrompt("Enter event name: ");
-        String event_name = inputGetter.getLine();
+        ArrayList<String> venueNames = VenueDAO.getVenueNames();
+        if(venueNames == null){
+            System.out.println("There are no available venues yet!");
+            return;
+        }
+
+        String event_name = inputGetter.getLine("Enter event name: ");
         System.out.println();
 
         String condition = "event_name = '" + event_name + "'";
-
 
         ArrayList<String> changes = new ArrayList<>();
 
         System.out.println("Simply press enter to not update that field.");
 
-        displayer.showPrompt("New Event Name: ");
-        String eventName = inputGetter.getLine(true);
+        String eventName = inputGetter.getLine("New Event Name: ",true);
         if(!eventName.isBlank()){
             changes.add("event_name = '" + eventName + "'");
         }
 
-        displayer.showPrompt("New Event Date: ");
-        String date = inputGetter.getDate(true);
+        String date = inputGetter.getDate("New Event Date: ",true);
         if(!date.isBlank()){
             changes.add("date = '" + date + "'");
         }
 
-        displayer.showPrompt("New Start Time: ");
-        String start_time = inputGetter.getTime(true);
+        String start_time = inputGetter.getTime("New Start Time: ",true);
         if(!start_time.isBlank()){
             changes.add("start_time = '" + start_time + "'");
         }
 
-        displayer.showPrompt("New End Time: ");
-        String end_time = inputGetter.getTime(true);
+        String end_time = inputGetter.getTime("New End Time: ",true);
         if(!end_time.isBlank()){
             changes.add("end_time = '" + end_time + "'");
         }
 
-        displayer.showPrompt("New Event Venue: ");
-        String venue = inputGetter.getLine(true);
-        if(!venue.isBlank()){
-            changes.add("venue = '" + venue + "'");
+        displayer.showMenu("Venues", venueNames);
+        int option = inputGetter.getNumberOption(venueNames.size(), true);
+        int venue_id = VenueDAO.getVenueId(venueNames.get(option - 1));
+
+        if(venue_id != -1){
+            changes.add("venue_id = '" + venue_id + "'");
         }
 
         System.out.println();
         EventDAO.update(changes, condition);
     }
 
+    /*
     private void deleteEvent(){
         if(EventDAO.getLatestEventId() == 0){
             System.out.println("There are no events yet!");
