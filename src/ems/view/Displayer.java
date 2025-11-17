@@ -28,8 +28,8 @@ public class Displayer {
     }
 
     public void centerAlignRow(final ArrayList<String> columnValues) {
-        final int tableWidth = displayWidth - 4;
-        final int columnWidth = tableWidth / 4;
+        final int tableWidth = displayWidth - columnValues.size();
+        final int columnWidth = tableWidth / columnValues.size();
 
         for (int i = 0; i < columnValues.size(); i++) {
             String columnValue = columnValues.get(i);
