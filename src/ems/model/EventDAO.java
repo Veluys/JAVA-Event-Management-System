@@ -91,8 +91,17 @@ public class EventDAO {
     }
 
     public static ArrayList<String> search(String condition){
-        String[] columns = {"event_id", "event_name", "date", "start_time", "end_time", "venue"};
-        String searchQuery = "SELECT * FROM events WHERE " + condition;
+        String[] columns = {"event_name", "event_date", "start_time", "end_time", "venue_name"};
+        String searchQuery = "SELECT " +
+                                "event_name, " +
+                                "TO_CHAR(event_date, 'Mon DD, YYYY') AS event_date, " +
+                                "LOWER(TO_CHAR(start_time, 'FMHH12:MI AM')) AS start_time, " +
+                                "LOWER(TO_CHAR(end_time, 'FMHH12:MI AM')) AS end_time, " +
+                                "venue_name " +
+                             "FROM events AS e " +
+                             "INNER JOIN venues AS v " +
+                                "ON e.venue_id = v.venue_id " +
+                                "AND " + condition;
         ArrayList<String> event = new ArrayList<>();
 
         try{

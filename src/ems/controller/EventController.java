@@ -24,7 +24,7 @@ public class EventController {
         switch (option){
             case 1 -> addEvent();
             case 2 -> viewEvents();
-//            case 3 -> searchEvent();
+            case 3 -> searchEvent();
 //            case 4 -> updateEvents();
 //            case 5 -> deleteEvent();
             case 6 -> {
@@ -76,7 +76,7 @@ public class EventController {
             displayer.centerAlignRow(event);
         }
     }
-    /*
+
     private void searchEvent(){
         if(EventDAO.getLatestEventId() == 0){
             System.out.println("There are no events yet!");
@@ -100,7 +100,7 @@ public class EventController {
             displayer.rightAlignRecord(new ArrayList<>(Arrays.asList(tableColumns[i], matchedEvent.get(i))));
         }
     }
-
+    /*
     private void updateEvents(){
         if(EventDAO.getLatestEventId() == 0){
             System.out.println("There are no events yet!");
