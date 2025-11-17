@@ -23,7 +23,7 @@ public class EventController {
 
         switch (option){
             case 1 -> addEvent();
-//            case 2 -> viewEvents();
+            case 2 -> viewEvents();
 //            case 3 -> searchEvent();
 //            case 4 -> updateEvents();
 //            case 5 -> deleteEvent();
@@ -62,7 +62,7 @@ public class EventController {
 
     }
 
-    /*private void viewEvents(){
+    private void viewEvents(){
         if(EventDAO.getLatestEventId() == 0){
             System.out.println("There are no events yet!");
             return;
@@ -70,13 +70,13 @@ public class EventController {
 
         ArrayList<ArrayList<String>> events = EventDAO.show();
 
-        displayer.centerAlignRow(new ArrayList<>(Arrays.asList("event_id", "event_name", "date", "venue")));
+        displayer.centerAlignRow(new ArrayList<>(Arrays.asList(event_attributes)));
         for(ArrayList<String> event : events){
             if(event == events.getFirst()) System.out.println();
             displayer.centerAlignRow(event);
         }
     }
-
+    /*
     private void searchEvent(){
         if(EventDAO.getLatestEventId() == 0){
             System.out.println("There are no events yet!");
