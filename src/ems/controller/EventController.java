@@ -26,7 +26,7 @@ public class EventController {
             case 2 -> viewEvents();
             case 3 -> searchEvent();
             case 4 -> updateEvents();
-//            case 5 -> deleteEvent();
+            case 5 -> deleteEvent();
             case 6 -> {
                 return;
             }
@@ -151,19 +151,17 @@ public class EventController {
         EventDAO.update(changes, condition);
     }
 
-    /*
+
     private void deleteEvent(){
         if(EventDAO.getLatestEventId() == 0){
             System.out.println("There are no events yet!");
             return;
         }
 
-        displayer.showPrompt("Enter event name. : ");
-        String event_name = inputGetter.getLine();
-
+        String event_name = inputGetter.getLine("Enter event name: ");
         String condition = "event_name = '" + event_name + "'";
 
         System.out.println();
         EventDAO.delete(condition);
-    }*/
+    }
 }
