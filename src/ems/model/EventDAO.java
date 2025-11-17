@@ -157,4 +157,21 @@ public class EventDAO {
             System.out.println("Delete operation unsuccessful!");
         }
     }
+
+    public static int getEventId(String venue_name){
+        String searchQuery = String.format("SELECT event_id FROM events WHERE event_name = '%s'", venue_name);
+
+        try{
+            Statement eventStatement = connection.createStatement();
+            ResultSet eventResult = eventStatement.executeQuery(searchQuery);
+
+            if(!eventResult.next()){
+                return -1;
+            }
+
+            return eventResult.getInt("event_id");
+        }catch (SQLException e){
+            return -1;
+        }
+    }
 }
