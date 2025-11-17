@@ -30,8 +30,7 @@ public class RegController {
             case 1 -> addRegistration();
             case 2 -> viewRegistered();
             case 3 -> searchRegistered();
-//            case 4 -> updateEvents();
-//            case 5 -> deleteEvent();
+            case 4 -> removeRegistered();
         }
         System.out.println();
     }
@@ -116,5 +115,14 @@ public class RegController {
             ArrayList<String> record = new ArrayList<>(Arrays.asList(tableColumns[i], matchedParticipant.get(i)));
             displayer.rightAlignRecord(record);
         }
+    }
+    private void removeRegistered(){
+        if(RegistrationDAO.isEmpty(eventIdSelected)){
+            System.out.println("There are no registered participants yet!");
+            return;
+        }
+        String participant_id = inputGetter.getLine("Enter Sr-code: ");
+        System.out.println();
+        RegistrationDAO.delete(eventIdSelected, participant_id);
     }
 }

@@ -113,8 +113,10 @@ public class RegistrationDAO {
         }
     }
 
-    public static void delete(String condition){
-        String deleteQuery = "DELETE FROM registration WHERE " + condition;
+    public static void delete(int event_id, String participant_id){
+        String deleteQuery = "DELETE FROM registration " +
+                             "WHERE event_id = " + event_id +
+                                " AND participant_id = '" + participant_id + "'";
 
         try{
             Statement delStatement = connection.createStatement();
