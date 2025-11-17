@@ -31,15 +31,13 @@ public class InputGetter {
     }
 
     public String getLine(boolean allowBlank){
-        String text;
-        while(true){
-            text = scanner.nextLine();
+        String text = scanner.nextLine();
 
-            if(!allowBlank){
-                if(!text.isBlank()) return text;
-            }else{
-                return text;
-            }
+        if(!allowBlank){
+            if(!text.isBlank()) return text;
+            else return null;
+        }else{
+            return text;
         }
     }
 
@@ -51,16 +49,15 @@ public class InputGetter {
         DateTimeFormatter inputFormat = DateTimeFormatter.ofPattern("MMMM dd, uuuu")
                 .withResolverStyle(ResolverStyle.STRICT);
 
-        while (true) {
-            String input = scanner.nextLine();
+        String input = scanner.nextLine();
 
-            if(allowBlank) return input;
+        if(allowBlank) return input;
 
-            try {
-                return LocalDate.parse(input, inputFormat).toString();
-            } catch (DateTimeParseException e) {
-                System.out.println("Invalid date, please try again.");
-            }
+        try {
+            return LocalDate.parse(input, inputFormat).toString();
+        } catch (DateTimeParseException e) {
+            System.out.println("Invalid date, please try again.");
+            return null;
         }
     }
 
@@ -72,16 +69,15 @@ public class InputGetter {
         DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("h:mm a", Locale.ENGLISH)
                 .withResolverStyle(ResolverStyle.STRICT);
 
-        while (true) {
-            String input = scanner.nextLine().toUpperCase().replace(".", "");
+        String input = scanner.nextLine().toUpperCase().replace(".", "");
 
-            if(allowBlank) return input;
+        if(allowBlank) return input;
 
-            try {
-                return LocalTime.parse(input, timeFormat).toString();
-            } catch (DateTimeParseException e) {
-                System.out.println("Invalid time format, please try again.");
-            }
+        try {
+            return LocalTime.parse(input, timeFormat).toString();
+        } catch (DateTimeParseException e) {
+            System.out.println("Invalid time format, please try again.");
+            return null;
         }
     }
 
