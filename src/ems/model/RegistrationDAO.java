@@ -16,9 +16,7 @@ public class RegistrationDAO {
         try{
             Statement insertStatement = connection.createStatement();
 
-            if(insertStatement.executeUpdate(insertQuery) == 1){
-                System.out.println("Insert operation successful");
-            }else{
+            if(insertStatement.executeUpdate(insertQuery) != 1){
                 throw new SQLException();
             }
         }catch (SQLException e){
@@ -121,9 +119,7 @@ public class RegistrationDAO {
         try{
             Statement delStatement = connection.createStatement();
 
-            if(delStatement.executeUpdate(deleteQuery) == 1){
-                System.out.println("Delete operation successful");
-            }else{
+            if(delStatement.executeUpdate(deleteQuery) != 1){
                 throw new SQLException();
             }
         }catch (SQLException e){

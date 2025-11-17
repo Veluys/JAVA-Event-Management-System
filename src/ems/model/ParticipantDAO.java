@@ -16,9 +16,7 @@ public class ParticipantDAO {
         try{
             Statement insertStatement = connection.createStatement();
 
-            if(insertStatement.executeUpdate(insertQuery) == 1){
-                System.out.println("Insert operation successful");
-            }else{
+            if(insertStatement.executeUpdate(insertQuery) != 1){
                 throw new SQLException();
             }
         }catch (SQLException e){
