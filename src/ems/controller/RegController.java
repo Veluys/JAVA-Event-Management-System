@@ -17,40 +17,33 @@ public class RegController {
             return;
         }
 
+        if(eventSelection() == -1){
+            System.out.println("There are no events that matched the given event name!");
+            return;
+        }
+
+        switch (mainMenu()){
+//            case 1 -> addEvent();
+//            case 2 -> viewEvents();
+//            case 3 -> searchEvent();
+//            case 4 -> updateEvents();
+//            case 5 -> deleteEvent();
+        }
+        System.out.println();
+    }
+
+    private int eventSelection(){
+        displayer.displayHeader("Registration");
+        String event_name = inputGetter.getLine("Enter event name: ");
+        return EventDAO.getEventId(event_name);
+    }
+
+    private int mainMenu(){
         displayer.displayHeader("Registration");
         ArrayList<String> operations = new ArrayList<>(
                 Arrays.asList("Add Participant", "View Participants", "Search Participant", "Remove Participants", "Exit")
         );
         displayer.showMenu("Select an operation:", operations);
+        return inputGetter.getNumberOption(operations.size());
     }
-//        int selected_event_id = eventSelection();
-//
-//        participantMenu();
-//        int option = inputGetter.getNumberOption(5);
-//
-//        System.out.println();
-////        switch (option){
-////            case 1 -> addEvent();
-////            case 2 -> viewEvents();
-////            case 3 -> searchEvent();
-////            case 4 -> updateEvents();
-////            case 5 -> deleteEvent();
-////            case 6 -> {
-////                return;
-////            }
-////        }
-//        System.out.println();
-//    }
-//
-//    private int eventSelection(){
-//        displayer.displayHeader("Registration");
-//        int event_id;
-//
-//        do{
-//            displayer.showPrompt("Enter event id: ");
-//            event_id = inputGetter.getPositiveInt(EventDAO.getLatestEventId());
-//        }while (!EventDAO.eventExist("event_id = '" + event_id + "'"));
-//
-//        return event_id;
-//    }
 }
