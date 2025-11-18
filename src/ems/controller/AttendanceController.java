@@ -25,10 +25,15 @@ public class AttendanceController {
             return;
         }
 
+        if(RegistrationDAO.isEmpty(eventIdSelected)){
+            System.out.println("There are no participants yet!");
+            return;
+        }
+
         while (true){
             switch (mainMenu()){
                 case 1 -> viewAttendees();
-//                case 2 -> viewRegistered();
+                case 2 -> viewAbsentees();
 //                case 3 -> searchRegistered();
 //                case 4 -> removeRegistered();
                 case 5 -> {return;}
@@ -53,17 +58,20 @@ public class AttendanceController {
     }
 
     private void viewAttendees(){
-        viewParticipants(AttendanceDAO.showAttendees(eventIdSelected));
+        viewParticipants(AttendanceDAO.showAttendees(eventIdSelected), true);
     }
 
-    private void viewParticipants(ArrayList<ArrayList<String>> presentAttendees){
-        if(RegistrationDAO.isEmpty(eventIdSelected)){
-            System.out.println("There are no participants yet!");
-            return;
-        }
+    private void viewAbsentees(){
+        viewParticipants(AttendanceDAO.showAbsentees(eventIdSelected), false);
+    }
 
-        if(presentAttendees == null){
-            System.out.println("There are no attendees yet!");
+    private void viewParticipants(ArrayList<ArrayList<String>> participants, boolean attendanceStatus){
+        if(participants == null){
+            if(attendanceStatus){
+                System.out.println("There are no attendees!");
+            }else{
+                System.out.println("There are no absentees!");
+            }
             return;
         }
 
@@ -72,8 +80,8 @@ public class AttendanceController {
         );
 
         displayer.centerAlignRow(columnHeaders);
-        for(ArrayList<String> participant : presentAttendees){
-            if(participant == presentAttendees.getFirst()) System.out.println();
+        for(ArrayList<String> participant : participants){
+            if(participant == participants.getFirst()) System.out.println();
             displayer.centerAlignRow(participant);
         }
     }
