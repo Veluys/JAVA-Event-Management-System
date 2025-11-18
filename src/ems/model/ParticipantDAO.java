@@ -94,4 +94,41 @@ public class ParticipantDAO {
             return null;
         }
     }
+
+    public static void update(ArrayList<String> changes, String condition){
+        if(changes.isEmpty()){
+            return;
+        }
+
+        String updateQuery = "UPDATE participants " +
+                " SET " + String.join(", ", changes) +
+                " WHERE " + condition;
+
+        try{
+            Statement updStatement = connection.createStatement();
+
+            if(updStatement.executeUpdate(updateQuery) == 1){
+                System.out.println("Update operation successful");
+            }else{
+                throw new SQLException();
+            }
+        }catch (SQLException e){
+            System.out.println("Update operation unsuccessful!");
+        }
+    }
+
+    public static boolean participantExist(String condition){
+        String searchQuery = "SELECT COUNT(*) FROM participants WHERE " + condition;
+
+        try{
+            Statement searchStatement = connection.createStatement();
+            ResultSet searchResult = searchStatement.executeQuery(searchQuery);
+
+            searchResult.next();
+            return searchResult.getInt("count") != 0;
+        }catch (SQLException e){
+            System.out.println("Search operation unsuccessful!");
+            return false;
+        }
+    }
 }
