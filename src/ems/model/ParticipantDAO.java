@@ -131,4 +131,19 @@ public class ParticipantDAO {
             return false;
         }
     }
+    public static void delete(String condition){
+        String deleteQuery = "DELETE FROM participants WHERE " + condition;
+
+        try{
+            Statement delStatement = connection.createStatement();
+
+            if(delStatement.executeUpdate(deleteQuery) == 1){
+                System.out.println("Delete operation successful");
+            }else{
+                throw new SQLException();
+            }
+        }catch (SQLException e){
+            System.out.println("Delete operation unsuccessful!");
+        }
+    }
 }
