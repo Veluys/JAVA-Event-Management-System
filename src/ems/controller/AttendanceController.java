@@ -1,6 +1,8 @@
 package ems.controller;
 
+import ems.model.AttendanceDAO;
 import ems.model.EventDAO;
+import ems.model.RegistrationDAO;
 import ems.view.Displayer;
 
 import java.util.ArrayList;
@@ -25,7 +27,7 @@ public class AttendanceController {
 
         while (true){
             switch (mainMenu()){
-//                case 1 -> addRegistration();
+                case 1 -> viewAttendees();
 //                case 2 -> viewRegistered();
 //                case 3 -> searchRegistered();
 //                case 4 -> removeRegistered();
@@ -48,5 +50,31 @@ public class AttendanceController {
         );
         displayer.showMenu("Select an operation:", operations);
         return inputGetter.getNumberOption(operations.size());
+    }
+
+    private void viewAttendees(){
+        viewParticipants(AttendanceDAO.showAttendees(eventIdSelected));
+    }
+
+    private void viewParticipants(ArrayList<ArrayList<String>> presentAttendees){
+        if(RegistrationDAO.isEmpty(eventIdSelected)){
+            System.out.println("There are no participants yet!");
+            return;
+        }
+
+        if(presentAttendees == null){
+            System.out.println("There are no attendees yet!");
+            return;
+        }
+
+        ArrayList<String> columnHeaders = new ArrayList<>(
+                Arrays.asList("Sr-Code", "Department", "Last Name", "First Name")
+        );
+
+        displayer.centerAlignRow(columnHeaders);
+        for(ArrayList<String> participant : presentAttendees){
+            if(participant == presentAttendees.getFirst()) System.out.println();
+            displayer.centerAlignRow(participant);
+        }
     }
 }
