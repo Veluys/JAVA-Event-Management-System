@@ -23,10 +23,12 @@ public class MainController {
 
             EventController eventController = new EventController();
             RegController regController = new RegController();
+            AttendanceController attendanceController = new AttendanceController();
 
             switch (option){
                 case 1 -> eventController.execute();
                 case 2 -> regController.execute();
+                case 4 -> attendanceController.execute();
                 case 5 -> System.exit(0);
             }
         }
