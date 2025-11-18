@@ -21,7 +21,7 @@ public class ParticipantController {
                 case 1 -> viewParticipants();
                 case 2 -> searchParticipant();
                 case 3 -> updateParticipant();
-//                case 4 -> removeRegistered();
+                case 4 -> removeParticipant();
                 case 5 -> {return;}
             }
             System.out.println();
@@ -129,5 +129,21 @@ public class ParticipantController {
 
         System.out.println();
         ParticipantDAO.update(changes, condition);
+    }
+
+    private void removeParticipant(){
+        String participant_id = inputGetter.getLine("Enter Sr-Code: ");
+        System.out.println();
+
+        if(!ParticipantDAO.participantExist("participant_id = '" + participant_id + "'")){
+            System.out.println("There are no participants with Sr-Code of '" + participant_id + "'.");
+            return;
+        }
+
+        String condition = "participant_id = '" + participant_id + "'";
+
+        System.out.println();
+        RegistrationDAO.delAllParticipantReg(participant_id);
+        ParticipantDAO.delete(condition);
     }
 }
