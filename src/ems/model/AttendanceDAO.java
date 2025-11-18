@@ -50,4 +50,29 @@ public class AttendanceDAO {
             return null;
         }
     }
+
+    public static void markPresent(int event_id, String participant_id){
+        updateAttendance(event_id, participant_id, true);
+    }
+
+    public static void markAbsent(int event_id, String participant_id){
+        updateAttendance(event_id, participant_id, false);
+    }
+
+    private static void updateAttendance(int event_id, String participant_id, boolean present){
+        String updateQuery = "UPDATE registration " +
+                            " SET attended = " + present + " " +
+                            " WHERE event_id = " + event_id + " " +
+                            "   AND participant_id = '" + participant_id + "'";
+
+        try{
+            Statement updStatement = connection.createStatement();
+
+            if(updStatement.executeUpdate(updateQuery) != 1){
+                throw new SQLException();
+            }
+        }catch (SQLException e){
+            System.out.println("Update operation unsuccessful!");
+        }
+    }
 }
