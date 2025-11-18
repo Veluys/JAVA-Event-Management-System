@@ -3,6 +3,7 @@ package ems.controller;
 import ems.model.AttendanceDAO;
 import ems.model.EventDAO;
 import ems.model.RegistrationDAO;
+import ems.model.VenueDAO;
 import ems.view.Displayer;
 
 import java.util.ArrayList;
@@ -34,8 +35,8 @@ public class AttendanceController {
             switch (mainMenu()){
                 case 1 -> viewAttendees();
                 case 2 -> viewAbsentees();
-//                case 3 -> searchRegistered();
-//                case 4 -> removeRegistered();
+                case 3 -> markPresent();
+                case 4 -> markAbsent();
                 case 5 -> {return;}
             }
             System.out.println();
@@ -84,5 +85,31 @@ public class AttendanceController {
             if(participant == participants.getFirst()) System.out.println();
             displayer.centerAlignRow(participant);
         }
+    }
+
+    private void markPresent(){
+        String participant_id = inputGetter.getLine("Enter the Sr-Code of the participant: ");
+        System.out.println();
+
+        if(RegistrationDAO.search(eventIdSelected, participant_id) == null){
+            System.out.println("A participant with an Sr-Code of " + participant_id + " is not registered!");
+            return;
+        }
+        AttendanceDAO.markPresent(eventIdSelected, participant_id);
+
+        System.out.println("Participant '" + participant_id + "' was successfully marked as present.");
+    }
+
+    private void markAbsent(){
+        String participant_id = inputGetter.getLine("Enter the Sr-Code of the participant: ");
+        System.out.println();
+
+        if(RegistrationDAO.search(eventIdSelected, participant_id) == null){
+            System.out.println("A participant with an Sr-Code of " + participant_id + " is not registered!");
+            return;
+        }
+        AttendanceDAO.markAbsent(eventIdSelected, participant_id);
+
+        System.out.println("Participant '" + participant_id + "' was successfully marked as absent.");
     }
 }

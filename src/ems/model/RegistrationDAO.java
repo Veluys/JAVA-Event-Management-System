@@ -93,18 +93,18 @@ public class RegistrationDAO {
                              "INNER JOIN departments AS d " +
                              "  ON p.dept_id = d.dept_id ";
 
-        ArrayList<String> event = new ArrayList<>();
+        ArrayList<String> participant = new ArrayList<>();
 
         try{
-            Statement eventStatement = connection.createStatement();
-            ResultSet eventResult = eventStatement.executeQuery(searchQuery);
+            Statement searchStatement = connection.createStatement();
+            ResultSet searchResult = searchStatement.executeQuery(searchQuery);
 
-            if(!eventResult.next()) return null;
+            if(!searchResult.next()) return null;
 
             for(String column : columns){
-                event.add(eventResult.getString(column));
+                participant.add(searchResult.getString(column));
             }
-            return event;
+            return participant;
         }catch (SQLException e){
             System.out.println("Search operation unsuccessful!");
             return null;
