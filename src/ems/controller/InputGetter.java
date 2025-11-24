@@ -2,6 +2,8 @@ package ems.controller;
 
 import ems.view.Displayer;
 
+import java.sql.Date;
+import java.sql.Time;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -56,7 +58,7 @@ public class InputGetter {
         return getLine(prompt,false);
     }
 
-    public String getDate(String prompt, boolean allowBlank){
+    public Date getDate(String prompt, boolean allowBlank){
         DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("MMMM dd, uuuu")
                 .withResolverStyle(ResolverStyle.STRICT);
 
@@ -64,10 +66,10 @@ public class InputGetter {
             displayer.showPrompt(prompt + " (Ex. January 1, 2001): ");
             String date = scanner.nextLine();
             if (date.isBlank()) {
-                if (allowBlank) return "";
+                if (allowBlank) return null;
             } else {
                 try {
-                    return LocalDate.parse(date, dateFormat).toString();
+                    return Date.valueOf(LocalDate.parse(date, dateFormat));
                 } catch (DateTimeParseException e) {
                     System.out.println("Invalid date, please try again.");
                 }
@@ -75,11 +77,11 @@ public class InputGetter {
         }
     }
 
-    public String getDate(String prompt){
+    public Date getDate(String prompt){
         return getDate(prompt,false);
     }
 
-    public String getTime(String prompt, boolean allowBlank){
+    public Time getTime(String prompt, boolean allowBlank){
         DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("h:mm a", Locale.ENGLISH)
                 .withResolverStyle(ResolverStyle.STRICT);
 
@@ -88,10 +90,10 @@ public class InputGetter {
             String time = scanner.nextLine().toUpperCase().replace(".", "");
 
             if (time.isBlank()) {
-                if (allowBlank) return "";
+                if (allowBlank) return null;
             } else {
                 try {
-                    return LocalTime.parse(time, timeFormat).toString();
+                    return Time.valueOf(LocalTime.parse(time, timeFormat));
                 } catch (DateTimeParseException e) {
                     System.out.println("Invalid time, please try again.\n");
                 }
@@ -99,7 +101,7 @@ public class InputGetter {
         }
     }
 
-    public String getTime(String prompt){
+    public Time getTime(String prompt){
         return getTime(prompt,false);
     }
 }

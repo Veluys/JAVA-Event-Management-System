@@ -9,22 +9,22 @@ public class EventDAO {
     final static Connection connection = DBConnection.getConnection();
 
     public static void insert(final String event_name,
-                              final String event_date,
-                              final String start_time,
-                              final String end_time,
+                              final Date event_date,
+                              final Time start_time,
+                              final Time end_time,
                               final int venue_id)
     {
         String insert_query = """
-                INSERT INTO events (event_name, event_date, start_time, end_time, venue_id
+                INSERT INTO events (event_name, event_date, start_time, end_time, venue_id)
                 VALUES (?, ?, ?, ?, ?);
                 """;
 
         try{
             PreparedStatement insert_stmt = connection.prepareStatement(insert_query);
             insert_stmt.setString(1, event_name);
-            insert_stmt.setString(2, event_date);
-            insert_stmt.setString(3, start_time);
-            insert_stmt.setString(4, end_time);
+            insert_stmt.setDate(2, event_date);
+            insert_stmt.setTime(3, start_time);
+            insert_stmt.setTime(4, end_time);
             insert_stmt.setInt(5, venue_id);
 
             if(insert_stmt.executeUpdate() == 1){
@@ -75,6 +75,47 @@ public class EventDAO {
             return null;
         }
     }
+
+    public static ArrayList<ArrayList<String>> showUpcoming(){
+        if(emptyCheck()) return null;
+
+        String[] show_columns = {"event_name", "event_date", "start_time", "end_time", "venue_name"};
+        String show_query = """
+                SELECT
+                    event_name,
+                    TO_CHAR(event_date, 'Mon DD, YYYY') AS event_date,
+                    LOWER(TO_CHAR(start_time, 'FMHH12:MI AM')) AS start_time,
+                    LOWER(TO_CHAR(end_time, 'FMHH12:MI AM')) AS end_time,
+                    venue_name
+                FROM events AS e
+                INNER JOIN venues AS v
+                    ON e.venue_id = v.venue_id
+                    AND event_date BETWEEN CURRENT_DATE AND (CURRENT_DATE + INTERVAL '3 days');
+                """;
+
+        ArrayList<ArrayList<String>> events = new ArrayList<>();
+
+        try{
+            PreparedStatement show_stmt = connection.prepareStatement(show_query);
+            ResultSet eventsSet = show_stmt.executeQuery();
+
+            if(!eventsSet.next()) return null;
+            do{
+                ArrayList<String> event = new ArrayList<>();
+
+                for(String column : show_columns){
+                    event.add(eventsSet.getString(column));
+                }
+                events.add(event);
+            } while(eventsSet.next());
+
+            return events;
+        }catch (SQLException e){
+            System.out.println("SELECT operation unsuccessful!");
+            return null;
+        }
+    }
+
 
     public static boolean emptyCheck(){
         String count_query = """
@@ -154,7 +195,7 @@ public class EventDAO {
                 update_query += String.format("%s = '%s'", new_value.getKey(), new_value.getValue());
             }
 
-            if(new_value == new_values.lastEntry() || new_values.size()==1){
+            if(new_value.getKey().equals(new_values.lastEntry().getKey())){
                 update_query += " ";
             }else {
                 update_query += ", ";
@@ -191,8 +232,8 @@ public class EventDAO {
         }
     }
 
-    public static int getEventId(String venue_name){
-        String searchQuery = String.format("SELECT event_id FROM events WHERE event_name = '%s'", venue_name);
+    public static int getEventId(String event_name){
+        String searchQuery = String.format("SELECT event_id FROM events WHERE event_name = '%s'", event_name);
 
         try{
             Statement eventStatement = connection.createStatement();

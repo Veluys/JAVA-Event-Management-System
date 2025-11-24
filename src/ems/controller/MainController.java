@@ -1,5 +1,6 @@
 package ems.controller;
 
+import ems.model.EventDAO;
 import ems.view.Displayer;
 
 import java.util.ArrayList;
@@ -11,6 +12,20 @@ public class MainController {
         InputGetter inputGetter = new InputGetter();
 
         displayer.displayHeader("Welcome to Event Management System");
+        ArrayList<ArrayList<String>> upcoming_events = EventDAO.showUpcoming();
+
+        if(upcoming_events!=null){
+            displayer.displayHeader("Upcoming Events");
+            ArrayList<String> event_attributes = new ArrayList<>(
+                    Arrays.asList("Event Name", "Date", "Start Time", "End Time", "Venue")
+            );
+
+            displayer.centerAlignRow(event_attributes);
+            for(ArrayList<String> event : upcoming_events){
+                if(event == upcoming_events.getFirst()) System.out.println();
+                displayer.centerAlignRow(event);
+            }
+        }
 
         ArrayList<String> mainMenuOptions = new ArrayList<>(
                 Arrays.asList("Events", "Participants", "Attendance", "Exit")

@@ -4,6 +4,8 @@ import ems.model.EventDAO;
 import ems.model.VenueDAO;
 import ems.view.Displayer;
 
+import java.sql.Date;
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -48,9 +50,9 @@ public class EventController {
         }
 
         String eventName = inputGetter.getLine("Event Name: ");
-        String date = inputGetter.getLine("Event Date: ");
-        String start_time = inputGetter.getLine("Start Time: ");
-        String end_time = inputGetter.getLine("End Time: ");
+        Date date = inputGetter.getDate("Event Date");
+        Time start_time = inputGetter.getTime("Start Time");
+        Time end_time = inputGetter.getTime("End Time");
 
         displayer.showMenu("Venues", venueNames);
         int option = inputGetter.getNumberOption(venueNames.size());
@@ -118,19 +120,19 @@ public class EventController {
             new_values.put("event_name", new_event_name);
         }
 
-        String date = inputGetter.getDate("New Event Date",true);
-        if(!date.isBlank()){
-            new_values.put("event_date", date);
+        Date date = inputGetter.getDate("New Event Date",true);
+        if(date != null){
+            new_values.put("event_date", String.valueOf(date));
         }
 
-        String start_time = inputGetter.getTime("New Start Time",true);
-        if(!start_time.isBlank()){
-            new_values.put("start_time", start_time);
+        Time start_time = inputGetter.getTime("New Start Time",true);
+        if(start_time != null){
+            new_values.put("start_time", String.valueOf(start_time));
         }
 
-        String end_time = inputGetter.getTime("New End Time",true);
-        if(!end_time.isBlank()){
-            new_values.put("end_time", end_time);
+        Time end_time = inputGetter.getTime("New End Time",true);
+        if(end_time != null){
+            new_values.put("end_time", String.valueOf(end_time));
         }
 
         displayer.showMenu("Venues", venueNames);
