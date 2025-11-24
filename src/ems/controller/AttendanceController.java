@@ -3,7 +3,6 @@ package ems.controller;
 import ems.model.AttendanceDAO;
 import ems.model.EventDAO;
 import ems.model.RegistrationDAO;
-import ems.model.VenueDAO;
 import ems.view.Displayer;
 
 import java.util.ArrayList;

@@ -15,10 +15,10 @@ public class AttendanceDAO {
     }
 
     private static ArrayList<ArrayList<String>> show(int event_id, boolean hasAttended){
-        String[] show_columns = {"sr_code", "pshortname", "year_level", "full_name", "attended"};
+        String[] show_columns = {"sr_code", "pshortname", "year_level", "full_name"};
         String show_query = """
                 SELECT
-                	sr_code,
+                	s.sr_code,
                 	pshortname,
                 	year_level,
                 	CONCAT(last_name, ', ', first_name) AS full_name
@@ -36,8 +36,8 @@ public class AttendanceDAO {
 
         try{
             PreparedStatement show_stmt = connection.prepareStatement(show_query);
-            show_stmt.setInt(0, event_id);
-            show_stmt.setBoolean(1, hasAttended);
+            show_stmt.setInt(1, event_id);
+            show_stmt.setBoolean(2, hasAttended);
 
             ResultSet student_set = show_stmt.executeQuery();
 
@@ -76,9 +76,9 @@ public class AttendanceDAO {
 
         try{
             PreparedStatement update_stmt = connection.prepareStatement(update_query);
-            update_stmt.setBoolean(0, present);
-            update_stmt.setInt(1, event_id);
-            update_stmt.setString(2, sr_code);
+            update_stmt.setBoolean(1, present);
+            update_stmt.setInt(2, event_id);
+            update_stmt.setString(3, sr_code);
 
             if(update_stmt.executeUpdate() != 1){
                 throw new Exception();
