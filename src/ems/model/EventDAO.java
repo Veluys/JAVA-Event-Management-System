@@ -1,6 +1,8 @@
 package ems.model;
 
 import java.sql.*;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -9,9 +11,9 @@ public class EventDAO {
     final static Connection connection = DBConnection.getConnection();
 
     public static void insert(final String event_name,
-                              final Date event_date,
-                              final Time start_time,
-                              final Time end_time,
+                              final LocalDate event_date,
+                              final LocalTime start_time,
+                              final LocalTime end_time,
                               final int venue_id)
     {
         String insert_query = """
@@ -22,9 +24,9 @@ public class EventDAO {
         try{
             PreparedStatement insert_stmt = connection.prepareStatement(insert_query);
             insert_stmt.setString(1, event_name);
-            insert_stmt.setDate(2, event_date);
-            insert_stmt.setTime(3, start_time);
-            insert_stmt.setTime(4, end_time);
+            insert_stmt.setObject(2, event_date);
+            insert_stmt.setObject(3, start_time);
+            insert_stmt.setObject(4, end_time);
             insert_stmt.setInt(5, venue_id);
 
             if(insert_stmt.executeUpdate() == 1){

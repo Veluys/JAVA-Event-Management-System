@@ -2,8 +2,6 @@ package ems.controller;
 
 import ems.view.Displayer;
 
-import java.sql.Date;
-import java.sql.Time;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -58,7 +56,7 @@ public class InputGetter {
         return getLine(prompt,false);
     }
 
-    public Date getDate(String prompt, boolean allowBlank){
+    public LocalDate getDate(String prompt, boolean allowBlank){
         DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("MMMM dd, uuuu")
                 .withResolverStyle(ResolverStyle.STRICT);
 
@@ -69,7 +67,7 @@ public class InputGetter {
                 if (allowBlank) return null;
             } else {
                 try {
-                    return Date.valueOf(LocalDate.parse(date, dateFormat));
+                    return LocalDate.parse(date, dateFormat);
                 } catch (DateTimeParseException e) {
                     System.out.println("Invalid date, please try again.");
                 }
@@ -77,11 +75,11 @@ public class InputGetter {
         }
     }
 
-    public Date getDate(String prompt){
+    public LocalDate getDate(String prompt){
         return getDate(prompt,false);
     }
 
-    public Time getTime(String prompt, boolean allowBlank){
+    public LocalTime getTime(String prompt, boolean allowBlank){
         DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("h:mm a", Locale.ENGLISH)
                 .withResolverStyle(ResolverStyle.STRICT);
 
@@ -93,7 +91,7 @@ public class InputGetter {
                 if (allowBlank) return null;
             } else {
                 try {
-                    return Time.valueOf(LocalTime.parse(time, timeFormat));
+                    return LocalTime.parse(time, timeFormat);
                 } catch (DateTimeParseException e) {
                     System.out.println("Invalid time, please try again.\n");
                 }
@@ -101,7 +99,7 @@ public class InputGetter {
         }
     }
 
-    public Time getTime(String prompt){
+    public LocalTime getTime(String prompt){
         return getTime(prompt,false);
     }
 }

@@ -6,6 +6,8 @@ import ems.view.Displayer;
 
 import java.sql.Date;
 import java.sql.Time;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -50,9 +52,9 @@ public class EventController {
         }
 
         String eventName = inputGetter.getLine("Event Name: ");
-        Date date = inputGetter.getDate("Event Date");
-        Time start_time = inputGetter.getTime("Start Time");
-        Time end_time = inputGetter.getTime("End Time");
+        LocalDate date = inputGetter.getDate("Event Date");
+        LocalTime start_time = inputGetter.getTime("Start Time");
+        LocalTime end_time = inputGetter.getTime("End Time");
 
         displayer.showMenu("Venues", venueNames);
         int option = inputGetter.getNumberOption(venueNames.size());
@@ -120,17 +122,17 @@ public class EventController {
             new_values.put("event_name", new_event_name);
         }
 
-        Date date = inputGetter.getDate("New Event Date",true);
+        LocalDate date = inputGetter.getDate("New Event Date",true);
         if(date != null){
             new_values.put("event_date", String.valueOf(date));
         }
 
-        Time start_time = inputGetter.getTime("New Start Time",true);
+        LocalTime start_time = inputGetter.getTime("New Start Time",true);
         if(start_time != null){
             new_values.put("start_time", String.valueOf(start_time));
         }
 
-        Time end_time = inputGetter.getTime("New End Time",true);
+        LocalTime end_time = inputGetter.getTime("New End Time",true);
         if(end_time != null){
             new_values.put("end_time", String.valueOf(end_time));
         }
