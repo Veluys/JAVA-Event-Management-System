@@ -12,7 +12,7 @@ public class RegController {
     private int eventIdSelected;
 
     public void execute() {
-        if (EventDAO.getLatestEventId() == 0) {
+        if (EventDAO.emptyCheck()) {
             System.out.println("There are no events yet!");
             return;
         }

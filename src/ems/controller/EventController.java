@@ -6,6 +6,7 @@ import ems.view.Displayer;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 
 public class EventController {
     Displayer displayer = new Displayer();
@@ -21,6 +22,11 @@ public class EventController {
 
             displayer.showMenu("Select an operation:", operations);
             int option = inputGetter.getNumberOption(operations.size());
+
+            if(EventDAO.emptyCheck() && option > 1 && option != 6){
+                System.out.println("There are no events yet!");
+                return;
+            }
 
             switch (option){
                 case 1 -> addEvent();
@@ -41,31 +47,22 @@ public class EventController {
             return;
         }
 
-        String eventName = String.format("'%s'", inputGetter.getLine("Event Name: "));
-        String date = String.format("'%s'", inputGetter.getDate("Event Date"));
-        String start_time = String.format("'%s'", inputGetter.getTime("Start Time"));
-        String end_time = String.format("'%s'", inputGetter.getTime("End Time"));
+        String eventName = inputGetter.getLine("Event Name: ");
+        String date = inputGetter.getLine("Event Date: ");
+        String start_time = inputGetter.getLine("Start Time: ");
+        String end_time = inputGetter.getLine("End Time: ");
 
         displayer.showMenu("Venues", venueNames);
         int option = inputGetter.getNumberOption(venueNames.size());
         int venue_id = VenueDAO.getVenueId(venueNames.get(option - 1));
 
-        ArrayList<String> eventDetails = new ArrayList<>(
-                Arrays.asList(eventName, date, start_time, end_time, String.format("'%s'", venue_id))
-        );
-
         System.out.println();
-        EventDAO.insert(String.join(",", eventDetails));
+        EventDAO.insert(eventName, date, start_time, end_time, venue_id);
 
     }
 
     private void viewEvents(){
         ArrayList<ArrayList<String>> events = EventDAO.show();
-
-        if(EventDAO.getLatestEventId() == 0 || events==null){
-            System.out.println("There are no events yet!");
-            return;
-        }
 
         displayer.centerAlignRow(new ArrayList<>(Arrays.asList(event_attributes)));
         for(ArrayList<String> event : events){
@@ -75,102 +72,82 @@ public class EventController {
     }
 
     private void searchEvent(){
-        if(EventDAO.getLatestEventId() == 0){
-            System.out.println("There are no events yet!");
-            return;
-        }
-
         String eventName = inputGetter.getLine("Enter event name: ");
         System.out.println();
 
-        String condition = "event_name = '" + eventName + "'";
-        String[] tableColumns = {"Event ID", "Event Name", "Date", "Start Time", "End Time", "Venue"};
+        ArrayList<String> columnHeaders = new ArrayList<>(
+                Arrays.asList("Event Name", "Date", "Start Time", "End Time", "Venue")
+        );
 
-        ArrayList<String> matchedEvent = EventDAO.search(condition);
+        ArrayList<String> matchedEvent = EventDAO.search(eventName);
 
         if(matchedEvent==null){
             System.out.println("There are no events that matched the given event name!");
             return;
         }
 
-        for(int i = 0; i < matchedEvent.size(); i++){
-            displayer.rightAlignRecord(new ArrayList<>(Arrays.asList(tableColumns[i], matchedEvent.get(i))));
-        }
+        displayer.centerAlignRow(columnHeaders);
+        displayer.centerAlignRow(matchedEvent);
     }
 
     private void updateEvents(){
-        if(EventDAO.getLatestEventId() == 0){
-            System.out.println("There are no events yet!");
-            return;
-        }
-
         ArrayList<String> venueNames = VenueDAO.getVenueNames();
         if(venueNames == null){
             System.out.println("There are no available venues yet!");
             return;
         }
 
-        String event_name = inputGetter.getLine("Enter event name: ");
+        String old_event_name = inputGetter.getLine("Enter event name: ");
         System.out.println();
 
-        if(!EventDAO.eventExist("event_name = '" + event_name + "'")){
-            System.out.println("Event name of '" + event_name + "' doesn't exist!");
+        if(!EventDAO.eventExist(old_event_name)){
+            System.out.println("Event name of '" + old_event_name + "' doesn't exist!");
             return;
         }
 
-        String condition = "event_name = '" + event_name + "'";
-
-        ArrayList<String> changes = new ArrayList<>();
+        LinkedHashMap<String, String> new_values = new LinkedHashMap<>();
 
         System.out.println("Simply press enter to not update that field.");
 
-        String eventName = inputGetter.getLine("New Event Name: ",true);
-        if(!eventName.isBlank()){
-            if(EventDAO.eventExist("event_name = '" + event_name + "'")){
-                System.out.println("Event name of '" + event_name + "' already exists!");
+        String new_event_name = inputGetter.getLine("New Event Name: ",true);
+        if(!new_event_name.isBlank()){
+            if(EventDAO.eventExist(new_event_name)){
+                System.out.println("Event name of '" + new_event_name + "' already exists!");
                 return;
             }
-            changes.add("event_name = '" + eventName + "'");
+            new_values.put("event_name", new_event_name);
         }
 
-        String date = inputGetter.getDate("New Event Date: ",true);
+        String date = inputGetter.getDate("New Event Date",true);
         if(!date.isBlank()){
-            changes.add("event_date = '" + date + "'");
+            new_values.put("event_date", date);
         }
 
-        String start_time = inputGetter.getTime("New Start Time: ",true);
+        String start_time = inputGetter.getTime("New Start Time",true);
         if(!start_time.isBlank()){
-            changes.add("start_time = '" + start_time + "'");
+            new_values.put("start_time", start_time);
         }
 
-        String end_time = inputGetter.getTime("New End Time: ",true);
+        String end_time = inputGetter.getTime("New End Time",true);
         if(!end_time.isBlank()){
-            changes.add("end_time = '" + end_time + "'");
+            new_values.put("end_time", end_time);
         }
 
         displayer.showMenu("Venues", venueNames);
         int option = inputGetter.getNumberOption(venueNames.size(), true);
-        int venue_id = VenueDAO.getVenueId(venueNames.get(option - 1));
 
-        if(venue_id != -1){
-            changes.add("venue_id = '" + venue_id + "'");
+        if(option != -1){
+            int venue_id = VenueDAO.getVenueId(venueNames.get(option - 1));
+            new_values.put("venue_id", String.valueOf(venue_id));
         }
 
         System.out.println();
-        EventDAO.update(changes, condition);
+        EventDAO.update(new_values, old_event_name);
     }
 
-
     private void deleteEvent(){
-        if(EventDAO.getLatestEventId() == 0){
-            System.out.println("There are no events yet!");
-            return;
-        }
-
         String event_name = inputGetter.getLine("Enter event name: ");
-        String condition = "event_name = '" + event_name + "'";
-
         System.out.println();
-        EventDAO.delete(condition);
+        EventDAO.delete(event_name);
     }
 }

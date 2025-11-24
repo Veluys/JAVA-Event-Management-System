@@ -1,22 +1,33 @@
 package ems.model;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class EventDAO {
     final static Connection connection = DBConnection.getConnection();
 
-    public static void insert(String values){
-        String insertQuery = String.format("INSERT INTO events (event_name, event_date, start_time, end_time, venue_id) " +
-                                            "VALUES (%s)", values);
+    public static void insert(final String event_name,
+                              final String event_date,
+                              final String start_time,
+                              final String end_time,
+                              final int venue_id)
+    {
+        String insert_query = """
+                INSERT INTO events (event_name, event_date, start_time, end_time, venue_id
+                VALUES (?, ?, ?, ?, ?);
+                """;
 
         try{
-            Statement insertStatement = connection.createStatement();
+            PreparedStatement insert_stmt = connection.prepareStatement(insert_query);
+            insert_stmt.setString(1, event_name);
+            insert_stmt.setString(2, event_date);
+            insert_stmt.setString(3, start_time);
+            insert_stmt.setString(4, end_time);
+            insert_stmt.setInt(5, venue_id);
 
-            if(insertStatement.executeUpdate(insertQuery) == 1){
+            if(insert_stmt.executeUpdate() == 1){
                 System.out.println("Insert operation successful");
             }else{
                 throw new SQLException();
@@ -27,28 +38,32 @@ public class EventDAO {
     }
 
     public static ArrayList<ArrayList<String>> show(){
-        String[] columns = {"event_name", "event_date", "start_time", "end_time", "venue_name"};
-        String selectQuery = "SELECT " +
-                                "event_name, " +
-                                "TO_CHAR(event_date, 'Mon DD, YYYY') AS event_date, " +
-                                "LOWER(TO_CHAR(start_time, 'FMHH12:MI AM')) AS start_time, " +
-                                "LOWER(TO_CHAR(end_time, 'FMHH12:MI AM')) AS end_time, " +
-                                "venue_name " +
-                             "FROM events AS e " +
-                             "INNER JOIN venues AS v " +
-                                 "ON e.venue_id = v.venue_id";
+        if(emptyCheck()) return null;
+
+        String[] show_columns = {"event_name", "event_date", "start_time", "end_time", "venue_name"};
+        String show_query = """
+                SELECT
+                    event_name,
+                    TO_CHAR(event_date, 'Mon DD, YYYY') AS event_date,
+                    LOWER(TO_CHAR(start_time, 'FMHH12:MI AM')) AS start_time,
+                    LOWER(TO_CHAR(end_time, 'FMHH12:MI AM')) AS end_time,
+                    venue_name
+                FROM events AS e
+                INNER JOIN venues AS v
+                    ON e.venue_id = v.venue_id;
+                """;
 
         ArrayList<ArrayList<String>> events = new ArrayList<>();
 
         try{
-            Statement stmt = connection.createStatement();
-            ResultSet eventsSet = stmt.executeQuery(selectQuery);
+            PreparedStatement show_stmt = connection.prepareStatement(show_query);
+            ResultSet eventsSet = show_stmt.executeQuery();
 
             if(!eventsSet.next()) return null;
             do{
                 ArrayList<String> event = new ArrayList<>();
 
-                for(String column : columns){
+                for(String column : show_columns){
                     event.add(eventsSet.getString(column));
                 }
                 events.add(event);
@@ -61,78 +76,95 @@ public class EventDAO {
         }
     }
 
-    public static int getLatestEventId(){
-        String countQuery = "SELECT COALESCE(MAX(event_id), 0) AS latest_event_id FROM events";
+    public static boolean emptyCheck(){
+        String count_query = """
+                SELECT event_id
+                FROM events
+                LIMIT 1
+                """;
 
         try{
-            Statement stmt = connection.createStatement();
-            ResultSet resultSet = stmt.executeQuery(countQuery);
-
-            resultSet.next();
-            return resultSet.getInt("latest_event_id");
-        }catch (SQLException e){
-            return -1;
+            PreparedStatement check_stmt = connection.prepareStatement(count_query);
+            return !check_stmt.execute();
+        }catch (Exception e){
+            System.out.println("Checking for event records failed!");
+            System.err.println(e.getMessage());
+            return true;
         }
     }
 
-    public static boolean eventExist(String condition){
-        String searchQuery = "SELECT COUNT(*) FROM events WHERE " + condition;
+    public static boolean eventExist(final String event_name){
+        String search_query = "SELECT event_id FROM events WHERE event_name = ?";
 
         try{
-            Statement eventStatement = connection.createStatement();
-            ResultSet eventResult = eventStatement.executeQuery(searchQuery);
+            PreparedStatement search_stmt = connection.prepareStatement(search_query);
+            search_stmt.setString(1, event_name);
 
-            eventResult.next();
-            return eventResult.getInt("count") != 0;
+            return search_stmt.execute();
         }catch (SQLException e){
             System.out.println("Search operation unsuccessful!");
             return false;
         }
     }
 
-    public static ArrayList<String> search(String condition){
-        String[] columns = {"event_name", "event_date", "start_time", "end_time", "venue_name"};
-        String searchQuery = "SELECT " +
-                                "event_name, " +
-                                "TO_CHAR(event_date, 'Mon DD, YYYY') AS event_date, " +
-                                "LOWER(TO_CHAR(start_time, 'FMHH12:MI AM')) AS start_time, " +
-                                "LOWER(TO_CHAR(end_time, 'FMHH12:MI AM')) AS end_time, " +
-                                "venue_name " +
-                             "FROM events AS e " +
-                             "INNER JOIN venues AS v " +
-                                "ON e.venue_id = v.venue_id " +
-                                "AND " + condition;
-        ArrayList<String> event = new ArrayList<>();
+    public static ArrayList<String> search(final String event_name) {
+        String[] search_columns = {"event_name", "event_date", "start_time", "end_time", "venue_name"};
+        String search_query = """
+                SELECT
+                    event_name,
+                    TO_CHAR(event_date, 'Mon DD, YYYY') AS event_date,
+                    LOWER(TO_CHAR(start_time, 'FMHH12:MI AM')) AS start_time,
+                    LOWER(TO_CHAR(end_time, 'FMHH12:MI AM')) AS end_time,
+                    venue_name
+                FROM events AS e
+                INNER JOIN venues AS v
+                    ON e.venue_id = v.venue_id
+                    AND event_name = ?;
+                """;
 
-        try{
-            Statement eventStatement = connection.createStatement();
-            ResultSet eventResult = eventStatement.executeQuery(searchQuery);
+        try {
+            PreparedStatement search_stmt = connection.prepareStatement(search_query);
+            search_stmt.setString(1, event_name);
+            ResultSet eventsSet = search_stmt.executeQuery();
 
-            if(!eventResult.next()) return null;
+            if (!eventsSet.next()) return null;
+            ArrayList<String> event = new ArrayList<>();
 
-            for(String column : columns){
-                event.add(eventResult.getString(column));
+            for (String column : search_columns) {
+                event.add(eventsSet.getString(column));
             }
             return event;
-        }catch (SQLException e){
-            System.out.println("Search operation unsuccessful!");
+        } catch (SQLException e) {
+            System.out.println("SELECT operation unsuccessful!");
             return null;
         }
     }
 
-    public static void update(ArrayList<String> changes, String condition){
-        if(changes.isEmpty()){
+    public static void update(LinkedHashMap<String, String> new_values, final String event_name){
+        if(new_values.isEmpty()){
             return;
         }
 
-        String updateQuery = "UPDATE events " +
-                            " SET " + String.join(", ", changes) +
-                            " WHERE " + condition;
+        String update_query = "UPDATE events SET ";
+
+        for(Map.Entry<String, String> new_value : new_values.entrySet()){
+            if(new_value.getKey().equals("venue_id")){
+                update_query += String.format("%s = %s", new_value.getKey(), new_value.getValue());
+            }else{
+                update_query += String.format("%s = '%s'", new_value.getKey(), new_value.getValue());
+            }
+
+            if(new_value == new_values.lastEntry() || new_values.size()==1){
+                update_query += " ";
+            }else {
+                update_query += ", ";
+            }
+        }
+        update_query += String.format("WHERE event_name = '%s'", event_name);
 
         try{
-            Statement updStatement = connection.createStatement();
-
-            if(updStatement.executeUpdate(updateQuery) == 1){
+            PreparedStatement update_stmt = connection.prepareStatement(update_query);
+            if(update_stmt.executeUpdate() == 1){
                 System.out.println("Update operation successful");
             }else{
                 throw new SQLException();
@@ -142,13 +174,14 @@ public class EventDAO {
         }
     }
 
-    public static void delete(String condition){
-        String deleteQuery = "DELETE FROM events WHERE " + condition;
+    public static void delete(final String event_name){
+        String delete_query = "DELETE FROM events WHERE event_name = ?";
 
         try{
-            Statement delStatement = connection.createStatement();
+            PreparedStatement delete_stmt = connection.prepareStatement(delete_query);
+            delete_stmt.setString(1, event_name);
 
-            if(delStatement.executeUpdate(deleteQuery) == 1){
+            if(delete_stmt.executeUpdate() == 1){
                 System.out.println("Delete operation successful");
             }else{
                 throw new SQLException();
