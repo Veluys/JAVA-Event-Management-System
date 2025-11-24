@@ -6,14 +6,16 @@ import java.util.ArrayList;
 public class RegistrationDAO {
     final static Connection connection = DBConnection.getConnection();
 
-    public static void insert(String values){
-        String insert_query = String.format("""
+    public static void insert(final int event_id, final String sr_code){
+        String insert_query = """
                 INSERT INTO registration (event_id, sr_code)
-                VALUES (%s)
-                """, values);
+                VALUES (?, ?)
+                """;
 
         try{
             PreparedStatement insert_stmt = connection.prepareStatement(insert_query);
+            insert_stmt.setInt(1, event_id);
+            insert_stmt.setString(2, sr_code);
 
             if(insert_stmt.executeUpdate() != 1){
                 throw new Exception();
@@ -27,12 +29,12 @@ public class RegistrationDAO {
         String[] show_columns = {"sr_code", "pshortname", "year_level", "full_name"};
         String show_query = """
                 SELECT
-                	sr_code,
+                	s.sr_code,
                 	pshortname,
                 	year_level,
                 	CONCAT(last_name, ', ', first_name) AS full_name
                 FROM students AS s
-                LEFT JOIN registration AS r
+                INNER JOIN registration AS r
                     ON event_id = ?
                     AND s.sr_code = r.sr_code
                 INNER JOIN programs AS p
@@ -44,7 +46,7 @@ public class RegistrationDAO {
 
         try{
             PreparedStatement show_stmt = connection.prepareStatement(show_query);
-            show_stmt.setInt(0, event_id);
+            show_stmt.setInt(1, event_id);
             ResultSet student_set = show_stmt.executeQuery();
 
             if(!student_set.next()) return null;
@@ -75,7 +77,7 @@ public class RegistrationDAO {
 
         try{
             PreparedStatement check_stmt = connection.prepareStatement(count_query);
-            check_stmt.setInt(0, event_id);
+            check_stmt.setInt(1, event_id);
             return !check_stmt.execute();
         }catch (Exception e){
             System.out.println("Checking for student records failed!");
@@ -85,20 +87,16 @@ public class RegistrationDAO {
     }
 
     public static ArrayList<String> search(int event_id, final String sr_code){
-        String[] show_columns = {"sr_code", "pshortname", "year_level", "full_name", "attended"};
+        String[] show_columns = {"sr_code", "pshortname", "year_level", "full_name"};
         String show_query = """
                 SELECT
-                	sr_code,
+                	s.sr_code,
                 	pshortname,
                 	year_level,
-                	CONCAT(last_name, ', ', first_name) AS full_name,
-                	CASE
-                	    WHEN attended = TRUE THEN 'Y'
-                	    ELSE 'N'
-                	END AS attended
+                	CONCAT(last_name, ', ', first_name) AS full_name
                 FROM students AS s
-                LEFT JOIN registration AS r
-                    ON sr_code = ?
+                INNER JOIN registration AS r
+                    ON s.sr_code = ?
                     AND event_id = ?
                     AND s.sr_code = r.sr_code
                 INNER JOIN programs AS p
@@ -108,8 +106,8 @@ public class RegistrationDAO {
 
         try{
             PreparedStatement show_stmt = connection.prepareStatement(show_query);
-            show_stmt.setString(0, sr_code);
-            show_stmt.setInt(1, event_id);
+            show_stmt.setString(1, sr_code);
+            show_stmt.setInt(2, event_id);
 
             ResultSet student_set = show_stmt.executeQuery();
 
@@ -133,13 +131,13 @@ public class RegistrationDAO {
         String delete_query = """
                 DELETE FROM registration
                 WHERE event_id = ?
-                    AND participant_id = ?;
+                    AND sr_code = ?;
                 """;
 
         try{
             PreparedStatement delete_stmt = connection.prepareStatement(delete_query);
-            delete_stmt.setInt(0, event_id);
-            delete_stmt.setString(0, participant_id);
+            delete_stmt.setInt(1, event_id);
+            delete_stmt.setString(2, participant_id);
 
             if(delete_stmt.executeUpdate() != 1){
                 throw new Exception();

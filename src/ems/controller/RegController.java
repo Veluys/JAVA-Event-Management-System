@@ -1,9 +1,6 @@
 package ems.controller;
 
-import ems.model.DeptDao;
-import ems.model.EventDAO;
-import ems.model.ParticipantDAO;
-import ems.model.RegistrationDAO;
+import ems.model.*;
 import ems.view.Displayer;
 
 import java.util.ArrayList;
@@ -17,6 +14,11 @@ public class RegController {
     public void execute() {
         if (EventDAO.getLatestEventId() == 0) {
             System.out.println("There are no events yet!");
+            return;
+        }
+
+        if (StudentDao.emptyCheck()) {
+            System.out.println("There are no students yet!");
             return;
         }
 
@@ -55,29 +57,17 @@ public class RegController {
     }
 
     private void addRegistration(){
-        ArrayList<String> deptShortNames = DeptDao.getDeptShortNames();
+        /*ArrayList<String> deptShortNames = DeptDao.getDeptShortNames();
 
         if(deptShortNames==null){
             System.out.println("There is an unexpected error in fetching department names.");
             System.out.println("Please try again later.");
             return;
-        }
+        }*/
 
-        System.out.println("Please provide all of the following information.");
-        String participant_id = String.format("'%s'", inputGetter.getLine("Sr-Code: "));
-        String last_name = String.format("'%s'", inputGetter.getLine("Last Name: "));
-        String first_name = String.format("'%s'", inputGetter.getLine("First Name: "));
-
-        displayer.showMenu("Departments", deptShortNames);
-        int option = inputGetter.getNumberOption(deptShortNames.size());
-        int deptId = DeptDao.getDeptId(deptShortNames.get(option - 1));
-
-        String participantDetails = String.format("%s, %d, %s, %s", participant_id, deptId, last_name, first_name);
-        String regDetails = eventIdSelected + ", " + participant_id;
-
+        String sr_code = inputGetter.getLine("Sr-Code: ");
         System.out.println();
-        ParticipantDAO.insert(participantDetails);
-        RegistrationDAO.insert(regDetails);
+        RegistrationDAO.insert(eventIdSelected, sr_code);
     }
 
     private void viewRegistered(){
@@ -87,8 +77,9 @@ public class RegController {
             System.out.println("There are no participants yet!");
             return;
         }
+
         ArrayList<String> columnHeaders = new ArrayList<>(
-                Arrays.asList("Sr-Code", "Department", "Last Name", "First Name", "Attended")
+                Arrays.asList("Sr-Code", "Program", "Year Level", "Full Name")
         );
 
         displayer.centerAlignRow(columnHeaders);
@@ -97,36 +88,37 @@ public class RegController {
             displayer.centerAlignRow(participant);
         }
     }
+
     private void searchRegistered(){
         if(RegistrationDAO.emptyCheck(eventIdSelected)){
             System.out.println("There are no registered participants yet!");
             return;
         }
 
-        String participant_id = inputGetter.getLine("Enter Sr-Code: ");
+        String sr_code = inputGetter.getLine("Enter Sr-Code: ");
         System.out.println();
 
-        String[] tableColumns = {"Sr-Code", "Department", "Last Name", "First Name", "Attended"};
+        ArrayList<String> columnHeaders = new ArrayList<>(
+                Arrays.asList("Sr-Code", "Program", "Year Level", "Full Name")
+        );
 
-        ArrayList<String> matchedParticipant = RegistrationDAO.search(eventIdSelected, participant_id);
+        ArrayList<String> matchedParticipant = RegistrationDAO.search(eventIdSelected, sr_code);
 
         if(matchedParticipant==null){
             System.out.println("There are no participants that matched the given Sr-code!");
             return;
         }
 
-        for(int i = 0; i < matchedParticipant.size(); i++){
-            ArrayList<String> record = new ArrayList<>(Arrays.asList(tableColumns[i], matchedParticipant.get(i)));
-            displayer.rightAlignRecord(record);
-        }
+        displayer.centerAlignRow(columnHeaders);
+        displayer.centerAlignRow(matchedParticipant);
     }
     private void removeRegistered(){
         if(RegistrationDAO.emptyCheck(eventIdSelected)){
             System.out.println("There are no registered participants yet!");
             return;
         }
-        String participant_id = inputGetter.getLine("Enter Sr-code: ");
+        String sr_code = inputGetter.getLine("Enter Sr-code: ");
         System.out.println();
-        RegistrationDAO.delete(eventIdSelected, participant_id);
+        RegistrationDAO.delete(eventIdSelected, sr_code);
     }
 }
