@@ -131,6 +131,7 @@ public class ParticipantDAO {
             return false;
         }
     }
+
     public static void delete(String condition){
         String deleteQuery = "DELETE FROM participants WHERE " + condition;
 
