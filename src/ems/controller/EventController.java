@@ -113,8 +113,8 @@ public class EventController {
         String event_name = inputGetter.getLine("Enter event name: ");
         System.out.println();
 
-        if(EventDAO.eventExist("event_name = '" + event_name + "'")){
-            System.out.println("Event name of '" + event_name + "' already exists!");
+        if(!EventDAO.eventExist("event_name = '" + event_name + "'")){
+            System.out.println("Event name of '" + event_name + "' doesn't exist!");
             return;
         }
 
@@ -126,6 +126,10 @@ public class EventController {
 
         String eventName = inputGetter.getLine("New Event Name: ",true);
         if(!eventName.isBlank()){
+            if(EventDAO.eventExist("event_name = '" + event_name + "'")){
+                System.out.println("Event name of '" + event_name + "' already exists!");
+                return;
+            }
             changes.add("event_name = '" + eventName + "'");
         }
 

@@ -13,7 +13,7 @@ public class MainController {
         displayer.displayHeader("Welcome to Event Management System");
 
         ArrayList<String> mainMenuOptions = new ArrayList<>(
-                Arrays.asList("Events", "Registration", "Participants", "Attendance", "Exit")
+                Arrays.asList("Events", "Participants", "Attendance", "Exit")
         );
 
         while(true){
@@ -24,14 +24,12 @@ public class MainController {
             EventController eventController = new EventController();
             RegController regController = new RegController();
             AttendanceController attendanceController = new AttendanceController();
-            ParticipantController participantController = new ParticipantController();
 
             switch (option){
                 case 1 -> eventController.execute();
                 case 2 -> regController.execute();
-                case 3 -> participantController.execute();
-                case 4 -> attendanceController.execute();
-                case 5 -> System.exit(0);
+                case 3 -> attendanceController.execute();
+                case 4 -> System.exit(0);
             }
         }
     }

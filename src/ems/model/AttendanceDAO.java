@@ -1,9 +1,6 @@
 package ems.model;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 
 public class AttendanceDAO {
@@ -18,33 +15,43 @@ public class AttendanceDAO {
     }
 
     private static ArrayList<ArrayList<String>> show(int event_id, boolean hasAttended){
-        String[] columns = {"participant_id", "dept_shortname", "last_name", "first_name"};
-        String selectQuery = "SELECT p.participant_id, dept_shortname, last_name, first_name " +
-                             "FROM participants AS p " +
-                             "INNER JOIN registration AS r " +
-                             "  ON p.participant_id = r.participant_id " +
-                             "  AND r.attended = " + hasAttended +
-                             "  AND r.event_id = " + event_id + " " +
-                             "INNER JOIN departments AS d " +
-                             "  ON p.dept_id = d.dept_id";
+        String[] show_columns = {"sr_code", "pshortname", "year_level", "full_name", "attended"};
+        String show_query = """
+                SELECT
+                	sr_code,
+                	pshortname,
+                	year_level,
+                	CONCAT(last_name, ', ', first_name) AS full_name
+                FROM students AS s
+                INNER JOIN registration AS r
+                    ON event_id = ?
+                        AND attended = ?
+                        AND s.sr_code = r.sr_code
+                INNER JOIN programs AS p
+                	ON s.program_id = p.program_id
+                ORDER BY year_level, pshortname, full_name
+                """;
 
-        ArrayList<ArrayList<String>> events = new ArrayList<>();
+        ArrayList<ArrayList<String>> students = new ArrayList<>();
 
         try{
-            Statement stmt = connection.createStatement();
-            ResultSet eventsSet = stmt.executeQuery(selectQuery);
+            PreparedStatement show_stmt = connection.prepareStatement(show_query);
+            show_stmt.setInt(0, event_id);
+            show_stmt.setBoolean(1, hasAttended);
 
-            if(!eventsSet.next()) return null;
+            ResultSet student_set = show_stmt.executeQuery();
+
+            if(!student_set.next()) return null;
             do{
-                ArrayList<String> event = new ArrayList<>();
+                ArrayList<String> student = new ArrayList<>();
 
-                for(String column : columns){
-                    event.add(eventsSet.getString(column));
+                for(String column : show_columns){
+                    student.add(student_set.getString(column));
                 }
-                events.add(event);
-            } while(eventsSet.next());
+                students.add(student);
+            } while(student_set.next());
 
-            return events;
+            return students;
         }catch (SQLException e){
             System.out.println("SELECT operation unsuccessful!");
             return null;
@@ -59,19 +66,24 @@ public class AttendanceDAO {
         updateAttendance(event_id, participant_id, false);
     }
 
-    private static void updateAttendance(int event_id, String participant_id, boolean present){
-        String updateQuery = "UPDATE registration " +
-                            " SET attended = " + present + " " +
-                            " WHERE event_id = " + event_id + " " +
-                            "   AND participant_id = '" + participant_id + "'";
+    private static void updateAttendance(final int event_id, final String sr_code, final boolean present){
+        String update_query = """
+                UPDATE registration
+                SET attended = ?
+                WHERE event_id = ?
+                    AND sr_code = ?
+                """;
 
         try{
-            Statement updStatement = connection.createStatement();
+            PreparedStatement update_stmt = connection.prepareStatement(update_query);
+            update_stmt.setBoolean(0, present);
+            update_stmt.setInt(1, event_id);
+            update_stmt.setString(2, sr_code);
 
-            if(updStatement.executeUpdate(updateQuery) != 1){
-                throw new SQLException();
+            if(update_stmt.executeUpdate() != 1){
+                throw new Exception();
             }
-        }catch (SQLException e){
+        }catch (Exception e){
             System.out.println("Update operation unsuccessful!");
         }
     }
