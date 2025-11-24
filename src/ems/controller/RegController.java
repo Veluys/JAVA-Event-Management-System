@@ -83,7 +83,7 @@ public class RegController {
     private void viewRegistered(){
         ArrayList<ArrayList<String>> participants = RegistrationDAO.show(eventIdSelected);
 
-        if(RegistrationDAO.isEmpty(eventIdSelected) || participants==null){
+        if(RegistrationDAO.emptyCheck(eventIdSelected) || participants==null){
             System.out.println("There are no participants yet!");
             return;
         }
@@ -98,7 +98,7 @@ public class RegController {
         }
     }
     private void searchRegistered(){
-        if(RegistrationDAO.isEmpty(eventIdSelected)){
+        if(RegistrationDAO.emptyCheck(eventIdSelected)){
             System.out.println("There are no registered participants yet!");
             return;
         }
@@ -121,7 +121,7 @@ public class RegController {
         }
     }
     private void removeRegistered(){
-        if(RegistrationDAO.isEmpty(eventIdSelected)){
+        if(RegistrationDAO.emptyCheck(eventIdSelected)){
             System.out.println("There are no registered participants yet!");
             return;
         }

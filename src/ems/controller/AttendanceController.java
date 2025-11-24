@@ -26,7 +26,7 @@ public class AttendanceController {
             return;
         }
 
-        if(RegistrationDAO.isEmpty(eventIdSelected)){
+        if(RegistrationDAO.emptyCheck(eventIdSelected)){
             System.out.println("There are no participants yet!");
             return;
         }
