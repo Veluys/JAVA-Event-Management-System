@@ -5,6 +5,7 @@ import ems.model.EventDAO;
 import ems.model.RegistrationDAO;
 import ems.view.Displayer;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -12,6 +13,7 @@ public class AttendanceController {
     Displayer displayer = new Displayer();
     InputGetter inputGetter = new InputGetter();
     private int eventIdSelected;
+    private boolean eventDone;
 
     public void execute() {
         displayer.displayHeader("Attendance");
@@ -20,11 +22,22 @@ public class AttendanceController {
             return;
         }
 
-        eventIdSelected = eventSelection();
-        if(eventIdSelected == -1){
+        String event_name = inputGetter.getLine("Enter event name: ");
+        System.out.println();
+        ArrayList<String> matchedEvent = EventDAO.searchRecord(event_name);
+
+        if(matchedEvent==null){
             System.out.println("There are no events that matched the given event name!");
             return;
         }
+
+        if(LocalDate.parse(matchedEvent.get(2)).isBefore(LocalDate.now())){
+            eventDone = true;
+        }else{
+            eventDone = false;
+        }
+
+        eventIdSelected = Integer.parseInt(matchedEvent.get(0));
 
         if(RegistrationDAO.emptyCheck(eventIdSelected)){
             System.out.println("There are no participants yet!");
@@ -41,11 +54,6 @@ public class AttendanceController {
             }
             System.out.println();
         }
-    }
-    private int eventSelection(){
-        String event_name = inputGetter.getLine("Enter event name: ");
-        System.out.println();
-        return EventDAO.getEventId(event_name);
     }
 
     private int mainMenu(){
@@ -96,6 +104,11 @@ public class AttendanceController {
 
     private void markPresent(){
         displayer.displayHeader("Marking for Present");
+        if(eventDone){
+            System.out.println("Event is already finished!");
+            return;
+        }
+
         String participant_id = inputGetter.getLine("Enter the Sr-Code of the participant: ");
         System.out.println();
 
@@ -110,6 +123,11 @@ public class AttendanceController {
 
     private void markAbsent(){
         displayer.displayHeader("Marking for Absent");
+        if(eventDone){
+            System.out.println("Event is already finished!");
+            return;
+        }
+
         String participant_id = inputGetter.getLine("Enter the Sr-Code of the participant: ");
         System.out.println();
 
