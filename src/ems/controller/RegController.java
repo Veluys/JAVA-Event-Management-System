@@ -89,12 +89,11 @@ public class RegController {
                 Arrays.asList("Sr-Code", "Program", "Year Level", "Full Name")
         );
 
+        ArrayList<Double> columnWidths = new ArrayList<>(
+                Arrays.asList(0.15, 0.20, 0.15, 0.50)
+        );
         displayer.displaySubheader("Registered Participants");
-        displayer.centerAlignRow(columnHeaders);
-        for(ArrayList<String> participant : participants){
-            if(participant == participants.getFirst()) System.out.println();
-            displayer.centerAlignRow(participant);
-        }
+        displayer.displayTable(columnHeaders, participants, columnWidths);
     }
 
     private void searchRegistered(){
@@ -112,15 +111,20 @@ public class RegController {
         );
 
         ArrayList<String> matchedParticipant = RegistrationDAO.search(eventIdSelected, sr_code);
+        ArrayList<ArrayList<String>> record = new ArrayList<>(
+                Arrays.asList(matchedParticipant)
+        );
 
         if(matchedParticipant==null){
             System.out.println("There are no participants that matched the given Sr-code!");
             return;
         }
 
-        displayer.displaySubheader("Matched Participant");
-        displayer.centerAlignRow(columnHeaders);
-        displayer.centerAlignRow(matchedParticipant);
+        ArrayList<Double> columnWidths = new ArrayList<>(
+                Arrays.asList(0.30, 0.20, 0.15, 0.15, 0.20)
+        );
+        displayer.displaySubheader("Overlapping Events");
+        displayer.displayTable(columnHeaders, record, columnWidths);
     }
     private void removeRegistered(){
         displayer.displayHeader("Removing Participant");

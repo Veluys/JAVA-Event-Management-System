@@ -86,7 +86,11 @@ public class AttendanceController {
         }
 
         ArrayList<String> columnHeaders = new ArrayList<>(
-                Arrays.asList("Sr-Code", "Department", "Last Name", "First Name")
+                Arrays.asList("Sr-Code", "Program", "Year Level", "Full Name")
+        );
+
+        ArrayList<Double> columnWidths = new ArrayList<>(
+                Arrays.asList(0.15, 0.20, 0.15, 0.50)
         );
 
         if(attendanceStatus){
@@ -95,11 +99,8 @@ public class AttendanceController {
             displayer.displaySubheader("Absentees");
         }
 
-        displayer.centerAlignRow(columnHeaders);
-        for(ArrayList<String> participant : participants){
-            if(participant == participants.getFirst()) System.out.println();
-            displayer.centerAlignRow(participant);
-        }
+
+        displayer.displayTable(columnHeaders, participants, columnWidths);
     }
 
     private void markPresent(){

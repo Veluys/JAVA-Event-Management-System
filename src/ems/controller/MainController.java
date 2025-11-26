@@ -19,16 +19,14 @@ public class MainController {
         while(true){
             ArrayList<ArrayList<String>> upcoming_events = EventDAO.showUpcoming();
             if(upcoming_events!=null){
-                displayer.displayHeader("Upcoming Events");
                 ArrayList<String> event_attributes = new ArrayList<>(
                         Arrays.asList("Event Name", "Date", "Start Time", "End Time", "Venue")
                 );
-
-                displayer.centerAlignRow(event_attributes);
-                for(ArrayList<String> event : upcoming_events){
-                    if(event == upcoming_events.getFirst()) System.out.println();
-                    displayer.centerAlignRow(event);
-                }
+                ArrayList<Double> columnWidths = new ArrayList<>(
+                        Arrays.asList(0.30, 0.20, 0.15, 0.15, 0.20)
+                );
+                displayer.displaySubheader("Upcoming Events");
+                displayer.displayTable(event_attributes, upcoming_events, columnWidths);
             }
 
             displayer.displaySubheader("Main Menu");

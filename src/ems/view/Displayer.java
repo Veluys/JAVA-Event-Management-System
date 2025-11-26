@@ -3,7 +3,7 @@ package ems.view;
 import java.util.ArrayList;
 
 public class Displayer {
-    protected final int displayWidth = 120;
+    protected final int displayWidth = 150;
 
     private void displayHeader(final String header,
                                final char upperLeftChar,
@@ -47,20 +47,49 @@ public class Displayer {
         System.out.print(prompt);
     }
 
-    public void centerAlignRow(final ArrayList<String> columnValues) {
-        final int tableWidth = displayWidth - columnValues.size();
-        final int columnWidth = tableWidth / columnValues.size();
+    public void displayTable(final ArrayList<String> columnHeaders,
+                          final ArrayList<ArrayList<String>> records,
+                          final ArrayList<Double> columnSizes)
+    {
+        final int tableWidth = displayWidth - columnHeaders.size();
 
-        for (int i = 0; i < columnValues.size(); i++) {
-            String columnValue = columnValues.get(i);
-            int totalPadding = columnWidth - columnValue.length();
+        final ArrayList<Integer> columnWidths = new ArrayList<>();
+        int totalWidth = 0;
+        for(int i = 0; i < columnSizes.size(); i++){
+            if(i == columnSizes.size() - 1){
+                columnWidths.add(tableWidth - totalWidth);
+                break;
+            }
+
+            int colWidth = (int) (tableWidth * columnSizes.get(i));
+            totalWidth+=colWidth;
+            columnWidths.add(colWidth);
+        }
+
+        System.out.print("|");
+        for(int i = 0; i < columnHeaders.size(); i++){
+            int totalPadding = columnWidths.get(i) - columnHeaders.get(i).length();
+            if(i == 0) totalPadding--;
             int paddingStart = totalPadding / 2;
             int paddingEnd = totalPadding - paddingStart;
 
-            String centered = " ".repeat(paddingStart) + columnValue + " ".repeat(paddingEnd);
+            String centered = " ".repeat(paddingStart) + columnHeaders.get(i) + " ".repeat(paddingEnd);
             System.out.print(centered + "|");
         }
-        System.out.println();
-        System.out.println("-".repeat(120));
+        System.out.println("\n" +"-".repeat(displayWidth));
+
+        for(ArrayList<String> record : records){
+            System.out.print("|");
+            for(int i = 0; i < columnHeaders.size(); i++){
+                int totalPadding = columnWidths.get(i) - record.get(i).length();
+                if(i == 0) totalPadding--;
+                int paddingStart = totalPadding / 2;
+                int paddingEnd = totalPadding - paddingStart;
+
+                String centered = " ".repeat(paddingStart) + record.get(i) + " ".repeat(paddingEnd);
+                System.out.print(centered + "|");
+            }
+            System.out.println("\n" +"-".repeat(displayWidth));
+        }
     }
 }

@@ -15,7 +15,10 @@ import java.util.LinkedHashMap;
 public class EventController {
     Displayer displayer = new Displayer();
     InputGetter inputGetter = new InputGetter();
-    private final String[] event_attributes = {"Event Name", "Date", "Start Time", "End Time", "Venue"};
+    private final ArrayList<String> event_attributes = new ArrayList<>(
+            Arrays.asList("Event Name", "Date", "Start Time", "End Time", "Venue")
+    );
+    //private final String[] event_attributes = {"Event Name", "Date", "Start Time", "End Time", "Venue"};
 
     public void execute(){
         while(true){
@@ -56,6 +59,12 @@ public class EventController {
 
         String eventName = inputGetter.getLine("Event Name: ");
         LocalDate date = inputGetter.getDate("Event Date");
+
+        if(date.isBefore(LocalDate.now()) || date.equals(LocalDate.now())){
+            System.out.println("Error: Event Date must be at least 1 day from now");
+            return;
+        }
+
         LocalTime start_time = inputGetter.getTime("Start Time");
         LocalTime end_time = inputGetter.getTime("End Time");
 
@@ -71,12 +80,11 @@ public class EventController {
         ArrayList<ArrayList<String>> conflictEvents = EventDAO.eventsInConflict(-1, date, start_time, venue_id);
         if(conflictEvents!= null){
             System.out.println("The event can't be added to the database!");
-            displayer.displayHeader("Overlapping Events");
-            displayer.centerAlignRow(new ArrayList<>(Arrays.asList(event_attributes)));
-            for(ArrayList<String> event : conflictEvents){
-                if(event == conflictEvents.getFirst()) System.out.println();
-                displayer.centerAlignRow(event);
-            }
+            ArrayList<Double> columnWidths = new ArrayList<>(
+                    Arrays.asList(0.30, 0.20, 0.15, 0.15, 0.20)
+            );
+            displayer.displaySubheader("Overlapped Events");
+            displayer.displayTable(event_attributes, conflictEvents, columnWidths);
             return;
         }
 
@@ -89,12 +97,12 @@ public class EventController {
         ArrayList<ArrayList<String>> events = EventDAO.show();
 
         displayer.displayHeader("Viewing Events");
+
+        ArrayList<Double> columnWidths = new ArrayList<>(
+                Arrays.asList(0.30, 0.20, 0.15, 0.15, 0.20)
+        );
         displayer.displaySubheader("Events");
-        displayer.centerAlignRow(new ArrayList<>(Arrays.asList(event_attributes)));
-        for(ArrayList<String> event : events){
-            if(event == events.getFirst()) System.out.println();
-            displayer.centerAlignRow(event);
-        }
+        displayer.displayTable(event_attributes, events, columnWidths);
     }
 
     private void searchEvent(){
@@ -107,15 +115,20 @@ public class EventController {
         );
 
         ArrayList<String> matchedEvent = EventDAO.search(eventName);
+        ArrayList<ArrayList<String>> records = new ArrayList<>(
+                Arrays.asList(matchedEvent)
+        );
 
         if(matchedEvent==null){
             System.out.println("There are no events that matched the given event name!");
             return;
         }
 
-        displayer.displaySubheader("Matched Event");
-        displayer.centerAlignRow(columnHeaders);
-        displayer.centerAlignRow(matchedEvent);
+        ArrayList<Double> columnWidths = new ArrayList<>(
+                Arrays.asList(0.30, 0.20, 0.15, 0.15, 0.20)
+        );
+        displayer.displaySubheader("Events");
+        displayer.displayTable(event_attributes, records, columnWidths);
     }
 
     private void updateEvents(){
@@ -151,6 +164,10 @@ public class EventController {
 
         LocalDate new_event_date = inputGetter.getDate("New Event Date",true);
         if(new_event_date != null){
+            if(new_event_date.isBefore(LocalDate.now()) || new_event_date.equals(LocalDate.now())){
+                System.out.println("Error: Event Date must be at least 1 day from now");
+                return;
+            }
             new_values.put("event_date", String.valueOf(new_event_date));
         }
 
@@ -197,12 +214,11 @@ public class EventController {
                 EventDAO.eventsInConflict(event_id, event_date, start_time, venue_id);
         if(conflictEvents!= null){
             System.out.println("The event can't be updated!");
-            displayer.displayHeader("Overlapping Events");
-            displayer.centerAlignRow(new ArrayList<>(Arrays.asList(event_attributes)));
-            for(ArrayList<String> event : conflictEvents){
-                if(event == conflictEvents.getFirst()) System.out.println();
-                displayer.centerAlignRow(event);
-            }
+            ArrayList<Double> columnWidths = new ArrayList<>(
+                    Arrays.asList(0.30, 0.20, 0.15, 0.15, 0.20)
+            );
+            displayer.displaySubheader("Overlapped Events");
+            displayer.displayTable(event_attributes, conflictEvents, columnWidths);
             return;
         }
 
