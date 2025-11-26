@@ -57,7 +57,7 @@ public class EventDAO {
                         AND e.event_date = ?
                         AND ? BETWEEN start_time AND end_time
                         AND e.venue_id = v.venue_id
-                ;
+                ORDER BY event_date;
                 """;
 
         ArrayList<ArrayList<String>> events = new ArrayList<>();
@@ -101,7 +101,8 @@ public class EventDAO {
                     venue_name
                 FROM events AS e
                 INNER JOIN venues AS v
-                    ON e.venue_id = v.venue_id;
+                    ON e.venue_id = v.venue_id
+                ORDER BY event_date;
                 """;
 
         ArrayList<ArrayList<String>> events = new ArrayList<>();
@@ -141,7 +142,8 @@ public class EventDAO {
                 FROM events AS e
                 INNER JOIN venues AS v
                     ON e.venue_id = v.venue_id
-                    AND event_date BETWEEN (CURRENT_DATE + INTERVAL '1 day') AND (CURRENT_DATE + INTERVAL '3 days');
+                    AND event_date BETWEEN (CURRENT_DATE + INTERVAL '1 day') AND (CURRENT_DATE + INTERVAL '3 days')
+                ORDER BY event_date;
                 """;
 
         ArrayList<ArrayList<String>> events = new ArrayList<>();
@@ -212,7 +214,8 @@ public class EventDAO {
                 FROM events AS e
                 INNER JOIN venues AS v
                     ON e.venue_id = v.venue_id
-                    AND event_name = ?;
+                    AND event_name = ?
+                ORDER BY event_date;
                 """;
 
         try {
