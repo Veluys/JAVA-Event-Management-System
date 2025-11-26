@@ -186,7 +186,7 @@ public class EventDAO {
     }
 
     public static boolean eventExist(final String event_name){
-        String search_query = "SELECT event_id FROM events WHERE event_name = ?";
+        String search_query = "SELECT event_id FROM events WHERE event_name ILIKE ?";
 
         try{
             PreparedStatement search_stmt = connection.prepareStatement(search_query);
@@ -252,7 +252,7 @@ public class EventDAO {
                 FROM events AS e
                 INNER JOIN venues AS v
                     ON e.venue_id = v.venue_id
-                    AND event_name = ?;
+                    AND event_name ILIKE ?;
                 """;
 
         try {
@@ -293,7 +293,7 @@ public class EventDAO {
                 update_query += ", ";
             }
         }
-        update_query += String.format("WHERE event_name = '%s'", event_name);
+        update_query += String.format("WHERE event_name ILIKE '%s'", event_name);
 
         try{
             PreparedStatement update_stmt = connection.prepareStatement(update_query);
@@ -308,7 +308,7 @@ public class EventDAO {
     }
 
     public static void delete(final String event_name){
-        String delete_query = "DELETE FROM events WHERE event_name = ?";
+        String delete_query = "DELETE FROM events WHERE event_name ILIKE ?";
 
         try{
             PreparedStatement delete_stmt = connection.prepareStatement(delete_query);
@@ -325,7 +325,7 @@ public class EventDAO {
     }
 
     public static int getEventId(String event_name){
-        String searchQuery = String.format("SELECT event_id FROM events WHERE event_name = '%s'", event_name);
+        String searchQuery = String.format("SELECT event_id FROM events WHERE event_name ILIKE '%s'", event_name);
 
         try{
             Statement eventStatement = connection.createStatement();
