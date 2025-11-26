@@ -43,16 +43,26 @@ public class EventDAO {
 
         String[] show_columns = {"event_name", "event_date", "start_time", "end_time", "venue_name"};
         String show_query = """
-                SELECT
-                    event_name,
-                    TO_CHAR(event_date, 'Mon DD, YYYY') AS event_date,
-                    LOWER(TO_CHAR(start_time, 'FMHH12:MI AM')) AS start_time,
-                    LOWER(TO_CHAR(end_time, 'FMHH12:MI AM')) AS end_time,
-                    venue_name
-                FROM events AS e
-                INNER JOIN venues AS v
-                    ON e.venue_id = v.venue_id
-                ORDER BY event_date;
+                    WITH events_cte AS (
+                        SELECT
+                            e.event_name,
+                            event_date,
+                            start_time,
+                            end_time,
+                            v.venue_name
+                        FROM events AS e
+                        INNER JOIN venues AS v
+                            ON e.venue_id = v.venue_id
+                        ORDER BY event_date
+                    )
+
+                    SELECT
+                        event_name,
+                        TO_CHAR(event_date, 'Mon DD, YYYY') AS event_date,
+                        LOWER(TO_CHAR(start_time, 'FMHH12:MI AM')) AS start_time,
+                        LOWER(TO_CHAR(end_time, 'FMHH12:MI AM')) AS end_time,
+                        venue_name
+                    FROM events_cte;
                 """;
 
         ArrayList<ArrayList<String>> events = new ArrayList<>();
@@ -81,20 +91,31 @@ public class EventDAO {
 
         String[] show_columns = {"event_name", "event_date", "start_time", "end_time", "venue_name"};
         String check_query = """
-                SELECT
-                    e.event_name,
-                    TO_CHAR(event_date, 'Mon DD, YYYY') AS event_date,
-                    LOWER(TO_CHAR(start_time, 'FMHH12:MI AM')) AS start_time,
-                    LOWER(TO_CHAR(end_time, 'FMHH12:MI AM')) AS end_time,
-                    v.venue_name
-                FROM events AS e
-                INNER JOIN venues AS v
-                    ON e.event_id != ?
+                    WITH events_cte AS (
+                        SELECT
+                            e.event_name,
+                            event_date,
+                            start_time,
+                            end_time,
+                            v.venue_name
+                        FROM events AS e
+                        INNER JOIN venues AS v
+                            ON e.venue_id = v.venue_id
+                        ORDER BY event_date
+                    )
+
+                    SELECT
+                        event_name,
+                        TO_CHAR(event_date, 'Mon DD, YYYY') AS event_date,
+                        LOWER(TO_CHAR(start_time, 'FMHH12:MI AM')) AS start_time,
+                        LOWER(TO_CHAR(end_time, 'FMHH12:MI AM')) AS end_time,
+                        venue_name
+                    FROM events_cte
+                    WHERE e.event_id != ?
                         AND e.venue_id = ?
                         AND e.event_date = ?
                         AND ? BETWEEN start_time AND end_time
-                        AND e.venue_id = v.venue_id
-                ORDER BY e.event_date;
+                        AND e.venue_id = v.venue_id;
                 """;
 
         ArrayList<ArrayList<String>> events = new ArrayList<>();
@@ -130,17 +151,26 @@ public class EventDAO {
 
         String[] show_columns = {"event_name", "event_date", "start_time", "end_time", "venue_name"};
         String show_query = """
-                SELECT
-                    event_name,
-                    TO_CHAR(event_date, 'Mon DD, YYYY') AS event_date,
-                    LOWER(TO_CHAR(start_time, 'FMHH12:MI AM')) AS start_time,
-                    LOWER(TO_CHAR(end_time, 'FMHH12:MI AM')) AS end_time,
-                    venue_name
-                FROM events AS e
-                INNER JOIN venues AS v
-                    ON e.venue_id = v.venue_id
-                    AND event_date BETWEEN (CURRENT_DATE + INTERVAL '1 day') AND (CURRENT_DATE + INTERVAL '3 days')
-                ORDER BY event_date;
+                    WITH events_cte AS (
+                        SELECT
+                            e.event_name,
+                            event_date,
+                            start_time,
+                            end_time,
+                            v.venue_name
+                        FROM events AS e
+                        INNER JOIN venues AS v
+                            ON e.venue_id = v.venue_id
+                        ORDER BY event_date
+                    )
+                    SELECT
+                        event_name,
+                        TO_CHAR(event_date, 'Mon DD, YYYY') AS event_date,
+                        LOWER(TO_CHAR(start_time, 'FMHH12:MI AM')) AS start_time,
+                        LOWER(TO_CHAR(end_time, 'FMHH12:MI AM')) AS end_time,
+                        venue_name
+                    FROM events_cte
+                    WHERE event_date BETWEEN (CURRENT_DATE + INTERVAL '1 day') AND (CURRENT_DATE + INTERVAL '3 days')
                 """;
 
         ArrayList<ArrayList<String>> events = new ArrayList<>();
