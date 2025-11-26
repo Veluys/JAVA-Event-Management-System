@@ -141,7 +141,7 @@ public class EventDAO {
                 FROM events AS e
                 INNER JOIN venues AS v
                     ON e.venue_id = v.venue_id
-                    AND event_date BETWEEN CURRENT_DATE AND (CURRENT_DATE + INTERVAL '3 days');
+                    AND event_date BETWEEN (CURRENT_DATE + INTERVAL '1 day') AND (CURRENT_DATE + INTERVAL '3 days');
                 """;
 
         ArrayList<ArrayList<String>> events = new ArrayList<>();

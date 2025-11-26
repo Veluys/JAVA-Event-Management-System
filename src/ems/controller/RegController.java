@@ -3,6 +3,7 @@ package ems.controller;
 import ems.model.*;
 import ems.view.Displayer;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -10,6 +11,7 @@ public class RegController {
     Displayer displayer = new Displayer();
     InputGetter inputGetter = new InputGetter();
     private int eventIdSelected;
+    private boolean eventDone;
 
     public void execute() {
         displayer.displayHeader("Registration");
@@ -23,11 +25,22 @@ public class RegController {
             return;
         }
 
-        eventIdSelected = eventSelection();
-        if(eventIdSelected == -1){
+        String event_name = inputGetter.getLine("Enter event name: ");
+        System.out.println();
+        ArrayList<String> matchedEvent = EventDAO.searchRecord(event_name);
+
+        if(matchedEvent==null){
             System.out.println("There are no events that matched the given event name!");
             return;
         }
+
+        if(LocalDate.parse(matchedEvent.get(2)).isBefore(LocalDate.now())){
+            eventDone = true;
+        }else{
+            eventDone = false;
+        }
+
+        eventIdSelected = Integer.parseInt(matchedEvent.get(0));
 
         while (true){
             switch (mainMenu()){
@@ -41,12 +54,6 @@ public class RegController {
         }
     }
 
-    private int eventSelection(){
-        String event_name = inputGetter.getLine("Enter event name: ");
-        System.out.println();
-        return EventDAO.getEventId(event_name);
-    }
-
     private int mainMenu(){
         displayer.displaySubheader("Main Menu");
         ArrayList<String> operations = new ArrayList<>(
@@ -58,6 +65,11 @@ public class RegController {
 
     private void addRegistration(){
         displayer.displayHeader("Adding Participant");
+
+        if(eventDone){
+            System.out.println("Event is already finished!");
+            return;
+        }
 
         String sr_code = inputGetter.getLine("Sr-Code: ");
         System.out.println();
@@ -112,6 +124,12 @@ public class RegController {
     }
     private void removeRegistered(){
         displayer.displayHeader("Removing Participant");
+
+        if(eventDone){
+            System.out.println("Event is already finished!");
+            return;
+        }
+
         if(RegistrationDAO.emptyCheck(eventIdSelected)){
             System.out.println("There are no registered participants yet!");
             return;

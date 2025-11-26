@@ -57,18 +57,25 @@ public class InputGetter {
     }
 
     public LocalDate getDate(String prompt, boolean allowBlank){
-        DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("MMMM dd, uuuu")
+        DateTimeFormatter shortDateFormat = DateTimeFormatter.ofPattern("MMM d, uuuu")
+                .withResolverStyle(ResolverStyle.STRICT);
+        DateTimeFormatter longDateFormat = DateTimeFormatter.ofPattern("MMMM d, uuuu")
                 .withResolverStyle(ResolverStyle.STRICT);
 
+
         while (true) {
-            displayer.showPrompt(prompt + " (Ex. January 1, 2001): ");
+            displayer.showPrompt(prompt + " (Ex. January 1, 2001 or Jan 1, 2001): ");
             String date = scanner.nextLine();
+
             if (date.isBlank()) {
                 if (allowBlank) return null;
-            } else {
+            }
+            try {
+                return LocalDate.parse(date, shortDateFormat);
+            } catch (DateTimeParseException e) {
                 try {
-                    return LocalDate.parse(date, dateFormat);
-                } catch (DateTimeParseException e) {
+                    return LocalDate.parse(date, longDateFormat);
+                }catch (DateTimeParseException err){
                     System.out.println("Invalid date, please try again.");
                 }
             }
@@ -80,11 +87,11 @@ public class InputGetter {
     }
 
     public LocalTime getTime(String prompt, boolean allowBlank){
-        DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("h:mm a", Locale.ENGLISH)
+        DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("h[:mm] a", Locale.ENGLISH)
                 .withResolverStyle(ResolverStyle.STRICT);
 
         while (true) {
-            displayer.showPrompt(prompt + " (Ex. 7:00 a.m.): ");
+            displayer.showPrompt(prompt + " (Ex. 7:00 am or 7 am): ");
             String time = scanner.nextLine().toUpperCase().replace(".", "");
 
             if (time.isBlank()) {
