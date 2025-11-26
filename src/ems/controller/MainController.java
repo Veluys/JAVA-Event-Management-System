@@ -13,10 +13,11 @@ public class MainController {
 
         displayer.displayHeader("Welcome to Event Management System");
         ArrayList<String> mainMenuOptions = new ArrayList<>(
-                Arrays.asList("Events", "Participants", "Attendance", "Exit")
+                Arrays.asList("Events", "Registration", "Attendance", "Exit")
         );
 
         while(true){
+            displayer.displayHeader("Start Page");
             ArrayList<ArrayList<String>> upcoming_events = EventDAO.showUpcoming();
             if(upcoming_events!=null){
                 ArrayList<String> event_attributes = new ArrayList<>(

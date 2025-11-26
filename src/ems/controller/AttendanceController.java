@@ -16,7 +16,7 @@ public class AttendanceController {
     private boolean eventDone;
 
     public void execute() {
-        displayer.displayHeader("Attendance");
+        displayer.displayHeader("Attendance Page");
         if (EventDAO.emptyCheck()) {
             System.out.println("There are no events yet!");
             return;
@@ -57,7 +57,7 @@ public class AttendanceController {
     }
 
     private int mainMenu(){
-        displayer.displaySubheader("Main Menu");
+        displayer.displaySubheader("Attendance Menu");
         ArrayList<String> operations = new ArrayList<>(
                 Arrays.asList("View Attendees", "View Absentees", "Set as Present", "Reset as Absent", "Exit")
         );

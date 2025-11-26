@@ -14,7 +14,7 @@ public class RegController {
     private boolean eventDone;
 
     public void execute() {
-        displayer.displayHeader("Registration");
+        displayer.displayHeader("Registration Page");
         if (EventDAO.emptyCheck()) {
             System.out.println("There are no events yet!");
             return;
@@ -55,7 +55,7 @@ public class RegController {
     }
 
     private int mainMenu(){
-        displayer.displaySubheader("Main Menu");
+        displayer.displaySubheader("Registration Menu");
         ArrayList<String> operations = new ArrayList<>(
                 Arrays.asList("Add Participant", "View Participants", "Search Participant", "Remove Participants", "Exit")
         );

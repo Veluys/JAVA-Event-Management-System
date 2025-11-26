@@ -57,7 +57,7 @@ public class EventDAO {
                         AND e.event_date = ?
                         AND ? BETWEEN start_time AND end_time
                         AND e.venue_id = v.venue_id
-                ORDER BY event_date;
+                ORDER BY e.event_date;
                 """;
 
         ArrayList<ArrayList<String>> events = new ArrayList<>();

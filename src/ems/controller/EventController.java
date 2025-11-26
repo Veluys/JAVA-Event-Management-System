@@ -22,12 +22,12 @@ public class EventController {
 
     public void execute(){
         while(true){
-            displayer.displayHeader("Events");
+            displayer.displayHeader("Events Page");
             ArrayList<String> operations = new ArrayList<>(
                     Arrays.asList("Add Events", "View Events", "Search Events", "Update Events", "Delete Events", "Exit")
             );
 
-            displayer.displaySubheader("Main Menu");
+            displayer.displaySubheader("Event Menu");
             displayer.showMenu("Select an operation:", operations);
             int option = inputGetter.getNumberOption(operations.size());
 
