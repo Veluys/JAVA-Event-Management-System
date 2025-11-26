@@ -14,6 +14,7 @@ public class AttendanceController {
     private int eventIdSelected;
 
     public void execute() {
+        displayer.displayHeader("Attendance");
         if (EventDAO.emptyCheck()) {
             System.out.println("There are no events yet!");
             return;
@@ -42,14 +43,13 @@ public class AttendanceController {
         }
     }
     private int eventSelection(){
-        displayer.displayHeader("Attendance");
         String event_name = inputGetter.getLine("Enter event name: ");
         System.out.println();
         return EventDAO.getEventId(event_name);
     }
 
     private int mainMenu(){
-        displayer.displayHeader("Attendance");
+        displayer.displaySubheader("Main Menu");
         ArrayList<String> operations = new ArrayList<>(
                 Arrays.asList("View Attendees", "View Absentees", "Set as Present", "Reset as Absent", "Exit")
         );
@@ -58,10 +58,12 @@ public class AttendanceController {
     }
 
     private void viewAttendees(){
+        displayer.displayHeader("Viewing Attendees");
         viewParticipants(AttendanceDAO.showAttendees(eventIdSelected), true);
     }
 
     private void viewAbsentees(){
+        displayer.displayHeader("Viewing Absentees");
         viewParticipants(AttendanceDAO.showAbsentees(eventIdSelected), false);
     }
 
@@ -79,6 +81,12 @@ public class AttendanceController {
                 Arrays.asList("Sr-Code", "Department", "Last Name", "First Name")
         );
 
+        if(attendanceStatus){
+            displayer.displaySubheader("Attendees");
+        }else{
+            displayer.displaySubheader("Absentees");
+        }
+
         displayer.centerAlignRow(columnHeaders);
         for(ArrayList<String> participant : participants){
             if(participant == participants.getFirst()) System.out.println();
@@ -87,6 +95,7 @@ public class AttendanceController {
     }
 
     private void markPresent(){
+        displayer.displayHeader("Marking for Present");
         String participant_id = inputGetter.getLine("Enter the Sr-Code of the participant: ");
         System.out.println();
 
@@ -100,6 +109,7 @@ public class AttendanceController {
     }
 
     private void markAbsent(){
+        displayer.displayHeader("Marking for Absent");
         String participant_id = inputGetter.getLine("Enter the Sr-Code of the participant: ");
         System.out.println();
 

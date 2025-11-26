@@ -24,6 +24,7 @@ public class EventController {
                     Arrays.asList("Add Events", "View Events", "Search Events", "Update Events", "Delete Events", "Exit")
             );
 
+            displayer.displaySubheader("Main Menu");
             displayer.showMenu("Select an operation:", operations);
             int option = inputGetter.getNumberOption(operations.size());
 
@@ -50,6 +51,8 @@ public class EventController {
             System.out.println("There are no available venues yet!");
             return;
         }
+
+        displayer.displayHeader("Adding New Event");
 
         String eventName = inputGetter.getLine("Event Name: ");
         LocalDate date = inputGetter.getDate("Event Date");
@@ -85,6 +88,8 @@ public class EventController {
     private void viewEvents(){
         ArrayList<ArrayList<String>> events = EventDAO.show();
 
+        displayer.displayHeader("Viewing Events");
+        displayer.displaySubheader("Events");
         displayer.centerAlignRow(new ArrayList<>(Arrays.asList(event_attributes)));
         for(ArrayList<String> event : events){
             if(event == events.getFirst()) System.out.println();
@@ -93,6 +98,7 @@ public class EventController {
     }
 
     private void searchEvent(){
+        displayer.displayHeader("Searching Event");
         String eventName = inputGetter.getLine("Enter event name: ");
         System.out.println();
 
@@ -107,6 +113,7 @@ public class EventController {
             return;
         }
 
+        displayer.displaySubheader("Matched Event");
         displayer.centerAlignRow(columnHeaders);
         displayer.centerAlignRow(matchedEvent);
     }
@@ -118,6 +125,7 @@ public class EventController {
             return;
         }
 
+        displayer.displayHeader("Updating Event");
         String old_event_name = inputGetter.getLine("Enter event name: ");
         System.out.println();
 
@@ -203,6 +211,7 @@ public class EventController {
     }
 
     private void deleteEvent(){
+        displayer.displayHeader("Deleting Event");
         String event_name = inputGetter.getLine("Enter event name: ");
         System.out.println();
         EventDAO.delete(event_name);

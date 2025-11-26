@@ -31,7 +31,7 @@ public class MainController {
                 }
             }
 
-            displayer.displayHeader("Main Menu");
+            displayer.displaySubheader("Main Menu");
             displayer.showMenu("What do you want to do or work with today?", mainMenuOptions);
             int option = inputGetter.getNumberOption(mainMenuOptions.size());
 

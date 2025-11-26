@@ -12,6 +12,7 @@ public class RegController {
     private int eventIdSelected;
 
     public void execute() {
+        displayer.displayHeader("Registration");
         if (EventDAO.emptyCheck()) {
             System.out.println("There are no events yet!");
             return;
@@ -41,14 +42,13 @@ public class RegController {
     }
 
     private int eventSelection(){
-        displayer.displayHeader("Registration");
         String event_name = inputGetter.getLine("Enter event name: ");
         System.out.println();
         return EventDAO.getEventId(event_name);
     }
 
     private int mainMenu(){
-        displayer.displayHeader("Registration");
+        displayer.displaySubheader("Main Menu");
         ArrayList<String> operations = new ArrayList<>(
                 Arrays.asList("Add Participant", "View Participants", "Search Participant", "Remove Participants", "Exit")
         );
@@ -57,13 +57,7 @@ public class RegController {
     }
 
     private void addRegistration(){
-        /*ArrayList<String> deptShortNames = DeptDao.getDeptShortNames();
-
-        if(deptShortNames==null){
-            System.out.println("There is an unexpected error in fetching department names.");
-            System.out.println("Please try again later.");
-            return;
-        }*/
+        displayer.displayHeader("Adding Participant");
 
         String sr_code = inputGetter.getLine("Sr-Code: ");
         System.out.println();
@@ -71,6 +65,7 @@ public class RegController {
     }
 
     private void viewRegistered(){
+        displayer.displayHeader("Viewing Participants");
         ArrayList<ArrayList<String>> participants = RegistrationDAO.show(eventIdSelected);
 
         if(RegistrationDAO.emptyCheck(eventIdSelected) || participants==null){
@@ -82,6 +77,7 @@ public class RegController {
                 Arrays.asList("Sr-Code", "Program", "Year Level", "Full Name")
         );
 
+        displayer.displaySubheader("Registered Participants");
         displayer.centerAlignRow(columnHeaders);
         for(ArrayList<String> participant : participants){
             if(participant == participants.getFirst()) System.out.println();
@@ -90,6 +86,7 @@ public class RegController {
     }
 
     private void searchRegistered(){
+        displayer.displayHeader("Searching Participant");
         if(RegistrationDAO.emptyCheck(eventIdSelected)){
             System.out.println("There are no registered participants yet!");
             return;
@@ -109,10 +106,12 @@ public class RegController {
             return;
         }
 
+        displayer.displaySubheader("Matched Participant");
         displayer.centerAlignRow(columnHeaders);
         displayer.centerAlignRow(matchedParticipant);
     }
     private void removeRegistered(){
+        displayer.displayHeader("Removing Participant");
         if(RegistrationDAO.emptyCheck(eventIdSelected)){
             System.out.println("There are no registered participants yet!");
             return;

@@ -5,14 +5,34 @@ import java.util.ArrayList;
 public class Displayer {
     protected final int displayWidth = 120;
 
-    public void displayHeader(final String message){
-        final int padding = (displayWidth - message.length()) / 2;
-        final String centered = " ".repeat(padding) + message;
-        final String border = "+" + "-".repeat(displayWidth - 2) + "+";
+    private void displayHeader(final String header,
+                               final char upperLeftChar,
+                               final char upperRightChar,
+                               final char middleChar,
+                               final char centerChar,
+                               final char lowerLeftChar,
+                               final char lowerRightChar)
+    {
+        final int leftPadding = (displayWidth - header.length() - 2) / 2;
+        final int rightPadding = displayWidth - leftPadding - header.length() - 2;
+        final String centered = centerChar + " ".repeat(leftPadding) + header +
+                " ".repeat(rightPadding) + centerChar;
+        final String upperBorder = upperLeftChar + String.valueOf(middleChar).repeat(displayWidth - 2) +
+                upperRightChar;
+        final String lowerBorder = lowerLeftChar + String.valueOf(middleChar).repeat(displayWidth - 2) +
+                lowerRightChar;
 
-        System.out.println(border);
+        System.out.println(upperBorder);
         System.out.println(centered);
-        System.out.println(border);
+        System.out.println(lowerBorder);
+    }
+
+    public void displayHeader(final String header){
+        displayHeader(header, '╔', '╗', '═','║', '╚','╝');
+    }
+
+    public void displaySubheader(final String header){
+        displayHeader(header, '+', '+', '-','|', '+', '+');
     }
 
     public void showMenu(final String initialPrompt, final ArrayList<String> options){
@@ -42,15 +62,5 @@ public class Displayer {
         }
         System.out.println();
         System.out.println("-".repeat(120));
-    }
-
-    public void rightAlignRecord(final ArrayList<String> columnValues){
-        final int labelWidth = 15;
-        String attributeLabel = columnValues.get(0);
-        String attributeValue = columnValues.get(1);
-
-        int paddingRight = labelWidth - attributeLabel.length();
-
-        System.out.println(attributeLabel + ":" + " ".repeat(paddingRight) + attributeValue);
     }
 }
