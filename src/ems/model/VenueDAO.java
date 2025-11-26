@@ -47,20 +47,6 @@ public class VenueDAO {
         }
     }
 
-    public static int getLatestVenueId(){
-        String countQuery = "SELECT COALESCE(MAX(venue_id), 0) AS latest_venue_id FROM venues";
-
-        try{
-            Statement stmt = connection.createStatement();
-            ResultSet resultSet = stmt.executeQuery(countQuery);
-
-            resultSet.next();
-            return resultSet.getInt("latest_venue_id");
-        }catch (SQLException e){
-            return -1;
-        }
-    }
-
     public static int getVenueId(String venue_name){
         String searchQuery = String.format("SELECT venue_id FROM venues WHERE venue_name = '%s'", venue_name);
 

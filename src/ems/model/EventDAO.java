@@ -21,8 +21,7 @@ public class EventDAO {
                 VALUES (?, ?, ?, ?, ?);
                 """;
 
-        try{
-            PreparedStatement insert_stmt = connection.prepareStatement(insert_query);
+        try(PreparedStatement insert_stmt = connection.prepareStatement(insert_query)){
             insert_stmt.setString(1, event_name);
             insert_stmt.setObject(2, event_date);
             insert_stmt.setObject(3, start_time);
@@ -36,6 +35,44 @@ public class EventDAO {
             }
         }catch (SQLException e){
             System.out.println("Insert operation unsuccessful!");
+        }
+    }
+
+    public static ArrayList<ArrayList<String>> show(){
+        if(emptyCheck()) return null;
+
+        String[] show_columns = {"event_name", "event_date", "start_time", "end_time", "venue_name"};
+        String show_query = """
+                SELECT
+                    event_name,
+                    TO_CHAR(event_date, 'Mon DD, YYYY') AS event_date,
+                    LOWER(TO_CHAR(start_time, 'FMHH12:MI AM')) AS start_time,
+                    LOWER(TO_CHAR(end_time, 'FMHH12:MI AM')) AS end_time,
+                    venue_name
+                FROM events AS e
+                INNER JOIN venues AS v
+                    ON e.venue_id = v.venue_id
+                ORDER BY event_date;
+                """;
+
+        ArrayList<ArrayList<String>> events = new ArrayList<>();
+
+        try(PreparedStatement show_stmt = connection.prepareStatement(show_query)){
+            try(ResultSet event_set = show_stmt.executeQuery()){
+                if(!event_set.next()) return null;
+
+                do{
+                    ArrayList<String> event = new ArrayList<>();
+                    for(String column : show_columns){
+                        event.add(event_set.getString(column));
+                    }
+                    events.add(event);
+                } while(event_set.next());
+            }
+            return events;
+        }catch (SQLException e){
+            System.out.println("SELECT operation unsuccessful!");
+            return null;
         }
     }
 
@@ -70,46 +107,6 @@ public class EventDAO {
             check_stmt.setObject(4, start_time);
 
             ResultSet eventsSet = check_stmt.executeQuery();
-
-            if(!eventsSet.next()) return null;
-            do{
-                ArrayList<String> event = new ArrayList<>();
-
-                for(String column : show_columns){
-                    event.add(eventsSet.getString(column));
-                }
-                events.add(event);
-            } while(eventsSet.next());
-
-            return events;
-        }catch (SQLException e){
-            System.out.println("SELECT operation unsuccessful!");
-            return null;
-        }
-    }
-
-    public static ArrayList<ArrayList<String>> show(){
-        if(emptyCheck()) return null;
-
-        String[] show_columns = {"event_name", "event_date", "start_time", "end_time", "venue_name"};
-        String show_query = """
-                SELECT
-                    event_name,
-                    TO_CHAR(event_date, 'Mon DD, YYYY') AS event_date,
-                    LOWER(TO_CHAR(start_time, 'FMHH12:MI AM')) AS start_time,
-                    LOWER(TO_CHAR(end_time, 'FMHH12:MI AM')) AS end_time,
-                    venue_name
-                FROM events AS e
-                INNER JOIN venues AS v
-                    ON e.venue_id = v.venue_id
-                ORDER BY event_date;
-                """;
-
-        ArrayList<ArrayList<String>> events = new ArrayList<>();
-
-        try{
-            PreparedStatement show_stmt = connection.prepareStatement(show_query);
-            ResultSet eventsSet = show_stmt.executeQuery();
 
             if(!eventsSet.next()) return null;
             do{
@@ -177,9 +174,10 @@ public class EventDAO {
                 LIMIT 1
                 """;
 
-        try{
-            PreparedStatement check_stmt = connection.prepareStatement(count_query);
-            return !check_stmt.execute();
+        try(PreparedStatement check_stmt = connection.prepareStatement(count_query)) {
+            try (ResultSet rs = check_stmt.executeQuery()) {
+                return !rs.next();
+            }
         }catch (Exception e){
             System.out.println("Checking for event records failed!");
             System.err.println(e.getMessage());
@@ -202,36 +200,42 @@ public class EventDAO {
     }
 
     public static ArrayList<String> searchRecord(final String event_name) {
-        String[] search_columns = {"event_id", "event_name", "event_date", "start_time", "end_time", "venue_id"};
+        String[] search_columns = {"event_id", "event_name", "event_date", "start_time", "end_time", "venue_id", "venue_name"};
         String search_query = """
                 SELECT
-                    event_id,
-                    event_name,
-                    TO_CHAR(event_date, 'YYYY-MM-DD') AS event_date,
-                    TO_CHAR(start_time, 'HH24:MI:SS') AS start_time,
-                    TO_CHAR(end_time, 'HH24:MI:SS') AS end_time,
-                    e.venue_id
+                	event_id,
+                	event_name,
+                	event_date,
+                	start_time,
+                	end_time,
+                	venue_id,
+                	venue_name
                 FROM events AS e
                 INNER JOIN venues AS v
-                    ON e.venue_id = v.venue_id
-                    AND event_name = ?
-                ORDER BY event_date;
+                	ON e.venue_id = v.venue_id
+                WHERE event_name ILIKE ?
+                ORDER BY event_date DESC
                 """;
 
-        try {
-            PreparedStatement search_stmt = connection.prepareStatement(search_query);
-            search_stmt.setString(1, event_name);
-            ResultSet eventsSet = search_stmt.executeQuery();
+        ArrayList<String> event = new ArrayList<>();
 
-            if (!eventsSet.next()) return null;
-            ArrayList<String> event = new ArrayList<>();
+        try(PreparedStatement search_stmt = connection.prepareStatement(search_query)){
+            search_stmt.setString(1, "%" + event_name + "%"); // Bind the wildcard search pattern
+            try(ResultSet event_set = search_stmt.executeQuery()){
+                if(!event_set.next()) return null;
 
-            for (String column : search_columns) {
-                event.add(eventsSet.getString(column));
+                for(String column : search_columns){
+                    event.add(event_set.getString(column));
+                }
+
+                if(event_set.next()){
+                    System.out.println("Multiple events matched! Using the first one.");
+                }
             }
+
             return event;
-        } catch (SQLException e) {
-            System.out.println("SELECT operation unsuccessful!");
+        }catch (SQLException e){
+            System.out.println("SELECT operation unsuccessful! Error: " + e.getMessage());
             return null;
         }
     }

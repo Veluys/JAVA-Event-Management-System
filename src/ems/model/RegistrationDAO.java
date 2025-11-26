@@ -146,20 +146,4 @@ public class RegistrationDAO {
             System.out.println("Delete operation unsuccessful!");
         }
     }
-
-    public static void delAllParticipantReg(String participant_id){
-        String deleteQuery = "DELETE FROM registration " +
-                                "WHERE participant_id = '" + participant_id + "'";
-
-        try{
-            Statement delStatement = connection.createStatement();
-
-            if(delStatement.executeUpdate(deleteQuery) != 1){
-                throw new SQLException();
-            }
-        }catch (SQLException e){
-            System.out.println("Delete operation unsuccessful!");
-        }
-    }
-
 }

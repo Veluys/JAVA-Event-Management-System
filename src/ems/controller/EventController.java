@@ -4,8 +4,6 @@ import ems.model.EventDAO;
 import ems.model.VenueDAO;
 import ems.view.Displayer;
 
-import java.sql.Date;
-import java.sql.Time;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -18,7 +16,6 @@ public class EventController {
     private final ArrayList<String> event_attributes = new ArrayList<>(
             Arrays.asList("Event Name", "Date", "Start Time", "End Time", "Venue")
     );
-    //private final String[] event_attributes = {"Event Name", "Date", "Start Time", "End Time", "Venue"};
 
     public void execute(){
         while(true){
@@ -109,10 +106,6 @@ public class EventController {
         displayer.displayHeader("Searching Event");
         String eventName = inputGetter.getLine("Enter event name: ");
         System.out.println();
-
-        ArrayList<String> columnHeaders = new ArrayList<>(
-                Arrays.asList("Event Name", "Date", "Start Time", "End Time", "Venue")
-        );
 
         ArrayList<String> matchedEvent = EventDAO.search(eventName);
         ArrayList<ArrayList<String>> records = new ArrayList<>(

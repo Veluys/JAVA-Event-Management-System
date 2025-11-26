@@ -31,11 +31,7 @@ public class AttendanceController {
             return;
         }
 
-        if(LocalDate.parse(matchedEvent.get(2)).isBefore(LocalDate.now())){
-            eventDone = true;
-        }else{
-            eventDone = false;
-        }
+        eventDone = LocalDate.parse(matchedEvent.get(2)).isBefore(LocalDate.now());
 
         eventIdSelected = Integer.parseInt(matchedEvent.get(0));
 
