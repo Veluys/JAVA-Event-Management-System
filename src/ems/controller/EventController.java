@@ -55,6 +55,11 @@ public class EventController {
         displayer.displayHeader("Adding New Event");
 
         String eventName = inputGetter.getLine("Event Name: ");
+        if(EventDAO.eventExist(eventName)){
+            System.out.printf("Error: Event Name '%s' already exists!\n", eventName);
+            return;
+        }
+
         LocalDate date = inputGetter.getDate("Event Date");
 
         if(date.isBefore(LocalDate.now()) || date.equals(LocalDate.now())){

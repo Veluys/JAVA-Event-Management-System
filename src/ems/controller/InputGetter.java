@@ -36,7 +36,7 @@ public class InputGetter {
         }
     }
 
-    public int getNumberOption(final int highest){
+        public int getNumberOption(final int highest){
         return getNumberOption(highest, false);
     }
 
