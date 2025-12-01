@@ -8,7 +8,7 @@ public class DBConnection {
     static Connection getConnection(){
         final String username = "postgres";
         final String password = "byte";
-        final String url = "jdbc:postgresql://localhost:5432/bvent";
+        final String url = "jdbc:postgresql://localhost:5432/plan_et";
         Connection connection = null;
 
         try {
