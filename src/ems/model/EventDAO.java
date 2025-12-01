@@ -327,19 +327,44 @@ public class EventDAO {
     }
 
     public static int getEventId(String event_name){
-        String searchQuery = String.format("SELECT event_id FROM events WHERE event_name ILIKE '%s'", event_name);
+        String searchQuery = """
+                SELECT event_id
+                FROM events
+                WHERE event_name ILIKE ?
+            """;
 
         try{
-            Statement eventStatement = connection.createStatement();
-            ResultSet eventResult = eventStatement.executeQuery(searchQuery);
+            PreparedStatement get_stmt = connection.prepareStatement(searchQuery);
+            get_stmt.setString(1, event_name);
+            ResultSet eventResult = get_stmt.executeQuery();
 
             if(!eventResult.next()){
                 return -1;
             }
-
             return eventResult.getInt("event_id");
         }catch (SQLException e){
             return -1;
+        }
+    }
+
+    public static String checkStatus(String event_name){
+        String search_query = """
+                SELECT event_status
+                FROM event_details
+                WHERE event_name ILIKE ?
+            """;
+
+        try{
+            PreparedStatement search_stmt = connection.prepareStatement(search_query);
+            search_stmt.setString(1, event_name);
+            ResultSet eventResult = search_stmt.executeQuery();
+
+            if(!eventResult.next()){
+                return "not found";
+            }
+            return eventResult.getString("event_status");
+        }catch (SQLException e){
+            return "not found";
         }
     }
 }
