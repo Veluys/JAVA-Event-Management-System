@@ -22,42 +22,71 @@ public class AttendanceController {
 
         String event_name = InputGetter.getLine("Enter event name: ");
         System.out.println();
-        ArrayList<String> matchedEvent = EventDAO.searchRecord(event_name);
+        eventIdSelected = EventDAO.getEventId(event_name);
 
-        if(matchedEvent==null){
+        if(eventIdSelected==-1){
             System.out.println("There are no events that matched the given event name!");
             return;
         }
-
-        eventDone = LocalDate.parse(matchedEvent.get(2)).isBefore(LocalDate.now());
-        eventIdSelected = EventDAO.getEventId(event_name);
 
         if(RegistrationDAO.emptyCheck(eventIdSelected)){
             System.out.println("There are no participants yet!");
             return;
         }
 
+        if(EventDAO.checkStatus(event_name).equalsIgnoreCase("scheduled")){
+            menuForScheduledEvent();
+        }else if(EventDAO.checkStatus(event_name).equalsIgnoreCase("completed")){
+            menuForCompletedEvent();
+        }else{
+            System.out.println("Event is not categorized as scheduled or completed!");
+        }
+
+    }
+
+    private void menuForScheduledEvent(){
+        ArrayList<String> operations = new ArrayList<>(
+                Arrays.asList("View Attendees", "View Absentees", "Check Participant's Attendance",
+                        "Set as Present", "Reset as Absent", "Exit")
+        );
+
         while (true){
-            switch (mainMenu()){
-                case 1 -> viewAttendees();
-                case 2 -> viewAbsentees();
-                case 3 -> checkAttendance();
-                case 4 -> markPresent();
-                case 5 -> markAbsent();
-                case 6 -> {return;}
+            Displayer.displaySubheader("Attendance Menu");
+            Displayer.showMenu("Select an operation:", operations);
+            int option = InputGetter.getNumberOption(operations.size());
+
+            while (true){
+                switch (option){
+                    case 1 -> viewAttendees();
+                    case 2 -> viewAbsentees();
+                    case 3 -> checkAttendance();
+                    case 4 -> markPresent();
+                    case 5 -> markAbsent();
+                    case 6 -> {return;}
+                }
+                System.out.println();
             }
-            System.out.println();
         }
     }
 
-    private int mainMenu(){
-        Displayer.displaySubheader("Attendance Menu");
+    private void menuForCompletedEvent(){
         ArrayList<String> operations = new ArrayList<>(
-                Arrays.asList("View Attendees", "View Absentees", "Check Participant's Attendance",
-                              "Set as Present", "Reset as Absent", "Exit")
+                Arrays.asList("View Attendees", "View Absentees", "Check Participant's Attendance", "Exit")
         );
-        Displayer.showMenu("Select an operation:", operations);
-        return InputGetter.getNumberOption(operations.size());
+
+        while (true){
+            Displayer.displaySubheader("Attendance Menu");
+            Displayer.showMenu("Select an operation:", operations);
+            int option = InputGetter.getNumberOption(operations.size());
+
+            switch (option){
+                case 1 -> viewAttendees();
+                case 2 -> viewAbsentees();
+                case 3 -> checkAttendance();
+                case 4 -> {return;}
+            }
+            System.out.println();
+        }
     }
 
     private void viewAttendees(){
