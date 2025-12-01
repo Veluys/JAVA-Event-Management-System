@@ -17,21 +17,21 @@ public class AttendanceDAO {
     }
 
     private static ArrayList<ArrayList<String>> show(int event_id, boolean hasAttended){
-        String[] show_columns = {"sr_code", "pshortname", "year_level", "full_name"};
+        String[] show_columns = {"sr_code", "dept_shortname", "year_level", "full_name"};
         String show_query = """
                 SELECT
-                	s.sr_code,
-                	pshortname,
-                	year_level,
-                	CONCAT(last_name, ', ', first_name) AS full_name
+                    s.sr_code,
+                    dept_shortname,
+                    year_level,
+                    CONCAT(last_name, ', ', first_name) AS full_name
                 FROM students AS s
                 INNER JOIN registration AS r
-                    ON event_id = ?
-                        AND attended = ?
-                        AND s.sr_code = r.sr_code
-                INNER JOIN programs AS p
-                	ON s.program_id = p.program_id
-                ORDER BY year_level, pshortname, full_name
+                    ON s.sr_code = r.sr_code
+                INNER JOIN departments AS d
+                    ON d.dept_id = s.dept_id
+                WHERE event_id = ?
+                    AND attended = ?
+                ORDER BY year_level, dept_shortname, full_name
                 """;
 
         ArrayList<ArrayList<String>> students = new ArrayList<>();
@@ -87,6 +87,28 @@ public class AttendanceDAO {
             }
         }catch (Exception e){
             System.out.println("Update operation unsuccessful!");
+        }
+    }
+
+    public static boolean checkAttendanceStatus(final int event_id, String sr_code){
+        String check_query = """
+                SELECT attended
+                FROM registration
+                WHERE event_id = ?
+                    AND sr_code = ?
+            """;
+
+        try(PreparedStatement check_stmt = connection.prepareStatement(check_query)){
+            check_stmt.setInt(1, event_id);
+            check_stmt.setString(2, sr_code);
+
+            try(ResultSet attendance_set = check_stmt.executeQuery()){
+                attendance_set.next();
+                return attendance_set.getBoolean("attended");
+            }
+        } catch (Exception e) {
+            System.out.println("Checking attendance unsuccessful!");
+            return false;
         }
     }
 }

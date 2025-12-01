@@ -16,7 +16,7 @@ public class Main {
         Displayer displayer = new Displayer();
         InputGetter inputGetter = new InputGetter();
 
-        displayer.displayHeader("Welcome to Event Management System");
+        displayer.displayHeader("Welcome to PLAN ET: The BSU-MALVAR Event Management System");
         ArrayList<String> mainMenuOptions = new ArrayList<>(
                 Arrays.asList("Events", "Registration", "Attendance", "Exit")
         );
@@ -49,6 +49,7 @@ public class Main {
                 case 3 -> attendanceController.execute();
                 case 4 -> {
                     closeConnection();
+                    System.out.println("Thank you for using Plan_ET. Happy Planning!");
                     System.exit(0);
                 }
             }

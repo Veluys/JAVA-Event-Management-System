@@ -38,6 +38,7 @@ public class RegController {
         eventIdSelected = Integer.parseInt(matchedEvent.get(0));
 
         while (true){
+            displayer.displayHeader("Registration Page");
             switch (mainMenu()){
                 case 1 -> addRegistration();
                 case 2 -> viewRegistered();
@@ -81,7 +82,7 @@ public class RegController {
         }
 
         ArrayList<String> columnHeaders = new ArrayList<>(
-                Arrays.asList("Sr-Code", "Program", "Year Level", "Full Name")
+                Arrays.asList("Sr-Code", "Department", "Year Level", "Full Name")
         );
 
         ArrayList<Double> columnWidths = new ArrayList<>(
@@ -102,7 +103,7 @@ public class RegController {
         System.out.println();
 
         ArrayList<String> columnHeaders = new ArrayList<>(
-                Arrays.asList("Sr-Code", "Program", "Year Level", "Full Name")
+                Arrays.asList("Sr-Code", "Department", "Year Level", "Full Name")
         );
 
         ArrayList<String> matchedParticipant = RegistrationDAO.search(eventIdSelected, sr_code);
@@ -116,9 +117,9 @@ public class RegController {
         }
 
         ArrayList<Double> columnWidths = new ArrayList<>(
-                Arrays.asList(0.30, 0.20, 0.15, 0.15, 0.20)
+                Arrays.asList(0.15, 0.20, 0.15, 0.50)
         );
-        displayer.displaySubheader("Overlapping Events");
+        displayer.displaySubheader("Matched Participant");
         displayer.displayTable(columnHeaders, record, columnWidths);
     }
     private void removeRegistered(){

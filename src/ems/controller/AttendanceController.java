@@ -32,8 +32,7 @@ public class AttendanceController {
         }
 
         eventDone = LocalDate.parse(matchedEvent.get(2)).isBefore(LocalDate.now());
-
-        eventIdSelected = Integer.parseInt(matchedEvent.get(0));
+        eventIdSelected = EventDAO.getEventId(event_name);
 
         if(RegistrationDAO.emptyCheck(eventIdSelected)){
             System.out.println("There are no participants yet!");
@@ -44,9 +43,10 @@ public class AttendanceController {
             switch (mainMenu()){
                 case 1 -> viewAttendees();
                 case 2 -> viewAbsentees();
-                case 3 -> markPresent();
-                case 4 -> markAbsent();
-                case 5 -> {return;}
+                case 3 -> checkAttendance();
+                case 4 -> markPresent();
+                case 5 -> markAbsent();
+                case 6 -> {return;}
             }
             System.out.println();
         }
@@ -55,7 +55,8 @@ public class AttendanceController {
     private int mainMenu(){
         displayer.displaySubheader("Attendance Menu");
         ArrayList<String> operations = new ArrayList<>(
-                Arrays.asList("View Attendees", "View Absentees", "Set as Present", "Reset as Absent", "Exit")
+                Arrays.asList("View Attendees", "View Absentees", "Check Participant's Attendance",
+                              "Set as Present", "Reset as Absent", "Exit")
         );
         displayer.showMenu("Select an operation:", operations);
         return inputGetter.getNumberOption(operations.size());
@@ -99,6 +100,24 @@ public class AttendanceController {
         displayer.displayTable(columnHeaders, participants, columnWidths);
     }
 
+    private void checkAttendance(){
+        displayer.displayHeader("Check Participant's Attendance");
+
+        String sr_code = inputGetter.getLine("Enter the Sr-Code of the participant: ");
+        System.out.println();
+
+        if(RegistrationDAO.search(eventIdSelected, sr_code) == null){
+            System.out.println("A participant with an Sr-Code of " + sr_code + " is not registered!");
+            return;
+        }
+
+        if(AttendanceDAO.checkAttendanceStatus(eventIdSelected, sr_code)){
+            System.out.println("The participant with an Sr-Code of " + sr_code + " is present.");
+        }else{
+            System.out.println("The participant with an Sr-Code of " + sr_code + " is absent.");
+        }
+    }
+
     private void markPresent(){
         displayer.displayHeader("Marking for Present");
         if(eventDone){
@@ -106,16 +125,21 @@ public class AttendanceController {
             return;
         }
 
-        String participant_id = inputGetter.getLine("Enter the Sr-Code of the participant: ");
+        String sr_code = inputGetter.getLine("Enter the Sr-Code of the participant: ");
         System.out.println();
 
-        if(RegistrationDAO.search(eventIdSelected, participant_id) == null){
-            System.out.println("A participant with an Sr-Code of " + participant_id + " is not registered!");
+        if(AttendanceDAO.checkAttendanceStatus(eventIdSelected, sr_code)){
+            System.out.println("The participant with an Sr-Code of " + sr_code + " already present!");
             return;
         }
-        AttendanceDAO.markPresent(eventIdSelected, participant_id);
 
-        System.out.println("Participant '" + participant_id + "' was successfully marked as present.");
+        if(RegistrationDAO.search(eventIdSelected, sr_code) == null){
+            System.out.println("A participant with an Sr-Code of " + sr_code + " is not registered!");
+            return;
+        }
+        AttendanceDAO.markPresent(eventIdSelected, sr_code);
+
+        System.out.println("Participant '" + sr_code + "' was successfully marked as present.");
     }
 
     private void markAbsent(){
@@ -125,15 +149,20 @@ public class AttendanceController {
             return;
         }
 
-        String participant_id = inputGetter.getLine("Enter the Sr-Code of the participant: ");
+        String sr_code = inputGetter.getLine("Enter the Sr-Code of the participant: ");
         System.out.println();
 
-        if(RegistrationDAO.search(eventIdSelected, participant_id) == null){
-            System.out.println("A participant with an Sr-Code of " + participant_id + " is not registered!");
+        if(!AttendanceDAO.checkAttendanceStatus(eventIdSelected, sr_code)){
+            System.out.println("The participant with an Sr-Code of " + sr_code + " already absent!");
             return;
         }
-        AttendanceDAO.markAbsent(eventIdSelected, participant_id);
 
-        System.out.println("Participant '" + participant_id + "' was successfully marked as absent.");
+        if(RegistrationDAO.search(eventIdSelected, sr_code) == null){
+            System.out.println("A participant with an Sr-Code of " + sr_code + " is not registered!");
+            return;
+        }
+        AttendanceDAO.markAbsent(eventIdSelected, sr_code);
+
+        System.out.println("Participant '" + sr_code + "' was successfully marked as absent.");
     }
 }

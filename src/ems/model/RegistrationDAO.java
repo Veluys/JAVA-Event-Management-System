@@ -18,31 +18,28 @@ public class RegistrationDAO {
             PreparedStatement insert_stmt = connection.prepareStatement(insert_query);
             insert_stmt.setInt(1, event_id);
             insert_stmt.setString(2, sr_code);
-
-            if(insert_stmt.executeUpdate() != 1){
-                throw new Exception();
-            }
+            insert_stmt.executeUpdate();
+            System.out.println("New participant was successfully registered!");
         }catch (Exception e){
             System.out.println("Insert operation unsuccessful!");
         }
     }
 
     public static ArrayList<ArrayList<String>> show(int event_id){
-        String[] show_columns = {"sr_code", "pshortname", "year_level", "full_name"};
+        String[] show_columns = {"sr_code", "dept_shortname", "year_level", "full_name"};
         String show_query = """
                 SELECT
-                	s.sr_code,
-                	pshortname,
-                	year_level,
-                	CONCAT(last_name, ', ', first_name) AS full_name
+                    s.sr_code,
+                    dept_shortname,
+                    year_level,
+                    CONCAT(last_name, ', ', first_name) AS full_name
                 FROM students AS s
                 INNER JOIN registration AS r
-                    ON event_id = ?
-                    AND s.sr_code = r.sr_code
-                INNER JOIN programs AS p
-                	ON s.program_id = p.program_id
-                ORDER BY year_level, pshortname, full_name
-                """;
+                    ON s.sr_code = r.sr_code
+                INNER JOIN departments AS d
+                    ON d.dept_id = s.dept_id
+                WHERE r.event_id = ?
+            """;
 
         ArrayList<ArrayList<String>> students = new ArrayList<>();
 
@@ -71,7 +68,7 @@ public class RegistrationDAO {
 
     public static boolean emptyCheck(final int event_id){
         String count_query = """
-                SELECT reg_id
+                SELECT event_id
                 FROM registration
                 WHERE event_id = ?
                 LIMIT 1;
@@ -89,21 +86,20 @@ public class RegistrationDAO {
     }
 
     public static ArrayList<String> search(int event_id, final String sr_code){
-        String[] show_columns = {"sr_code", "pshortname", "year_level", "full_name"};
+        String[] show_columns = {"sr_code", "dept_shortname", "year_level", "full_name"};
         String show_query = """
                 SELECT
-                	s.sr_code,
-                	pshortname,
-                	year_level,
-                	CONCAT(last_name, ', ', first_name) AS full_name
+                    s.sr_code,
+                    dept_shortname,
+                    year_level,
+                    CONCAT(last_name, ', ', first_name) AS full_name
                 FROM students AS s
                 INNER JOIN registration AS r
-                    ON s.sr_code = ?
-                    AND event_id = ?
-                    AND s.sr_code = r.sr_code
-                INNER JOIN programs AS p
-                	ON s.program_id = p.program_id
-                ORDER BY year_level, pshortname, full_name
+                    ON s.sr_code = r.sr_code
+                INNER JOIN departments AS d
+                    ON d.dept_id = s.dept_id
+                WHERE r.sr_code = ?
+                    AND r.event_id = ?
                 """;
 
         try{
@@ -141,9 +137,8 @@ public class RegistrationDAO {
             delete_stmt.setInt(1, event_id);
             delete_stmt.setString(2, participant_id);
 
-            if(delete_stmt.executeUpdate() != 1){
-                throw new Exception();
-            }
+            delete_stmt.executeUpdate();
+            System.out.println("Delete operation successful!");
         }catch (Exception e){
             System.out.println("Delete operation unsuccessful!");
         }

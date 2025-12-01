@@ -11,20 +11,6 @@ import java.util.ArrayList;
 public class VenueDAO {
     final static Connection connection = Main.connection;
 
-    public static void insert(String venue){
-        String insertQuery = String.format("INSERT INTO venues (venue_name) VALUES (%s)", venue);
-
-        try{
-            Statement insertStatement = connection.createStatement();
-
-            if(insertStatement.executeUpdate(insertQuery) != 1){
-                throw new SQLException();
-            }
-        }catch (SQLException e){
-            System.out.println("Insert operation unsuccessful!");
-        }
-    }
-
     public static ArrayList<String> getVenueNames(){
         String selectQuery = "SELECT venue_name " +
                 "FROM venues " +
