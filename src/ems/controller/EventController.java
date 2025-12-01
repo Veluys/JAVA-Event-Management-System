@@ -11,22 +11,20 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 
 public class EventController {
-    Displayer displayer = new Displayer();
-    InputGetter inputGetter = new InputGetter();
     private final ArrayList<String> event_attributes = new ArrayList<>(
             Arrays.asList("Event Name", "Date", "Start Time", "End Time", "Venue")
     );
 
     public void execute(){
         while(true){
-            displayer.displayHeader("Events Page");
+            Displayer.displayHeader("Events Page");
             ArrayList<String> operations = new ArrayList<>(
                     Arrays.asList("Add Events", "View Events", "Search Events", "Update Events", "Delete Events", "Exit")
             );
 
-            displayer.displaySubheader("Event Menu");
-            displayer.showMenu("Select an operation:", operations);
-            int option = inputGetter.getNumberOption(operations.size());
+            Displayer.displaySubheader("Event Menu");
+            Displayer.showMenu("Select an operation:", operations);
+            int option = InputGetter.getNumberOption(operations.size());
 
             if(EventDAO.emptyCheck() && option > 1 && option != 6){
                 System.out.println("There are no events yet!");
@@ -52,31 +50,31 @@ public class EventController {
             return;
         }
 
-        displayer.displayHeader("Adding New Event");
+        Displayer.displayHeader("Adding New Event");
 
-        String eventName = inputGetter.getLine("Event Name: ");
+        String eventName = InputGetter.getLine("Event Name: ");
         if(EventDAO.eventExist(eventName)){
             System.out.printf("Error: Event Name '%s' already exists!\n", eventName);
             return;
         }
 
-        LocalDate date = inputGetter.getDate("Event Date");
+        LocalDate date = InputGetter.getDate("Event Date");
 
         if(date.isBefore(LocalDate.now()) || date.equals(LocalDate.now())){
             System.out.println("Error: Event Date must be at least 1 day from now");
             return;
         }
 
-        LocalTime start_time = inputGetter.getTime("Start Time");
-        LocalTime end_time = inputGetter.getTime("End Time");
+        LocalTime start_time = InputGetter.getTime("Start Time");
+        LocalTime end_time = InputGetter.getTime("End Time");
 
         if(end_time.isBefore(start_time) || end_time.equals(start_time)){
             System.out.println("Error: End time must be after start time!");
             return;
         }
 
-        displayer.showMenu("Venues", venueNames);
-        int option = inputGetter.getNumberOption(venueNames.size());
+        Displayer.showMenu("Venues", venueNames);
+        int option = InputGetter.getNumberOption(venueNames.size());
         int venue_id = VenueDAO.getVenueId(venueNames.get(option - 1));
 
         ArrayList<ArrayList<String>> conflictEvents = EventDAO.eventsInConflict(-1, date, start_time, venue_id);
@@ -85,8 +83,8 @@ public class EventController {
             ArrayList<Double> columnWidths = new ArrayList<>(
                     Arrays.asList(0.30, 0.20, 0.15, 0.15, 0.20)
             );
-            displayer.displaySubheader("Overlapped Events");
-            displayer.displayTable(event_attributes, conflictEvents, columnWidths);
+            Displayer.displaySubheader("Overlapped Events");
+            Displayer.displayTable(event_attributes, conflictEvents, columnWidths);
             return;
         }
 
@@ -98,18 +96,18 @@ public class EventController {
     private void viewEvents(){
         ArrayList<ArrayList<String>> events = EventDAO.show();
 
-        displayer.displayHeader("Viewing Events");
+        Displayer.displayHeader("Viewing Events");
 
         ArrayList<Double> columnWidths = new ArrayList<>(
                 Arrays.asList(0.30, 0.20, 0.15, 0.15, 0.20)
         );
-        displayer.displaySubheader("Events");
-        displayer.displayTable(event_attributes, events, columnWidths);
+        Displayer.displaySubheader("Events");
+        Displayer.displayTable(event_attributes, events, columnWidths);
     }
 
     private void searchEvent(){
-        displayer.displayHeader("Searching Event");
-        String eventName = inputGetter.getLine("Enter event name: ");
+        Displayer.displayHeader("Searching Event");
+        String eventName = InputGetter.getLine("Enter event name: ");
         System.out.println();
 
         ArrayList<String> matchedEvent = EventDAO.search(eventName);
@@ -125,8 +123,8 @@ public class EventController {
         ArrayList<Double> columnWidths = new ArrayList<>(
                 Arrays.asList(0.30, 0.20, 0.15, 0.15, 0.20)
         );
-        displayer.displaySubheader("Events");
-        displayer.displayTable(event_attributes, records, columnWidths);
+        Displayer.displaySubheader("Events");
+        Displayer.displayTable(event_attributes, records, columnWidths);
     }
 
     private void updateEvents(){
@@ -136,8 +134,8 @@ public class EventController {
             return;
         }
 
-        displayer.displayHeader("Updating Event");
-        String old_event_name = inputGetter.getLine("Enter event name: ");
+        Displayer.displayHeader("Updating Event");
+        String old_event_name = InputGetter.getLine("Enter event name: ");
         System.out.println();
 
         ArrayList<String> matchedEvent = EventDAO.searchRecord(old_event_name);
@@ -151,7 +149,7 @@ public class EventController {
 
         System.out.println("Simply press enter to not update that field.");
 
-        String new_event_name = inputGetter.getLine("New Event Name: ",true);
+        String new_event_name = InputGetter.getLine("New Event Name: ",true);
         if(!new_event_name.isBlank()){
             if(EventDAO.eventExist(new_event_name)){
                 System.out.println("Event name of '" + new_event_name + "' already exists!");
@@ -160,7 +158,7 @@ public class EventController {
             new_values.put("event_name", new_event_name);
         }
 
-        LocalDate new_event_date = inputGetter.getDate("New Event Date",true);
+        LocalDate new_event_date = InputGetter.getDate("New Event Date",true);
         if(new_event_date != null){
             if(new_event_date.isBefore(LocalDate.now()) || new_event_date.equals(LocalDate.now())){
                 System.out.println("Error: Event Date must be at least 1 day from now");
@@ -169,12 +167,12 @@ public class EventController {
             new_values.put("event_date", String.valueOf(new_event_date));
         }
 
-        LocalTime new_start_time = inputGetter.getTime("New Start Time",true);
+        LocalTime new_start_time = InputGetter.getTime("New Start Time",true);
         if(new_start_time != null){
             new_values.put("start_time", String.valueOf(new_start_time));
         }
 
-        LocalTime new_end_time = inputGetter.getTime("New End Time",true);
+        LocalTime new_end_time = InputGetter.getTime("New End Time",true);
         if(new_end_time != null){
             new_values.put("end_time", String.valueOf(new_end_time));
         }
@@ -189,8 +187,8 @@ public class EventController {
             return;
         }
 
-        displayer.showMenu("Venues", venueNames);
-        int option = inputGetter.getNumberOption(venueNames.size(), true);
+        Displayer.showMenu("Venues", venueNames);
+        int option = InputGetter.getNumberOption(venueNames.size(), true);
         int new_venue_id = -1;
         if(option != -1){
             new_venue_id = VenueDAO.getVenueId(venueNames.get(option - 1));
@@ -215,8 +213,8 @@ public class EventController {
             ArrayList<Double> columnWidths = new ArrayList<>(
                     Arrays.asList(0.30, 0.20, 0.15, 0.15, 0.20)
             );
-            displayer.displaySubheader("Overlapped Events");
-            displayer.displayTable(event_attributes, conflictEvents, columnWidths);
+            Displayer.displaySubheader("Overlapped Events");
+            Displayer.displayTable(event_attributes, conflictEvents, columnWidths);
             return;
         }
 
@@ -225,8 +223,8 @@ public class EventController {
     }
 
     private void deleteEvent(){
-        displayer.displayHeader("Deleting Event");
-        String event_name = inputGetter.getLine("Enter event name: ");
+        Displayer.displayHeader("Deleting Event");
+        String event_name = InputGetter.getLine("Enter event name: ");
         System.out.println();
         EventDAO.delete(event_name);
     }

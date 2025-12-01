@@ -3,9 +3,9 @@ package ems.view;
 import java.util.ArrayList;
 
 public class Displayer {
-    protected final int displayWidth = 150;
+    protected static final int displayWidth = 150;
 
-    private void displayHeader(final String header,
+    private static void displayHeader(final String header,
                                final char upperLeftChar,
                                final char upperRightChar,
                                final char middleChar,
@@ -27,15 +27,15 @@ public class Displayer {
         System.out.println(lowerBorder);
     }
 
-    public void displayHeader(final String header){
+    public static void displayHeader(final String header){
         displayHeader(header, '╔', '╗', '═','║', '╚','╝');
     }
 
-    public void displaySubheader(final String header){
+    public static void displaySubheader(final String header){
         displayHeader(header, '+', '+', '-','|', '+', '+');
     }
 
-    public void showMenu(final String initialPrompt, final ArrayList<String> options){
+    public static void showMenu(final String initialPrompt, final ArrayList<String> options){
         System.out.println(initialPrompt);
 
         for(int i = 0; i< options.size(); i++){
@@ -43,11 +43,11 @@ public class Displayer {
         }
     }
 
-    public void showPrompt(final String prompt){
+    public static void showPrompt(final String prompt){
         System.out.print(prompt);
     }
 
-    public void displayTable(final ArrayList<String> columnHeaders,
+    public static void displayTable(final ArrayList<String> columnHeaders,
                           final ArrayList<ArrayList<String>> records,
                           final ArrayList<Double> columnSizes)
     {

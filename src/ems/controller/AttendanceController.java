@@ -10,19 +10,17 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class AttendanceController {
-    Displayer displayer = new Displayer();
-    InputGetter inputGetter = new InputGetter();
     private int eventIdSelected;
     private boolean eventDone;
 
     public void execute() {
-        displayer.displayHeader("Attendance Page");
+        Displayer.displayHeader("Attendance Page");
         if (EventDAO.emptyCheck()) {
             System.out.println("There are no events yet!");
             return;
         }
 
-        String event_name = inputGetter.getLine("Enter event name: ");
+        String event_name = InputGetter.getLine("Enter event name: ");
         System.out.println();
         ArrayList<String> matchedEvent = EventDAO.searchRecord(event_name);
 
@@ -53,22 +51,22 @@ public class AttendanceController {
     }
 
     private int mainMenu(){
-        displayer.displaySubheader("Attendance Menu");
+        Displayer.displaySubheader("Attendance Menu");
         ArrayList<String> operations = new ArrayList<>(
                 Arrays.asList("View Attendees", "View Absentees", "Check Participant's Attendance",
                               "Set as Present", "Reset as Absent", "Exit")
         );
-        displayer.showMenu("Select an operation:", operations);
-        return inputGetter.getNumberOption(operations.size());
+        Displayer.showMenu("Select an operation:", operations);
+        return InputGetter.getNumberOption(operations.size());
     }
 
     private void viewAttendees(){
-        displayer.displayHeader("Viewing Attendees");
+        Displayer.displayHeader("Viewing Attendees");
         viewParticipants(AttendanceDAO.showAttendees(eventIdSelected), true);
     }
 
     private void viewAbsentees(){
-        displayer.displayHeader("Viewing Absentees");
+        Displayer.displayHeader("Viewing Absentees");
         viewParticipants(AttendanceDAO.showAbsentees(eventIdSelected), false);
     }
 
@@ -91,19 +89,19 @@ public class AttendanceController {
         );
 
         if(attendanceStatus){
-            displayer.displaySubheader("Attendees");
+            Displayer.displaySubheader("Attendees");
         }else{
-            displayer.displaySubheader("Absentees");
+            Displayer.displaySubheader("Absentees");
         }
 
 
-        displayer.displayTable(columnHeaders, participants, columnWidths);
+        Displayer.displayTable(columnHeaders, participants, columnWidths);
     }
 
     private void checkAttendance(){
-        displayer.displayHeader("Check Participant's Attendance");
+        Displayer.displayHeader("Check Participant's Attendance");
 
-        String sr_code = inputGetter.getLine("Enter the Sr-Code of the participant: ");
+        String sr_code = InputGetter.getLine("Enter the Sr-Code of the participant: ");
         System.out.println();
 
         if(RegistrationDAO.search(eventIdSelected, sr_code) == null){
@@ -119,13 +117,13 @@ public class AttendanceController {
     }
 
     private void markPresent(){
-        displayer.displayHeader("Marking for Present");
+        Displayer.displayHeader("Marking for Present");
         if(eventDone){
             System.out.println("Event is already finished!");
             return;
         }
 
-        String sr_code = inputGetter.getLine("Enter the Sr-Code of the participant: ");
+        String sr_code = InputGetter.getLine("Enter the Sr-Code of the participant: ");
         System.out.println();
 
         if(AttendanceDAO.checkAttendanceStatus(eventIdSelected, sr_code)){
@@ -143,13 +141,13 @@ public class AttendanceController {
     }
 
     private void markAbsent(){
-        displayer.displayHeader("Marking for Absent");
+        Displayer.displayHeader("Marking for Absent");
         if(eventDone){
             System.out.println("Event is already finished!");
             return;
         }
 
-        String sr_code = inputGetter.getLine("Enter the Sr-Code of the participant: ");
+        String sr_code = InputGetter.getLine("Enter the Sr-Code of the participant: ");
         System.out.println();
 
         if(!AttendanceDAO.checkAttendanceStatus(eventIdSelected, sr_code)){

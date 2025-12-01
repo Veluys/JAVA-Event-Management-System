@@ -8,13 +8,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class RegController {
-    Displayer displayer = new Displayer();
-    InputGetter inputGetter = new InputGetter();
     private int eventIdSelected;
     private boolean eventDone;
 
     public void execute() {
-        displayer.displayHeader("Registration Page");
+        Displayer.displayHeader("Registration Page");
         if (EventDAO.emptyCheck()) {
             System.out.println("There are no events yet!");
             return;
@@ -25,7 +23,7 @@ public class RegController {
             return;
         }
 
-        String event_name = inputGetter.getLine("Enter event name: ");
+        String event_name = InputGetter.getLine("Enter event name: ");
         System.out.println();
         ArrayList<String> matchedEvent = EventDAO.searchRecord(event_name);
 
@@ -38,7 +36,7 @@ public class RegController {
         eventIdSelected = Integer.parseInt(matchedEvent.get(0));
 
         while (true){
-            displayer.displayHeader("Registration Page");
+            Displayer.displayHeader("Registration Page");
             switch (mainMenu()){
                 case 1 -> addRegistration();
                 case 2 -> viewRegistered();
@@ -51,29 +49,29 @@ public class RegController {
     }
 
     private int mainMenu(){
-        displayer.displaySubheader("Registration Menu");
+        Displayer.displaySubheader("Registration Menu");
         ArrayList<String> operations = new ArrayList<>(
                 Arrays.asList("Add Participant", "View Participants", "Search Participant", "Remove Participants", "Exit")
         );
-        displayer.showMenu("Select an operation:", operations);
-        return inputGetter.getNumberOption(operations.size());
+        Displayer.showMenu("Select an operation:", operations);
+        return InputGetter.getNumberOption(operations.size());
     }
 
     private void addRegistration(){
-        displayer.displayHeader("Adding Participant");
+        Displayer.displayHeader("Adding Participant");
 
         if(eventDone){
             System.out.println("Event is already finished!");
             return;
         }
 
-        String sr_code = inputGetter.getLine("Sr-Code: ");
+        String sr_code = InputGetter.getLine("Sr-Code: ");
         System.out.println();
         RegistrationDAO.insert(eventIdSelected, sr_code);
     }
 
     private void viewRegistered(){
-        displayer.displayHeader("Viewing Participants");
+        Displayer.displayHeader("Viewing Participants");
         ArrayList<ArrayList<String>> participants = RegistrationDAO.show(eventIdSelected);
 
         if(RegistrationDAO.emptyCheck(eventIdSelected) || participants==null){
@@ -88,18 +86,18 @@ public class RegController {
         ArrayList<Double> columnWidths = new ArrayList<>(
                 Arrays.asList(0.15, 0.20, 0.15, 0.50)
         );
-        displayer.displaySubheader("Registered Participants");
-        displayer.displayTable(columnHeaders, participants, columnWidths);
+        Displayer.displaySubheader("Registered Participants");
+        Displayer.displayTable(columnHeaders, participants, columnWidths);
     }
 
     private void searchRegistered(){
-        displayer.displayHeader("Searching Participant");
+        Displayer.displayHeader("Searching Participant");
         if(RegistrationDAO.emptyCheck(eventIdSelected)){
             System.out.println("There are no registered participants yet!");
             return;
         }
 
-        String sr_code = inputGetter.getLine("Enter Sr-Code: ");
+        String sr_code = InputGetter.getLine("Enter Sr-Code: ");
         System.out.println();
 
         ArrayList<String> columnHeaders = new ArrayList<>(
@@ -119,11 +117,11 @@ public class RegController {
         ArrayList<Double> columnWidths = new ArrayList<>(
                 Arrays.asList(0.15, 0.20, 0.15, 0.50)
         );
-        displayer.displaySubheader("Matched Participant");
-        displayer.displayTable(columnHeaders, record, columnWidths);
+        Displayer.displaySubheader("Matched Participant");
+        Displayer.displayTable(columnHeaders, record, columnWidths);
     }
     private void removeRegistered(){
-        displayer.displayHeader("Removing Participant");
+        Displayer.displayHeader("Removing Participant");
 
         if(eventDone){
             System.out.println("Event is already finished!");
@@ -134,7 +132,7 @@ public class RegController {
             System.out.println("There are no registered participants yet!");
             return;
         }
-        String sr_code = inputGetter.getLine("Enter Sr-code: ");
+        String sr_code = InputGetter.getLine("Enter Sr-code: ");
         System.out.println();
         RegistrationDAO.delete(eventIdSelected, sr_code);
     }

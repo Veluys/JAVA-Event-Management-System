@@ -11,13 +11,12 @@ import java.util.Locale;
 import java.util.Scanner;
 
 public class InputGetter {
-    private final Scanner scanner = new Scanner(System.in);
-    private final Displayer displayer = new Displayer();
+    private static final Scanner scanner = new Scanner(System.in);
 
-    public int getNumberOption(final int highest, boolean allowBlank){
+    public static int getNumberOption(final int highest, boolean allowBlank){
         while (true){
             try{
-                displayer.showPrompt("Enter the number of your option: ");
+                Displayer.showPrompt("Enter the number of your option: ");
                 String input = scanner.nextLine();
                 System.out.println();
 
@@ -36,13 +35,13 @@ public class InputGetter {
         }
     }
 
-        public int getNumberOption(final int highest){
+    public static int getNumberOption(final int highest){
         return getNumberOption(highest, false);
     }
 
-    public String getLine(String prompt, boolean allowBlank) {
+    public static String getLine(String prompt, boolean allowBlank) {
         while (true) {
-            displayer.showPrompt(prompt);
+            Displayer.showPrompt(prompt);
             String text = scanner.nextLine();
             if (text.isBlank()) {
                 if (allowBlank) return "";
@@ -52,11 +51,11 @@ public class InputGetter {
         }
     }
 
-    public String getLine(String prompt){
+    public static String getLine(String prompt){
         return getLine(prompt,false);
     }
 
-    public LocalDate getDate(String prompt, boolean allowBlank){
+    public static LocalDate getDate(String prompt, boolean allowBlank){
         DateTimeFormatter shortDateFormat = DateTimeFormatter.ofPattern("MMM d, uuuu")
                 .withResolverStyle(ResolverStyle.STRICT);
         DateTimeFormatter longDateFormat = DateTimeFormatter.ofPattern("MMMM d, uuuu")
@@ -64,7 +63,7 @@ public class InputGetter {
 
 
         while (true) {
-            displayer.showPrompt(prompt + " (Ex. January 1, 2001 or Jan 1, 2001): ");
+            Displayer.showPrompt(prompt + " (Ex. January 1, 2001 or Jan 1, 2001): ");
             String date = scanner.nextLine();
 
             if (date.isBlank()) {
@@ -82,16 +81,16 @@ public class InputGetter {
         }
     }
 
-    public LocalDate getDate(String prompt){
+    public static LocalDate getDate(String prompt){
         return getDate(prompt,false);
     }
 
-    public LocalTime getTime(String prompt, boolean allowBlank){
+    public static LocalTime getTime(String prompt, boolean allowBlank){
         DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("h[:mm] a", Locale.ENGLISH)
                 .withResolverStyle(ResolverStyle.STRICT);
 
         while (true) {
-            displayer.showPrompt(prompt + " (Ex. 7:00 am or 7 am): ");
+            Displayer.showPrompt(prompt + " (Ex. 7:00 am or 7 am): ");
             String time = scanner.nextLine().toUpperCase().replace(".", "");
 
             if (time.isBlank()) {
@@ -106,7 +105,7 @@ public class InputGetter {
         }
     }
 
-    public LocalTime getTime(String prompt){
+    public static LocalTime getTime(String prompt){
         return getTime(prompt,false);
     }
 }
