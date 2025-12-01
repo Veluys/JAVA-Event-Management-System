@@ -47,7 +47,10 @@ public class Main {
                 case 1 -> eventController.execute();
                 case 2 -> regController.execute();
                 case 3 -> attendanceController.execute();
-                case 4 -> System.exit(0);
+                case 4 -> {
+                    closeConnection();
+                    System.exit(0);
+                }
             }
         }
     }
@@ -66,5 +69,16 @@ public class Main {
         }
 
         return connection;
+    }
+    private static void closeConnection() {
+        try{
+            if (connection != null && !connection.isClosed()) {
+                connection.close();
+            }
+        } catch (SQLException err) {
+            System.out.println("Connection can't be closed!");
+            System.out.println("System would be forcefully terminated!");
+            System.exit(1);
+        }
     }
 }

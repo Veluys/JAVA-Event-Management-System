@@ -1,10 +1,12 @@
 package ems.model;
 
+import ems.Main;
+
 import java.sql.*;
 import java.util.ArrayList;
 
 public class StudentDao {
-    final static Connection conn = DBConnection.getConnection();
+    final static Connection conn = Main.connection;
 
     public static boolean emptyCheck(){
         String count_query = """

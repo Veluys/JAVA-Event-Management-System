@@ -1,5 +1,7 @@
 package ems.model;
 
+import ems.Main;
+
 import java.sql.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -8,7 +10,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class EventDAO {
-    final static Connection connection = DBConnection.getConnection();
+    final static Connection connection = Main.connection;
 
     public static void insert(final String event_name,
                               final LocalDate event_date,

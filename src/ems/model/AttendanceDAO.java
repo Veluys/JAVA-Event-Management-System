@@ -1,10 +1,12 @@
 package ems.model;
 
+import ems.Main;
+
 import java.sql.*;
 import java.util.ArrayList;
 
 public class AttendanceDAO {
-    final static Connection connection = DBConnection.getConnection();
+    final static Connection connection = Main.connection;
 
     public static ArrayList<ArrayList<String>> showAttendees(int event_id){
         return show(event_id, true);

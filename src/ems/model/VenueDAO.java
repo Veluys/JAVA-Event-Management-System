@@ -1,5 +1,7 @@
 package ems.model;
 
+import ems.Main;
+
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -7,7 +9,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 
 public class VenueDAO {
-    final static Connection connection = DBConnection.getConnection();
+    final static Connection connection = Main.connection;
 
     public static void insert(String venue){
         String insertQuery = String.format("INSERT INTO venues (venue_name) VALUES (%s)", venue);

@@ -1,10 +1,12 @@
 package ems.model;
 
+import ems.Main;
+
 import java.sql.*;
 import java.util.ArrayList;
 
 public class RegistrationDAO {
-    final static Connection connection = DBConnection.getConnection();
+    final static Connection connection = Main.connection;
 
     public static void insert(final int event_id, final String sr_code){
         String insert_query = """
