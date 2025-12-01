@@ -9,7 +9,6 @@ import java.util.Arrays;
 
 public class RegController {
     private int eventIdSelected;
-    private boolean eventDone;
 
     public void execute() {
         Displayer.displayHeader("Registration Page");
@@ -25,19 +24,34 @@ public class RegController {
 
         String event_name = InputGetter.getLine("Enter event name: ");
         System.out.println();
-        ArrayList<String> matchedEvent = EventDAO.searchRecord(event_name);
+        eventIdSelected = EventDAO.getEventId(event_name);
 
-        if(matchedEvent==null){
+        if(eventIdSelected==-1){
             System.out.println("There are no events that matched the given event name!");
             return;
         }
 
-        eventDone = LocalDate.parse(matchedEvent.get(2)).isBefore(LocalDate.now());
-        eventIdSelected = Integer.parseInt(matchedEvent.get(0));
+        if(EventDAO.checkStatus(event_name).equalsIgnoreCase("scheduled")){
+            menuForScheduledEvents();
+        }else if(EventDAO.checkStatus(event_name).equalsIgnoreCase("completed")){
+            menuForCompletedEvents();
+        }else{
+            System.out.println("Event is not categorized as scheduled or completed!");
+        }
 
-        while (true){
+    }
+
+    private void menuForScheduledEvents(){
+        while (true) {
             Displayer.displayHeader("Registration Page");
-            switch (mainMenu()){
+            Displayer.displaySubheader("Registration Menu");
+            ArrayList<String> operations = new ArrayList<>(
+                    Arrays.asList("Add Participant", "View Participants", "Search Participant", "Remove Participants", "Exit")
+            );
+            Displayer.showMenu("Select an operation:", operations);
+            int option = InputGetter.getNumberOption(operations.size());
+
+            switch (option){
                 case 1 -> addRegistration();
                 case 2 -> viewRegistered();
                 case 3 -> searchRegistered();
@@ -46,25 +60,30 @@ public class RegController {
             }
             System.out.println();
         }
+
     }
 
-    private int mainMenu(){
-        Displayer.displaySubheader("Registration Menu");
-        ArrayList<String> operations = new ArrayList<>(
-                Arrays.asList("Add Participant", "View Participants", "Search Participant", "Remove Participants", "Exit")
-        );
-        Displayer.showMenu("Select an operation:", operations);
-        return InputGetter.getNumberOption(operations.size());
+    private void menuForCompletedEvents(){
+        while (true) {
+            Displayer.displayHeader("Registration Page");
+            Displayer.displaySubheader("Registration Menu");
+            ArrayList<String> operations = new ArrayList<>(
+                    Arrays.asList("View Participants", "Search Participant", "Exit")
+            );
+            Displayer.showMenu("Select an operation:", operations);
+            int option = InputGetter.getNumberOption(operations.size());
+
+            switch (option){
+                case 1 -> viewRegistered();
+                case 2 -> searchRegistered();
+                case 3 -> {return;}
+            }
+            System.out.println();
+        }
     }
 
     private void addRegistration(){
         Displayer.displayHeader("Adding Participant");
-
-        if(eventDone){
-            System.out.println("Event is already finished!");
-            return;
-        }
-
         String sr_code = InputGetter.getLine("Sr-Code: ");
         System.out.println();
         RegistrationDAO.insert(eventIdSelected, sr_code);
@@ -122,12 +141,6 @@ public class RegController {
     }
     private void removeRegistered(){
         Displayer.displayHeader("Removing Participant");
-
-        if(eventDone){
-            System.out.println("Event is already finished!");
-            return;
-        }
-
         if(RegistrationDAO.emptyCheck(eventIdSelected)){
             System.out.println("There are no registered participants yet!");
             return;
