@@ -13,16 +13,14 @@ import java.util.Arrays;
 public class Main {
     public static Connection connection = getConnection();
     public static void main(String[] args) {
-        Displayer displayer = new Displayer();
-        InputGetter inputGetter = new InputGetter();
 
-        displayer.displayHeader("Welcome to PLAN ET: The BSU-MALVAR Event Management System");
+        Displayer.displayHeader("Welcome to PLAN ET: The BSU-MALVAR Event Management System");
         ArrayList<String> mainMenuOptions = new ArrayList<>(
                 Arrays.asList("Events", "Registration", "Attendance", "Exit")
         );
 
         while(true){
-            displayer.displayHeader("Start Page");
+            Displayer.displayHeader("Start Page");
             ArrayList<ArrayList<String>> upcoming_events = EventDAO.showUpcoming();
             if(upcoming_events!=null){
                 ArrayList<String> event_attributes = new ArrayList<>(
@@ -31,13 +29,13 @@ public class Main {
                 ArrayList<Double> columnWidths = new ArrayList<>(
                         Arrays.asList(0.30, 0.20, 0.15, 0.15, 0.20)
                 );
-                displayer.displaySubheader("Upcoming Events");
-                displayer.displayTable(event_attributes, upcoming_events, columnWidths);
+                Displayer.displaySubheader("Upcoming Events");
+                Displayer.displayTable(event_attributes, upcoming_events, columnWidths);
             }
 
-            displayer.displaySubheader("Main Menu");
-            displayer.showMenu("What do you want to do or work with today?", mainMenuOptions);
-            int option = inputGetter.getNumberOption(mainMenuOptions.size());
+            Displayer.displaySubheader("Main Menu");
+            Displayer.showMenu("What do you want to do or work with today?", mainMenuOptions);
+            int option = InputGetter.getNumberOption(mainMenuOptions.size());
 
             EventController eventController = new EventController();
             RegController regController = new RegController();
