@@ -222,7 +222,9 @@ public class EventDAO {
             PreparedStatement search_stmt = connection.prepareStatement(search_query);
             search_stmt.setString(1, event_name);
 
-            return search_stmt.execute();
+            try (ResultSet rs = search_stmt.executeQuery()) {
+                return rs.next();
+            }
         }catch (SQLException e){
             System.out.println("Search operation unsuccessful!");
             return false;
