@@ -47,14 +47,11 @@ public class EventDAO {
         String show_query = """
                     SELECT
                         event_name,
-                        TO_CHAR(event_date, 'Mon DD, YYYY') AS event_date,
-                        LOWER(TO_CHAR(start_time, 'FMHH12:MI AM')) AS start_time,
-                        LOWER(TO_CHAR(end_time, 'FMHH12:MI AM')) AS end_time,
+                        event_date,
+                        start_time,
+                        end_time,
                         venue_name
-                    FROM events e
-                    INNER JOIN venues v
-                        ON e.venue_id = v.venue_id
-                    ORDER BY e.event_date;
+                    FROM event_details;
                 """;
 
         ArrayList<ArrayList<String>> events = new ArrayList<>();
@@ -247,14 +244,12 @@ public class EventDAO {
         String search_query = """
                 SELECT
                     event_name,
-                    TO_CHAR(event_date, 'Mon DD, YYYY') AS event_date,
-                    LOWER(TO_CHAR(start_time, 'FMHH12:MI AM')) AS start_time,
-                    LOWER(TO_CHAR(end_time, 'FMHH12:MI AM')) AS end_time,
+                    event_date,
+                    start_time,
+                    end_time,
                     venue_name
-                FROM events AS e
-                INNER JOIN venues AS v
-                    ON e.venue_id = v.venue_id
-                    AND event_name ILIKE ?;
+                FROM event_details
+                WHERE event_name ILIKE ?;
                 """;
 
         try {

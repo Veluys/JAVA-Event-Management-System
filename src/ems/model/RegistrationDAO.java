@@ -29,16 +29,12 @@ public class RegistrationDAO {
         String[] show_columns = {"sr_code", "dept_shortname", "year_level", "full_name"};
         String show_query = """
                 SELECT
-                    s.sr_code,
+                    sr_code,
                     dept_shortname,
                     year_level,
-                    CONCAT(last_name, ', ', first_name) AS full_name
-                FROM students AS s
-                INNER JOIN registration AS r
-                    ON s.sr_code = r.sr_code
-                INNER JOIN departments AS d
-                    ON d.dept_id = s.dept_id
-                WHERE r.event_id = ?
+                    full_name
+                FROM participant_details
+                WHERE event_id = ?
             """;
 
         ArrayList<ArrayList<String>> students = new ArrayList<>();
@@ -89,17 +85,13 @@ public class RegistrationDAO {
         String[] show_columns = {"sr_code", "dept_shortname", "year_level", "full_name"};
         String show_query = """
                 SELECT
-                    s.sr_code,
+                    sr_code,
                     dept_shortname,
                     year_level,
-                    CONCAT(last_name, ', ', first_name) AS full_name
-                FROM students AS s
-                INNER JOIN registration AS r
-                    ON s.sr_code = r.sr_code
-                INNER JOIN departments AS d
-                    ON d.dept_id = s.dept_id
-                WHERE r.sr_code = ?
-                    AND r.event_id = ?
+                    full_name
+                FROM participant_details
+                WHERE sr_code = ?
+                    AND event_id = ?
                 """;
 
         try{
