@@ -94,7 +94,7 @@ public class EventController {
 
         System.out.println();
         EventDAO.insert(eventName, date, start_time, end_time, venue_id);
-
+        InputGetter.getLine("Press any button to return: ", true);
     }
 
     public static void viewEvents(String event_status, boolean displayNoneMsg){
@@ -123,6 +123,8 @@ public class EventController {
 
         String table_name = event_status.toUpperCase() + " EVENTS";
         Displayer.displayTable(table_name, event_attributes, events, columnWidths);
+
+        InputGetter.getLine("Press any button to return: ", true);
     }
 
     private void searchEvent(){
@@ -145,6 +147,7 @@ public class EventController {
         );
 
         Displayer.displayTable("Events", event_attributes, records, columnWidths);
+        InputGetter.getLine("Press any button to return: ", true);
     }
 
     private void updateEvents(){
@@ -240,6 +243,7 @@ public class EventController {
 
         System.out.println();
         EventDAO.update(new_values, old_event_name);
+        InputGetter.getLine("Press any button to return: ", true);
     }
 
     private void deleteEvent(){
@@ -247,5 +251,6 @@ public class EventController {
         String event_name = InputGetter.getLine("Enter event name: ");
         System.out.println();
         EventDAO.delete(event_name);
+        InputGetter.getLine("Press any button to return: ", true);
     }
 }

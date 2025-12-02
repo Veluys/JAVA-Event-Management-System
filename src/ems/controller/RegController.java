@@ -118,6 +118,7 @@ public class RegController {
         String sr_code = InputGetter.getLine("Sr-Code: ");
         System.out.println();
         RegistrationDAO.insert(eventIdSelected, sr_code);
+        InputGetter.getLine("Press any button to return: ", true);
     }
 
     private void viewRegistered(){
@@ -137,6 +138,7 @@ public class RegController {
                 Arrays.asList(0.15, 0.20, 0.15, 0.50)
         );
         Displayer.displayTable("Registered Participants", columnHeaders, participants, columnWidths);
+        InputGetter.getLine("Press any button to return: ", true);
     }
 
     private void searchRegistered(){
@@ -168,6 +170,7 @@ public class RegController {
         );
 
         Displayer.displayTable("Matched Participant", columnHeaders, record, columnWidths);
+        InputGetter.getLine("Press any button to return: ", true);
     }
     private void removeRegistered(){
         Displayer.displayHeader("Removing Participant");
@@ -178,5 +181,6 @@ public class RegController {
         String sr_code = InputGetter.getLine("Enter Sr-code: ");
         System.out.println();
         RegistrationDAO.delete(eventIdSelected, sr_code);
+        InputGetter.getLine("Press any button to return: ", true);
     }
 }

@@ -148,6 +148,7 @@ public class AttendanceController {
 
         String table_name = attendanceStatus ? "Attendees" : "Absentees";
         Displayer.displayTable(table_name, columnHeaders, participants, columnWidths);
+        InputGetter.getLine("Press any button to return: ", true);
     }
 
     private void checkAttendance(){
@@ -166,6 +167,7 @@ public class AttendanceController {
         }else{
             System.out.println("The participant with an Sr-Code of " + sr_code + " is absent.");
         }
+        InputGetter.getLine("Press any button to return: ", true);
     }
 
     private void markPresent(){
@@ -186,6 +188,7 @@ public class AttendanceController {
         AttendanceDAO.markPresent(eventIdSelected, sr_code);
 
         System.out.println("Participant '" + sr_code + "' was successfully marked as present.");
+        InputGetter.getLine("Press any button to return: ", true);
     }
 
     private void markAbsent(){
@@ -206,5 +209,6 @@ public class AttendanceController {
         AttendanceDAO.markAbsent(eventIdSelected, sr_code);
 
         System.out.println("Participant '" + sr_code + "' was successfully marked as absent.");
+        InputGetter.getLine("Press any button to return: ", true);
     }
 }
