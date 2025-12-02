@@ -20,14 +20,15 @@ public class EventController {
             Displayer.displayHeader("Events Page");
             ArrayList<String> operations = new ArrayList<>(
                     Arrays.asList("Add Events", "View Completed Events", "View Scheduled Events",
-                                  "Search Events", "Update Events", "Delete Events", "Exit")
+                                  "View Upcoming Events", "View Ongoing Events", "Search Events",
+                                  "Update Events", "Delete Events", "Exit")
             );
 
             Displayer.displaySubheader("Event Menu");
             Displayer.showMenu("Select an operation:", operations);
             int option = InputGetter.getNumberOption(operations.size());
 
-            if(EventDAO.emptyCheck() && option > 1 && option != 7){
+            if(EventDAO.emptyCheck() && option > 1 && option != 9){
                 System.out.println("There are no events yet!");
                 return;
             }
@@ -36,10 +37,12 @@ public class EventController {
                 case 1 -> addEvent();
                 case 2 -> viewEvents("completed", true);
                 case 3 -> viewEvents("scheduled", true);
-                case 4 -> searchEvent();
-                case 5 -> updateEvents();
-                case 6 -> deleteEvent();
-                case 7 -> {return;}
+                case 4 -> viewEvents("upcoming", true);
+                case 5 -> viewEvents("ongoing", true);
+                case 6 -> searchEvent();
+                case 7 -> updateEvents();
+                case 8 -> deleteEvent();
+                case 9 -> {return;}
             }
             System.out.println();
         }

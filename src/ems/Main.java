@@ -1,7 +1,6 @@
 package ems;
 
 import ems.controller.*;
-import ems.model.EventDAO;
 import ems.view.Displayer;
 
 import java.sql.Connection;
@@ -13,18 +12,14 @@ import java.util.Arrays;
 public class Main {
     public static Connection connection = getConnection();
     public static void main(String[] args) {
-
         Displayer.displayHeader("Welcome to PLAN ET: The BSU-MALVAR Event Management System");
-        ArrayList<String> mainMenuOptions = new ArrayList<>(
-                Arrays.asList("Events", "Registration", "Attendance", "Exit")
-        );
-
-        EventController.viewEvents("ongoing", false);
-        EventController.viewEvents("upcoming", false);
 
         while(true){
             Displayer.displayHeader("Start Page");
             Displayer.displaySubheader("Main Menu");
+            ArrayList<String> mainMenuOptions = new ArrayList<>(
+                    Arrays.asList("Events", "Registration", "Attendance", "Exit")
+            );
             Displayer.showMenu("What do you want to do or work with today?", mainMenuOptions);
             int option = InputGetter.getNumberOption(mainMenuOptions.size());
 
