@@ -65,15 +65,14 @@ public class RegistrationDAO {
     public static boolean emptyCheck(final int event_id){
         String count_query = """
                 SELECT event_id
-                FROM registration
+                FROM participant_details
                 WHERE event_id = ?
-                LIMIT 1;
         """;
 
         try{
             PreparedStatement check_stmt = connection.prepareStatement(count_query);
             check_stmt.setInt(1, event_id);
-            return !check_stmt.execute();
+            return !check_stmt.executeQuery().next();
         }catch (Exception e){
             System.out.println("Checking for student records failed!");
             System.err.println(e.getMessage());

@@ -11,6 +11,7 @@ public class RegController {
 
     public void execute() {
         Displayer.displayHeader("Registration Page");
+
         if (EventDAO.emptyCheck()) {
             System.out.println("There are no events yet!");
             return;
@@ -21,73 +22,95 @@ public class RegController {
             return;
         }
 
-        String event_name = InputGetter.getLine("Enter event name: ");
+        String eventName = InputGetter.getLine("Enter event name: ");
         System.out.println();
-        eventIdSelected = EventDAO.getEventId(event_name);
+        eventIdSelected = EventDAO.getEventId(eventName);
 
-        if(eventIdSelected==-1){
+        if (eventIdSelected == -1) {
             System.out.println("There are no events that matched the given event name!");
             return;
         }
 
-        boolean should_loop = true;
-        while(should_loop){
-            Displayer.displayHeader("Registration Page");
-
-            Displayer.displaySubheader("Currently Selected Event");
-            ArrayList<String> event_attributes = new ArrayList<>(
-                    Arrays.asList("Event Name", "Date", "Start Time", "End Time", "Venue")
-            );
-
-            ArrayList<Double> columnWidths = new ArrayList<>(
-                    Arrays.asList(0.30, 0.20, 0.15, 0.15, 0.20)
-            );
-
-            ArrayList<ArrayList<String>> selected_event = new ArrayList<>();
-            selected_event.add(EventDAO.search(event_name));
-
-            Displayer.displayTable(event_attributes, selected_event, columnWidths);
+        boolean shouldLoop = true;
+        while (shouldLoop) {
+            displaySelectedEvent(eventName);
 
             Displayer.displaySubheader("Registration Menu");
-            if(EventDAO.checkStatus(event_name).equalsIgnoreCase("scheduled")){
-                should_loop = menuForScheduledEvents();
-            }else if(EventDAO.checkStatus(event_name).equalsIgnoreCase("completed")){
-                should_loop = menuForCompletedEvents();
-            }else{
-                System.out.println("Event is not categorized as scheduled or completed!");
+            String status = EventDAO.checkStatus(eventName).toLowerCase();
+
+            switch (status) {
+                case "scheduled" -> shouldLoop = menuForScheduledEvents();
+                case "completed" -> shouldLoop = menuForCompletedEvents();
+                default -> {
+                    System.out.println("Event is not categorized as scheduled or completed!");
+                    shouldLoop = false;
+                }
             }
         }
     }
 
-    private boolean menuForScheduledEvents(){
+    private void displaySelectedEvent(String eventName) {
+        Displayer.displayHeader("Registration Page");
+        Displayer.displaySubheader("Currently Selected Event");
+
+        ArrayList<String> eventAttributes = new ArrayList<>(
+                Arrays.asList("Event Name", "Date", "Start Time", "End Time", "Venue")
+        );
+
+        ArrayList<Double> columnWidths = new ArrayList<>(
+                Arrays.asList(0.30, 0.20, 0.15, 0.15, 0.20)
+        );
+
+        ArrayList<ArrayList<String>> selectedEvent = new ArrayList<>();
+        selectedEvent.add(EventDAO.search(eventName));
+
+        Displayer.displayTable(eventAttributes, selectedEvent, columnWidths);
+    }
+
+    private boolean hasNoParticipants() {
+        return RegistrationDAO.show(eventIdSelected) == null;
+    }
+
+    private boolean menuForScheduledEvents() {
         ArrayList<String> operations = new ArrayList<>(
                 Arrays.asList("Add Participant", "View Participants", "Search Participant", "Remove Participants", "Exit")
         );
         Displayer.showMenu("Select an operation:", operations);
         int option = InputGetter.getNumberOption(operations.size());
 
-        switch (option){
+        if (hasNoParticipants() && option != 1 && option != 5) {
+            System.out.println("There are currently no participants");
+            System.out.println();
+            return true;
+        }
+
+        switch (option) {
             case 1 -> addRegistration();
             case 2 -> viewRegistered();
             case 3 -> searchRegistered();
             case 4 -> removeRegistered();
-            case 5 -> {return false;}
+            case 5 -> { return false; }
         }
         System.out.println();
         return true;
     }
 
-    private boolean menuForCompletedEvents(){
+    private boolean menuForCompletedEvents() {
         ArrayList<String> operations = new ArrayList<>(
                 Arrays.asList("View Participants", "Search Participant", "Exit")
         );
         Displayer.showMenu("Select an operation:", operations);
         int option = InputGetter.getNumberOption(operations.size());
 
-        switch (option){
+        if (hasNoParticipants()) {
+            System.out.println("There are no participants for this event.");
+            return true;
+        }
+
+        switch (option) {
             case 1 -> viewRegistered();
             case 2 -> searchRegistered();
-            case 3 -> {return false;}
+            case 3 -> { return false; }
         }
         System.out.println();
         return true;
