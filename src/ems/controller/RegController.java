@@ -3,7 +3,6 @@ package ems.controller;
 import ems.model.*;
 import ems.view.Displayer;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -79,21 +78,19 @@ public class RegController {
     }
 
     private boolean menuForCompletedEvents(){
-        while (true) {
-            ArrayList<String> operations = new ArrayList<>(
-                    Arrays.asList("View Participants", "Search Participant", "Exit")
-            );
-            Displayer.showMenu("Select an operation:", operations);
-            int option = InputGetter.getNumberOption(operations.size());
+        ArrayList<String> operations = new ArrayList<>(
+                Arrays.asList("View Participants", "Search Participant", "Exit")
+        );
+        Displayer.showMenu("Select an operation:", operations);
+        int option = InputGetter.getNumberOption(operations.size());
 
-            switch (option){
-                case 1 -> viewRegistered();
-                case 2 -> searchRegistered();
-                case 3 -> {return false;}
-            }
-            System.out.println();
-            return true;
+        switch (option){
+            case 1 -> viewRegistered();
+            case 2 -> searchRegistered();
+            case 3 -> {return false;}
         }
+        System.out.println();
+        return true;
     }
 
     private void addRegistration(){

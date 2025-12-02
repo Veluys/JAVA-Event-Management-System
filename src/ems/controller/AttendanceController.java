@@ -5,13 +5,11 @@ import ems.model.EventDAO;
 import ems.model.RegistrationDAO;
 import ems.view.Displayer;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 
 public class AttendanceController {
     private int eventIdSelected;
-    private boolean eventDone;
 
     public void execute() {
         Displayer.displayHeader("Attendance Page");
