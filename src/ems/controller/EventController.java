@@ -15,7 +15,7 @@ public class EventController {
             Arrays.asList("Event Name", "Date", "Start Time", "End Time", "Venue")
     );
 
-    public void execute(){
+    public static void execute(){
         while(true){
             Displayer.displayHeader("Events Page");
             ArrayList<String> operations = new ArrayList<>(
@@ -27,28 +27,28 @@ public class EventController {
             Displayer.displaySubheader("Event Menu");
             Displayer.showMenu("Select an operation:", operations);
             int option = InputGetter.getNumberOption(operations.size());
+            System.out.println();
 
             if(EventDAO.emptyCheck() && option > 1 && option != 9){
                 System.out.println("There are no events yet!");
-                return;
-            }
-
-            switch (option){
-                case 1 -> addEvent();
-                case 2 -> viewEvents("completed", true);
-                case 3 -> viewEvents("scheduled", true);
-                case 4 -> viewEvents("upcoming", true);
-                case 5 -> viewEvents("ongoing", true);
-                case 6 -> searchEvent();
-                case 7 -> updateEvents();
-                case 8 -> deleteEvent();
-                case 9 -> {return;}
+            }else{
+                switch (option){
+                    case 1 -> addEvent();
+                    case 2 -> viewEvents("completed", true);
+                    case 3 -> viewEvents("scheduled", true);
+                    case 4 -> viewEvents("upcoming", true);
+                    case 5 -> viewEvents("ongoing", true);
+                    case 6 -> searchEvent();
+                    case 7 -> updateEvents();
+                    case 8 -> deleteEvent();
+                    case 9 -> {return;}
+                }
             }
             System.out.println();
         }
     }
 
-    private void addEvent(){
+    private static void addEvent(){
         ArrayList<String> venueNames = VenueDAO.getVenueNames();
         if(venueNames == null){
             System.out.println("There are no available venues yet!");
@@ -92,9 +92,7 @@ public class EventController {
             return;
         }
 
-        System.out.println();
         EventDAO.insert(eventName, date, start_time, end_time, venue_id);
-        InputGetter.getLine("Press any button to return: ", true);
     }
 
     public static void viewEvents(String event_status, boolean displayNoneMsg){
@@ -123,11 +121,9 @@ public class EventController {
 
         String table_name = event_status.toUpperCase() + " EVENTS";
         Displayer.displayTable(table_name, event_attributes, events, columnWidths);
-
-        InputGetter.getLine("Press any button to return: ", true);
     }
 
-    private void searchEvent(){
+    private static void searchEvent(){
         Displayer.displayHeader("Searching Event");
         String eventName = InputGetter.getLine("Enter event name: ");
         System.out.println();
@@ -147,10 +143,9 @@ public class EventController {
         );
 
         Displayer.displayTable("Events", event_attributes, records, columnWidths);
-        InputGetter.getLine("Press any button to return: ", true);
     }
 
-    private void updateEvents(){
+    private static void updateEvents(){
         ArrayList<String> venueNames = VenueDAO.getVenueNames();
         if(venueNames == null){
             System.out.println("There are no available venues yet!");
@@ -165,6 +160,18 @@ public class EventController {
 
         if(matchedEvent == null){
             System.out.println("Event name of '" + old_event_name + "' doesn't exist!");
+            return;
+        }
+
+        boolean eventOngoing = EventDAO.checkStatus(old_event_name).equalsIgnoreCase("ongoing");
+        boolean eventCompleted = EventDAO.checkStatus(old_event_name).equalsIgnoreCase("completed");
+        if(eventOngoing){
+            System.out.println("Ongoing events can't be updated!");
+            return;
+        }
+
+        if(eventCompleted){
+            System.out.println("Completed events can't be updated!");
             return;
         }
 
@@ -241,16 +248,21 @@ public class EventController {
             return;
         }
 
-        System.out.println();
         EventDAO.update(new_values, old_event_name);
-        InputGetter.getLine("Press any button to return: ", true);
     }
 
-    private void deleteEvent(){
+    private static void deleteEvent(){
         Displayer.displayHeader("Deleting Event");
         String event_name = InputGetter.getLine("Enter event name: ");
         System.out.println();
+
+        boolean eventOngoing = EventDAO.checkStatus(event_name).equalsIgnoreCase("ongoing");
+        if(eventOngoing){
+            System.out.println("Ongoing events can't be deleted!");
+            return;
+        }
+
+        System.out.println();
         EventDAO.delete(event_name);
-        InputGetter.getLine("Press any button to return: ", true);
     }
 }

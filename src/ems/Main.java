@@ -22,18 +22,15 @@ public class Main {
             );
             Displayer.showMenu("What do you want to do or work with today?", mainMenuOptions);
             int option = InputGetter.getNumberOption(mainMenuOptions.size());
-
-            EventController eventController = new EventController();
-            RegController regController = new RegController();
-            AttendanceController attendanceController = new AttendanceController();
+            System.out.println();
 
             switch (option){
-                case 1 -> eventController.execute();
-                case 2 -> regController.execute();
-                case 3 -> attendanceController.execute();
+                case 1 -> EventController.execute();
+                case 2 -> RegController.execute();
+                case 3 -> AttendanceController.execute();
                 case 4 -> {
                     closeConnection();
-                    System.out.println("Thank you for using Plan_ET. Happy Planning!");
+                    Displayer.displayHeader("Thank you for using Plan_ET. Happy Planning!");
                     System.exit(0);
                 }
             }

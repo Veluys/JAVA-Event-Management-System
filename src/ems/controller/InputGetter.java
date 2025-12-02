@@ -15,15 +15,14 @@ public class InputGetter {
 
     public static int getNumberOption(final int highest, boolean allowBlank){
         while (true){
+            Displayer.showPrompt("Enter the number of your option: ");
+            String input = scanner.nextLine().trim();
+
+            if(allowBlank && input.isBlank()){
+                return -1;
+            }
+
             try{
-                Displayer.showPrompt("Enter the number of your option: ");
-                String input = scanner.nextLine().trim();
-                System.out.println();
-
-                if(allowBlank && input.isBlank()){
-                    return -1;
-                }
-
                 int num = Integer.parseInt(input);
                 if(num < 1 || num > highest){
                     throw new NumberFormatException();
@@ -45,6 +44,7 @@ public class InputGetter {
             String text = scanner.nextLine().trim();
             if (text.isBlank()) {
                 if (allowBlank) return "";
+                System.out.println("Input cannot be blank. Please try again.\n");
             } else {
                 return text;
             }
@@ -68,6 +68,7 @@ public class InputGetter {
 
             if (date.isBlank()) {
                 if (allowBlank) return null;
+                else System.out.println("Input can't be blank!");
             }
             try {
                 return LocalDate.parse(date, shortDateFormat);
@@ -95,6 +96,7 @@ public class InputGetter {
 
             if (time.isBlank()) {
                 if (allowBlank) return null;
+                else System.out.println("Input can't be blank!");
             } else {
                 try {
                     return LocalTime.parse(time, timeFormat);
