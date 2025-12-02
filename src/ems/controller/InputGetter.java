@@ -42,7 +42,7 @@ public class InputGetter {
     public static String getLine(String prompt, boolean allowBlank) {
         while (true) {
             Displayer.showPrompt(prompt);
-            String text = scanner.nextLine();
+            String text = scanner.nextLine().trim();
             if (text.isBlank()) {
                 if (allowBlank) return "";
             } else {
@@ -64,7 +64,7 @@ public class InputGetter {
 
         while (true) {
             Displayer.showPrompt(prompt + " (Ex. January 1, 2001 or Jan 1, 2001): ");
-            String date = scanner.nextLine();
+            String date = scanner.nextLine().trim();
 
             if (date.isBlank()) {
                 if (allowBlank) return null;
@@ -91,7 +91,7 @@ public class InputGetter {
 
         while (true) {
             Displayer.showPrompt(prompt + " (Ex. 7:00 am or 7 am): ");
-            String time = scanner.nextLine().toUpperCase().replace(".", "");
+            String time = scanner.nextLine().trim().toUpperCase().replace(".", "");
 
             if (time.isBlank()) {
                 if (allowBlank) return null;
