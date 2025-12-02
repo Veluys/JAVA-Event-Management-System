@@ -126,39 +126,6 @@ public class EventDAO {
         }
     }
 
-    /*public static ArrayList<ArrayList<String>> showUpcoming(){
-        if(emptyCheck()) return null;
-
-        String[] show_columns = {"event_name", "event_date", "start_time", "end_time", "venue_name"};
-        String show_query = get_base_show_query() + """
-                    WHERE (e.event_date + e.end_time) > CURRENT_TIMESTAMP AND
-                    BETWEEN (CURRENT_DATE + INTERVAL '1 day') AND (CURRENT_DATE + INTERVAL '3 days')
-                """;
-
-        ArrayList<ArrayList<String>> events = new ArrayList<>();
-
-        try{
-            PreparedStatement show_stmt = connection.prepareStatement(show_query);
-            ResultSet eventsSet = show_stmt.executeQuery();
-
-            if(!eventsSet.next()) return null;
-            do{
-                ArrayList<String> event = new ArrayList<>();
-
-                for(String column : show_columns){
-                    event.add(eventsSet.getString(column));
-                }
-                events.add(event);
-            } while(eventsSet.next());
-
-            return events;
-        }catch (SQLException e){
-            System.out.println("SELECT operation unsuccessful!");
-            return null;
-        }
-    }*/
-
-
     public static boolean emptyCheck(){
         String count_query = """
                 SELECT event_id
