@@ -82,13 +82,13 @@ public class EventDAO {
         String check_query = """
                     SELECT
                         event_name,
-                        TO_CHAR(event_date, 'Mon DD, YYYY') AS event_date,
-                        LOWER(TO_CHAR(start_time, 'FMHH12:MI AM')) AS start_time,
-                        LOWER(TO_CHAR(end_time, 'FMHH12:MI AM')) AS end_time,
+                        event_date,
+                        start_time,
+                        end_time,
                         venue_name
-                    FROM events e
-                    INNER JOIN venues v
-                        ON e.venue_id = v.venue_id
+                    FROM events AS e
+                    INNER JOIN event_details AS ed
+                        ON e.event_id = ed.event_id
                     WHERE e.event_id != ?
                         AND e.venue_id = ?
                         AND e.event_date = ?
@@ -130,13 +130,13 @@ public class EventDAO {
         String show_query = """
                     SELECT
                         event_name,
-                        TO_CHAR(event_date, 'Mon DD, YYYY') AS event_date,
-                        LOWER(TO_CHAR(start_time, 'FMHH12:MI AM')) AS start_time,
-                        LOWER(TO_CHAR(end_time, 'FMHH12:MI AM')) AS end_time,
+                        event_date,
+                        start_time,
+                        end_time,
                         venue_name
-                    FROM events e
-                    INNER JOIN venues v
-                        ON e.venue_id = v.venue_id
+                    FROM events AS e
+                    INNER JOIN event_details AS ed
+                        ON e.event_id = ed.event_id
                     WHERE e.event_date BETWEEN (CURRENT_DATE + INTERVAL '1 day') AND (CURRENT_DATE + INTERVAL '3 days')
                 """;
 
