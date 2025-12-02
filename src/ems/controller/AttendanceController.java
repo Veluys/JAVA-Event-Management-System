@@ -160,10 +160,6 @@ public class AttendanceController {
 
     private void markPresent(){
         Displayer.displayHeader("Marking for Present");
-        if(eventDone){
-            System.out.println("Event is already finished!");
-            return;
-        }
 
         String sr_code = InputGetter.getLine("Enter the Sr-Code of the participant: ");
         System.out.println();
@@ -184,10 +180,6 @@ public class AttendanceController {
 
     private void markAbsent(){
         Displayer.displayHeader("Marking for Absent");
-        if(eventDone){
-            System.out.println("Event is already finished!");
-            return;
-        }
 
         String sr_code = InputGetter.getLine("Enter the Sr-Code of the participant: ");
         System.out.println();
