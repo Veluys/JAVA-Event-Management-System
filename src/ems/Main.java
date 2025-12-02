@@ -19,20 +19,11 @@ public class Main {
                 Arrays.asList("Events", "Registration", "Attendance", "Exit")
         );
 
+        EventController.viewEvents("ongoing", false);
+        EventController.viewEvents("upcoming", false);
+
         while(true){
             Displayer.displayHeader("Start Page");
-            ArrayList<ArrayList<String>> upcoming_events = EventDAO.showUpcoming();
-            if(upcoming_events!=null){
-                ArrayList<String> event_attributes = new ArrayList<>(
-                        Arrays.asList("Event Name", "Date", "Start Time", "End Time", "Venue")
-                );
-                ArrayList<Double> columnWidths = new ArrayList<>(
-                        Arrays.asList(0.30, 0.20, 0.15, 0.15, 0.20)
-                );
-                Displayer.displaySubheader("Upcoming Events");
-                Displayer.displayTable(event_attributes, upcoming_events, columnWidths);
-            }
-
             Displayer.displaySubheader("Main Menu");
             Displayer.showMenu("What do you want to do or work with today?", mainMenuOptions);
             int option = InputGetter.getNumberOption(mainMenuOptions.size());

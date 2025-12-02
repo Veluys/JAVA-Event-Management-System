@@ -10,6 +10,7 @@ import java.util.Arrays;
 
 public class AttendanceController {
     private int eventIdSelected;
+    private String event_name;
 
     public void execute() {
         Displayer.displayHeader("Attendance Page");
@@ -18,8 +19,9 @@ public class AttendanceController {
             return;
         }
 
-        String event_name = InputGetter.getLine("Enter event name: ");
+        event_name = InputGetter.getLine("Enter event name: ");
         System.out.println();
+
         eventIdSelected = EventDAO.getEventId(event_name);
 
         if(eventIdSelected==-1){
@@ -27,41 +29,57 @@ public class AttendanceController {
             return;
         }
 
-        if(RegistrationDAO.emptyCheck(eventIdSelected)){
-            System.out.println("There are no participants yet!");
-            return;
-        }
-
         boolean should_loop = true;
         while(should_loop){
-            Displayer.displayHeader("Attendance Page");
+            String event_status = EventDAO.checkStatus(event_name);
 
-            Displayer.displaySubheader("Currently Selected Event");
-            ArrayList<String> event_attributes = new ArrayList<>(
-                    Arrays.asList("Event Name", "Date", "Start Time", "End Time", "Venue")
-            );
+            boolean eventSelectedOngoing = event_status.equalsIgnoreCase("ongoing");
+            boolean eventSelectedCompleted = event_status.equalsIgnoreCase("completed");
 
-            ArrayList<Double> columnWidths = new ArrayList<>(
-                    Arrays.asList(0.30, 0.20, 0.15, 0.15, 0.20)
-            );
-
-            ArrayList<ArrayList<String>> selected_event = new ArrayList<>();
-            selected_event.add(EventDAO.search(event_name));
-
-            Displayer.displayTable(event_attributes, selected_event, columnWidths);
-
-            Displayer.displaySubheader("Attendance Menu");
-            if(EventDAO.checkStatus(event_name).equalsIgnoreCase("scheduled")){
-                should_loop = menuForScheduledEvent();
-            }else if(EventDAO.checkStatus(event_name).equalsIgnoreCase("completed")){
-                should_loop = menuForCompletedEvent();
+            if(eventSelectedOngoing){
+                if(participantsExist()){
+                    base_menu();
+                    should_loop = menuForOnGoingEvent();
+                }
+            }else if(eventSelectedCompleted){
+                if(participantsExist()){
+                    base_menu();
+                    should_loop = menuForCompletedEvent();
+                }
             }else{
-                System.out.println("Event is not categorized as scheduled or completed!");
+                System.out.println("Attendance unavailable for non-completed and non-ongoing events");
+                return;
             }
         }
     }
 
-    private boolean menuForScheduledEvent(){
+    private void base_menu(){
+        Displayer.displayHeader("Attendance Page");
+
+        ArrayList<String> event_attributes = new ArrayList<>(
+                Arrays.asList("Event Name", "Date", "Start Time", "End Time", "Venue")
+        );
+        ArrayList<Double> columnWidths = new ArrayList<>(
+                Arrays.asList(0.30, 0.20, 0.15, 0.15, 0.20)
+        );
+
+        ArrayList<ArrayList<String>> selected_event = new ArrayList<>();
+        selected_event.add(EventDAO.search(event_name));
+
+        Displayer.displayTable("Currently Selected Event",event_attributes, selected_event, columnWidths);
+
+        Displayer.displaySubheader("Attendance Menu");
+    }
+
+    private boolean participantsExist(){
+        if(RegistrationDAO.emptyCheck(eventIdSelected)){
+            System.out.println("There are no participants yet!");
+            return false;
+        }
+        return true;
+    }
+
+    private boolean menuForOnGoingEvent(){
         ArrayList<String> operations = new ArrayList<>(
                 Arrays.asList("View Attendees", "View Absentees", "Check Participant's Attendance",
                         "Set as Present", "Reset as Absent", "Exit")
@@ -128,14 +146,8 @@ public class AttendanceController {
                 Arrays.asList(0.15, 0.20, 0.15, 0.50)
         );
 
-        if(attendanceStatus){
-            Displayer.displaySubheader("Attendees");
-        }else{
-            Displayer.displaySubheader("Absentees");
-        }
-
-
-        Displayer.displayTable(columnHeaders, participants, columnWidths);
+        String table_name = attendanceStatus ? "Attendees" : "Absentees";
+        Displayer.displayTable(table_name, columnHeaders, participants, columnWidths);
     }
 
     private void checkAttendance(){

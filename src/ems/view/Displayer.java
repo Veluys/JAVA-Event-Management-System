@@ -47,9 +47,10 @@ public class Displayer {
         System.out.print(prompt);
     }
 
-    public static void displayTable(final ArrayList<String> columnHeaders,
-                          final ArrayList<ArrayList<String>> records,
-                          final ArrayList<Double> columnSizes)
+    public static void displayTable(final String tableName,
+                                    final ArrayList<String> columnHeaders,
+                                    final ArrayList<ArrayList<String>> records,
+                                    final ArrayList<Double> columnSizes)
     {
         final int tableWidth = displayWidth - columnHeaders.size();
 
@@ -66,6 +67,7 @@ public class Displayer {
             columnWidths.add(colWidth);
         }
 
+        displaySubheader(tableName);
         System.out.print("|");
         for(int i = 0; i < columnHeaders.size(); i++){
             int totalPadding = columnWidths.get(i) - columnHeaders.get(i).length();
@@ -91,5 +93,7 @@ public class Displayer {
             }
             System.out.println("\n" +"-".repeat(displayWidth));
         }
+
+        System.out.println();
     }
 }

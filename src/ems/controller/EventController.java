@@ -11,7 +11,7 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 
 public class EventController {
-    private final ArrayList<String> event_attributes = new ArrayList<>(
+    private static final ArrayList<String> event_attributes = new ArrayList<>(
             Arrays.asList("Event Name", "Date", "Start Time", "End Time", "Venue")
     );
 
@@ -27,15 +27,15 @@ public class EventController {
             Displayer.showMenu("Select an operation:", operations);
             int option = InputGetter.getNumberOption(operations.size());
 
-            if(EventDAO.emptyCheck() && option > 1 && option != 6){
+            if(EventDAO.emptyCheck() && option > 1 && option != 7){
                 System.out.println("There are no events yet!");
                 return;
             }
 
             switch (option){
                 case 1 -> addEvent();
-                case 2 -> viewEvents("completed");
-                case 3 -> viewEvents("scheduled");
+                case 2 -> viewEvents("completed", true);
+                case 3 -> viewEvents("scheduled", true);
                 case 4 -> searchEvent();
                 case 5 -> updateEvents();
                 case 6 -> deleteEvent();
@@ -85,8 +85,7 @@ public class EventController {
             ArrayList<Double> columnWidths = new ArrayList<>(
                     Arrays.asList(0.30, 0.20, 0.15, 0.15, 0.20)
             );
-            Displayer.displaySubheader("Overlapped Events");
-            Displayer.displayTable(event_attributes, conflictEvents, columnWidths);
+            Displayer.displayTable("Overlapped Events", event_attributes, conflictEvents, columnWidths);
             return;
         }
 
@@ -95,26 +94,32 @@ public class EventController {
 
     }
 
-    private void viewEvents(String event_status){
+    public static void viewEvents(String event_status, boolean displayNoneMsg){
         ArrayList<ArrayList<String>> events = new ArrayList<>();
-        if(event_status.equalsIgnoreCase("completed")){
-            events = EventDAO.showCompleted();
+
+        boolean isValidStatus = event_status.equalsIgnoreCase("upcoming") ||
+                                event_status.equalsIgnoreCase("scheduled") ||
+                                event_status.equalsIgnoreCase("ongoing") ||
+                                event_status.equalsIgnoreCase("completed");
+        if(isValidStatus){
+            events = EventDAO.showEvents(event_status);
         }else{
-            events = EventDAO.showScheduled();
+            System.out.println("Event status provided was invalid!");
         }
 
         if(events==null){
-            System.out.printf("There are no %s events yet.\n", event_status);
+            if(displayNoneMsg){
+                System.out.printf("There are no %s events yet.\n", event_status);
+            }
             return;
         }
-
-        Displayer.displayHeader("Viewing Events");
 
         ArrayList<Double> columnWidths = new ArrayList<>(
                 Arrays.asList(0.30, 0.20, 0.15, 0.15, 0.20)
         );
-        Displayer.displaySubheader("Events");
-        Displayer.displayTable(event_attributes, events, columnWidths);
+
+        String table_name = event_status.toUpperCase() + " EVENTS";
+        Displayer.displayTable(table_name, event_attributes, events, columnWidths);
     }
 
     private void searchEvent(){
@@ -135,8 +140,8 @@ public class EventController {
         ArrayList<Double> columnWidths = new ArrayList<>(
                 Arrays.asList(0.30, 0.20, 0.15, 0.15, 0.20)
         );
-        Displayer.displaySubheader("Events");
-        Displayer.displayTable(event_attributes, records, columnWidths);
+
+        Displayer.displayTable("Events", event_attributes, records, columnWidths);
     }
 
     private void updateEvents(){
@@ -225,8 +230,8 @@ public class EventController {
             ArrayList<Double> columnWidths = new ArrayList<>(
                     Arrays.asList(0.30, 0.20, 0.15, 0.15, 0.20)
             );
-            Displayer.displaySubheader("Overlapped Events");
-            Displayer.displayTable(event_attributes, conflictEvents, columnWidths);
+
+            Displayer.displayTable("Overlapped Events", event_attributes, conflictEvents, columnWidths);
             return;
         }
 

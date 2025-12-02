@@ -38,20 +38,17 @@ public class RegController {
             Displayer.displaySubheader("Registration Menu");
             String status = EventDAO.checkStatus(eventName).toLowerCase();
 
-            switch (status) {
-                case "scheduled" -> shouldLoop = menuForScheduledEvents();
-                case "completed" -> shouldLoop = menuForCompletedEvents();
-                default -> {
-                    System.out.println("Event is not categorized as scheduled or completed!");
-                    shouldLoop = false;
-                }
+            boolean selectedEventCompleted = status.equalsIgnoreCase("completed");
+            if(selectedEventCompleted){
+                shouldLoop = menuForCompletedEvents();
+            }else {
+                shouldLoop = menuForNonCompletedEvents();
             }
         }
     }
 
     private void displaySelectedEvent(String eventName) {
         Displayer.displayHeader("Registration Page");
-        Displayer.displaySubheader("Currently Selected Event");
 
         ArrayList<String> eventAttributes = new ArrayList<>(
                 Arrays.asList("Event Name", "Date", "Start Time", "End Time", "Venue")
@@ -64,14 +61,14 @@ public class RegController {
         ArrayList<ArrayList<String>> selectedEvent = new ArrayList<>();
         selectedEvent.add(EventDAO.search(eventName));
 
-        Displayer.displayTable(eventAttributes, selectedEvent, columnWidths);
+        Displayer.displayTable("Currently Selected Event", eventAttributes, selectedEvent, columnWidths);
     }
 
     private boolean hasNoParticipants() {
         return RegistrationDAO.show(eventIdSelected) == null;
     }
 
-    private boolean menuForScheduledEvents() {
+    private boolean menuForNonCompletedEvents() {
         ArrayList<String> operations = new ArrayList<>(
                 Arrays.asList("Add Participant", "View Participants", "Search Participant", "Remove Participants", "Exit")
         );
@@ -139,8 +136,7 @@ public class RegController {
         ArrayList<Double> columnWidths = new ArrayList<>(
                 Arrays.asList(0.15, 0.20, 0.15, 0.50)
         );
-        Displayer.displaySubheader("Registered Participants");
-        Displayer.displayTable(columnHeaders, participants, columnWidths);
+        Displayer.displayTable("Registered Participants", columnHeaders, participants, columnWidths);
     }
 
     private void searchRegistered(){
@@ -170,8 +166,8 @@ public class RegController {
         ArrayList<Double> columnWidths = new ArrayList<>(
                 Arrays.asList(0.15, 0.20, 0.15, 0.50)
         );
-        Displayer.displaySubheader("Matched Participant");
-        Displayer.displayTable(columnHeaders, record, columnWidths);
+
+        Displayer.displayTable("Matched Participant", columnHeaders, record, columnWidths);
     }
     private void removeRegistered(){
         Displayer.displayHeader("Removing Participant");

@@ -40,15 +40,7 @@ public class EventDAO {
         }
     }
 
-    public static ArrayList<ArrayList<String>> showScheduled(){
-        return show("scheduled");
-    }
-
-    public static ArrayList<ArrayList<String>> showCompleted(){
-        return show("completed");
-    }
-
-    private static ArrayList<ArrayList<String>> show(String event_status){
+    public static ArrayList<ArrayList<String>> showEvents(String event_status){
         String[] show_columns = {"event_name", "event_date", "start_time", "end_time", "venue_name"};
         String show_query = get_base_show_query() + """
             WHERE event_status ILIKE ?
@@ -134,12 +126,13 @@ public class EventDAO {
         }
     }
 
-    public static ArrayList<ArrayList<String>> showUpcoming(){
+    /*public static ArrayList<ArrayList<String>> showUpcoming(){
         if(emptyCheck()) return null;
 
         String[] show_columns = {"event_name", "event_date", "start_time", "end_time", "venue_name"};
         String show_query = get_base_show_query() + """
-                    WHERE e.event_date BETWEEN (CURRENT_DATE + INTERVAL '1 day') AND (CURRENT_DATE + INTERVAL '3 days')
+                    WHERE (e.event_date + e.end_time) > CURRENT_TIMESTAMP AND
+                    BETWEEN (CURRENT_DATE + INTERVAL '1 day') AND (CURRENT_DATE + INTERVAL '3 days')
                 """;
 
         ArrayList<ArrayList<String>> events = new ArrayList<>();
@@ -163,7 +156,7 @@ public class EventDAO {
             System.out.println("SELECT operation unsuccessful!");
             return null;
         }
-    }
+    }*/
 
 
     public static boolean emptyCheck(){
