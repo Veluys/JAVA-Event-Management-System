@@ -31,42 +31,55 @@ public class RegController {
             return;
         }
 
-        if(EventDAO.checkStatus(event_name).equalsIgnoreCase("scheduled")){
-            menuForScheduledEvents();
-        }else if(EventDAO.checkStatus(event_name).equalsIgnoreCase("completed")){
-            menuForCompletedEvents();
-        }else{
-            System.out.println("Event is not categorized as scheduled or completed!");
-        }
-
-    }
-
-    private void menuForScheduledEvents(){
-        while (true) {
+        boolean should_loop = true;
+        while(should_loop){
             Displayer.displayHeader("Registration Page");
-            Displayer.displaySubheader("Registration Menu");
-            ArrayList<String> operations = new ArrayList<>(
-                    Arrays.asList("Add Participant", "View Participants", "Search Participant", "Remove Participants", "Exit")
+
+            Displayer.displaySubheader("Currently Selected Event");
+            ArrayList<String> event_attributes = new ArrayList<>(
+                    Arrays.asList("Event Name", "Date", "Start Time", "End Time", "Venue")
             );
-            Displayer.showMenu("Select an operation:", operations);
-            int option = InputGetter.getNumberOption(operations.size());
 
-            switch (option){
-                case 1 -> addRegistration();
-                case 2 -> viewRegistered();
-                case 3 -> searchRegistered();
-                case 4 -> removeRegistered();
-                case 5 -> {return;}
+            ArrayList<Double> columnWidths = new ArrayList<>(
+                    Arrays.asList(0.30, 0.20, 0.15, 0.15, 0.20)
+            );
+
+            ArrayList<ArrayList<String>> selected_event = new ArrayList<>();
+            selected_event.add(EventDAO.search(event_name));
+
+            Displayer.displayTable(event_attributes, selected_event, columnWidths);
+
+            Displayer.displaySubheader("Registration Menu");
+            if(EventDAO.checkStatus(event_name).equalsIgnoreCase("scheduled")){
+                should_loop = menuForScheduledEvents();
+            }else if(EventDAO.checkStatus(event_name).equalsIgnoreCase("completed")){
+                should_loop = menuForCompletedEvents();
+            }else{
+                System.out.println("Event is not categorized as scheduled or completed!");
             }
-            System.out.println();
         }
-
     }
 
-    private void menuForCompletedEvents(){
+    private boolean menuForScheduledEvents(){
+        ArrayList<String> operations = new ArrayList<>(
+                Arrays.asList("Add Participant", "View Participants", "Search Participant", "Remove Participants", "Exit")
+        );
+        Displayer.showMenu("Select an operation:", operations);
+        int option = InputGetter.getNumberOption(operations.size());
+
+        switch (option){
+            case 1 -> addRegistration();
+            case 2 -> viewRegistered();
+            case 3 -> searchRegistered();
+            case 4 -> removeRegistered();
+            case 5 -> {return false;}
+        }
+        System.out.println();
+        return true;
+    }
+
+    private boolean menuForCompletedEvents(){
         while (true) {
-            Displayer.displayHeader("Registration Page");
-            Displayer.displaySubheader("Registration Menu");
             ArrayList<String> operations = new ArrayList<>(
                     Arrays.asList("View Participants", "Search Participant", "Exit")
             );
@@ -76,9 +89,10 @@ public class RegController {
             switch (option){
                 case 1 -> viewRegistered();
                 case 2 -> searchRegistered();
-                case 3 -> {return;}
+                case 3 -> {return false;}
             }
             System.out.println();
+            return true;
         }
     }
 
