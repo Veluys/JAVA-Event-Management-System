@@ -17,7 +17,7 @@ public class InputGetter {
         while (true){
             try{
                 Displayer.showPrompt("Enter the number of your option: ");
-                String input = scanner.nextLine();
+                String input = scanner.nextLine().trim();
                 System.out.println();
 
                 if(allowBlank && input.isBlank()){

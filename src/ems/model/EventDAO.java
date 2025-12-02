@@ -40,23 +40,29 @@ public class EventDAO {
         }
     }
 
-    public static ArrayList<ArrayList<String>> show(){
-        if(emptyCheck()) return null;
+    public static ArrayList<ArrayList<String>> showScheduled(){
+        return show("scheduled");
+    }
 
+    public static ArrayList<ArrayList<String>> showCompleted(){
+        return show("completed");
+    }
+
+    private static ArrayList<ArrayList<String>> show(String event_status){
         String[] show_columns = {"event_name", "event_date", "start_time", "end_time", "venue_name"};
-        String show_query = """
-                    SELECT
-                        event_name,
-                        event_date,
-                        start_time,
-                        end_time,
-                        venue_name
-                    FROM event_details;
-                """;
+        String show_query = get_base_show_query() + """
+            WHERE event_status ILIKE ?
+            ORDER BY e.event_date
+        """;
+
+        if(event_status.equalsIgnoreCase("completed")){
+            show_query += " DESC";
+        }
 
         ArrayList<ArrayList<String>> events = new ArrayList<>();
 
         try(PreparedStatement show_stmt = connection.prepareStatement(show_query)){
+            show_stmt.setString(1, event_status);
             try(ResultSet event_set = show_stmt.executeQuery()){
                 if(!event_set.next()) return null;
 
@@ -75,20 +81,25 @@ public class EventDAO {
         }
     }
 
+    private static String get_base_show_query(){
+        return """
+            SELECT
+                ed.event_name,
+                ed.event_date,
+                ed.start_time,
+                ed.end_time,
+                ed.venue_name
+            FROM event_details AS ed
+            INNER JOIN events AS e
+                ON e.event_name = ed.event_name
+        """;
+    }
+
     public static ArrayList<ArrayList<String>> eventsInConflict(final int event_id, final LocalDate event_date, final LocalTime start_time, final int venue_id){
         if(emptyCheck()) return null;
 
         String[] show_columns = {"event_name", "event_date", "start_time", "end_time", "venue_name"};
-        String check_query = """
-                    SELECT
-                        event_name,
-                        event_date,
-                        start_time,
-                        end_time,
-                        venue_name
-                    FROM events AS e
-                    INNER JOIN event_details AS ed
-                        ON e.event_id = ed.event_id
+        String check_query = get_base_show_query() + """
                     WHERE e.event_id != ?
                         AND e.venue_id = ?
                         AND e.event_date = ?
@@ -127,16 +138,7 @@ public class EventDAO {
         if(emptyCheck()) return null;
 
         String[] show_columns = {"event_name", "event_date", "start_time", "end_time", "venue_name"};
-        String show_query = """
-                    SELECT
-                        event_name,
-                        event_date,
-                        start_time,
-                        end_time,
-                        venue_name
-                    FROM events AS e
-                    INNER JOIN event_details AS ed
-                        ON e.event_id = ed.event_id
+        String show_query = get_base_show_query() + """
                     WHERE e.event_date BETWEEN (CURRENT_DATE + INTERVAL '1 day') AND (CURRENT_DATE + INTERVAL '3 days')
                 """;
 

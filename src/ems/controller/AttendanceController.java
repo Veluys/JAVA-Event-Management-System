@@ -67,7 +67,6 @@ public class AttendanceController {
                         "Set as Present", "Reset as Absent", "Exit")
         );
 
-        Displayer.displaySubheader("Attendance Menu");
         Displayer.showMenu("Select an operation:", operations);
         int option = InputGetter.getNumberOption(operations.size());
 
@@ -88,7 +87,6 @@ public class AttendanceController {
                 Arrays.asList("View Attendees", "View Absentees", "Check Participant's Attendance", "Exit")
         );
 
-        Displayer.displaySubheader("Attendance Menu");
         Displayer.showMenu("Select an operation:", operations);
         int option = InputGetter.getNumberOption(operations.size());
 

@@ -19,7 +19,8 @@ public class EventController {
         while(true){
             Displayer.displayHeader("Events Page");
             ArrayList<String> operations = new ArrayList<>(
-                    Arrays.asList("Add Events", "View Events", "Search Events", "Update Events", "Delete Events", "Exit")
+                    Arrays.asList("Add Events", "View Completed Events", "View Scheduled Events",
+                                  "Search Events", "Update Events", "Delete Events", "Exit")
             );
 
             Displayer.displaySubheader("Event Menu");
@@ -33,11 +34,12 @@ public class EventController {
 
             switch (option){
                 case 1 -> addEvent();
-                case 2 -> viewEvents();
-                case 3 -> searchEvent();
-                case 4 -> updateEvents();
-                case 5 -> deleteEvent();
-                case 6 -> {return;}
+                case 2 -> viewEvents("completed");
+                case 3 -> viewEvents("scheduled");
+                case 4 -> searchEvent();
+                case 5 -> updateEvents();
+                case 6 -> deleteEvent();
+                case 7 -> {return;}
             }
             System.out.println();
         }
@@ -93,8 +95,18 @@ public class EventController {
 
     }
 
-    private void viewEvents(){
-        ArrayList<ArrayList<String>> events = EventDAO.show();
+    private void viewEvents(String event_status){
+        ArrayList<ArrayList<String>> events = new ArrayList<>();
+        if(event_status.equalsIgnoreCase("completed")){
+            events = EventDAO.showCompleted();
+        }else{
+            events = EventDAO.showScheduled();
+        }
+
+        if(events==null){
+            System.out.printf("There are no %s events yet.\n", event_status);
+            return;
+        }
 
         Displayer.displayHeader("Viewing Events");
 
