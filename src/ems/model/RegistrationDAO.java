@@ -14,8 +14,7 @@ public class RegistrationDAO {
                 VALUES (?, ?)
                 """;
 
-        try{
-            PreparedStatement insert_stmt = connection.prepareStatement(insert_query);
+        try(PreparedStatement insert_stmt = connection.prepareStatement(insert_query)){
             insert_stmt.setInt(1, event_id);
             insert_stmt.setString(2, sr_code);
             insert_stmt.executeUpdate();
@@ -39,22 +38,21 @@ public class RegistrationDAO {
 
         ArrayList<ArrayList<String>> students = new ArrayList<>();
 
-        try{
-            PreparedStatement show_stmt = connection.prepareStatement(show_query);
+        try(PreparedStatement show_stmt = connection.prepareStatement(show_query)){
             show_stmt.setInt(1, event_id);
-            ResultSet student_set = show_stmt.executeQuery();
 
-            if(!student_set.next()) return null;
-            do{
-                ArrayList<String> student = new ArrayList<>();
+            try(ResultSet student_set = show_stmt.executeQuery()){
+                if(!student_set.next()) return null;
+                do{
+                    ArrayList<String> student = new ArrayList<>();
 
-                for(String column : show_columns){
-                    student.add(student_set.getString(column));
-                }
-                students.add(student);
-            } while(student_set.next());
-
-            return students;
+                    for(String column : show_columns){
+                        student.add(student_set.getString(column));
+                    }
+                    students.add(student);
+                } while(student_set.next());
+                return students;
+            }
         }catch (Exception e){
             System.out.println("Selecting students results in an error!");
             System.err.println(e.getMessage());
@@ -69,8 +67,7 @@ public class RegistrationDAO {
                 WHERE event_id = ?
         """;
 
-        try{
-            PreparedStatement check_stmt = connection.prepareStatement(count_query);
+        try(PreparedStatement check_stmt = connection.prepareStatement(count_query)){
             check_stmt.setInt(1, event_id);
             return !check_stmt.executeQuery().next();
         }catch (Exception e){
@@ -93,22 +90,21 @@ public class RegistrationDAO {
                     AND event_id = ?
                 """;
 
-        try{
-            PreparedStatement show_stmt = connection.prepareStatement(show_query);
+        try(PreparedStatement show_stmt = connection.prepareStatement(show_query)){
             show_stmt.setString(1, sr_code);
             show_stmt.setInt(2, event_id);
 
-            ResultSet student_set = show_stmt.executeQuery();
+            try(ResultSet student_set = show_stmt.executeQuery()){
+                if(!student_set.next()) return null;
 
-            if(!student_set.next()) return null;
+                ArrayList<String> student = new ArrayList<>();
 
-            ArrayList<String> student = new ArrayList<>();
+                for(String column : show_columns){
+                    student.add(student_set.getString(column));
+                }
 
-            for(String column : show_columns){
-                student.add(student_set.getString(column));
+                return student;
             }
-
-            return student;
         }catch (Exception e){
             System.out.println("Selecting students results in an error!");
             System.err.println(e.getMessage());
@@ -123,8 +119,7 @@ public class RegistrationDAO {
                     AND sr_code = ?;
                 """;
 
-        try{
-            PreparedStatement delete_stmt = connection.prepareStatement(delete_query);
+        try(PreparedStatement delete_stmt = connection.prepareStatement(delete_query)){
             delete_stmt.setInt(1, event_id);
             delete_stmt.setString(2, participant_id);
 

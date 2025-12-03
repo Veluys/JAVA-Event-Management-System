@@ -115,6 +115,12 @@ public class RegController {
         Displayer.displayHeader("Adding Participant");
         String sr_code = InputGetter.getLine("Sr-Code: ");
         System.out.println();
+
+        if(!StudentDao.studentExist(sr_code)){
+            System.out.printf("There is no student with a given Sr Code of %s\n", sr_code);
+            return;
+        }
+
         RegistrationDAO.insert(eventIdSelected, sr_code);
     }
 

@@ -15,9 +15,8 @@ public class StudentDao {
                 LIMIT 1
                 """;
 
-        try{
-            PreparedStatement check_stmt = conn.prepareStatement(count_query);
-            return !check_stmt.execute();
+        try(PreparedStatement check_stmt = conn.prepareStatement(count_query)){
+            return !check_stmt.executeQuery().next();
         }catch (Exception e){
             System.out.println("Checking for student records failed!");
             System.err.println(e.getMessage());
@@ -26,17 +25,15 @@ public class StudentDao {
     }
 
     public static boolean studentExist(final String sr_code){
-        String count_query = String.format(
-                """
+        String count_query = """
                 SELECT sr_code
                 FROM students
-                WHERE sr_code = '%s'
-                """, sr_code
-        );
+                WHERE sr_code ILIKE ?;
+            """;
 
-        try{
-            PreparedStatement check_stmt = conn.prepareStatement(count_query);
-            return !check_stmt.execute();
+        try(PreparedStatement check_stmt = conn.prepareStatement(count_query)){
+            check_stmt.setString(1, sr_code);
+            return check_stmt.executeQuery().next();
         }catch (Exception e){
             System.out.println("Checking for student records failed!");
             System.err.println(e.getMessage());

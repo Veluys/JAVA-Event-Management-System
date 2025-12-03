@@ -39,7 +39,7 @@ public class EventController {
                     case 4 -> viewEvents("upcoming", true);
                     case 5 -> viewEvents("ongoing", true);
                     case 6 -> searchEvent();
-                    case 7 -> updateEvents();
+                    case 7 -> updateEvent();
                     case 8 -> deleteEvent();
                     case 9 -> {return;}
                 }
@@ -145,7 +145,7 @@ public class EventController {
         Displayer.displayTable("Events", event_attributes, records, columnWidths);
     }
 
-    private static void updateEvents(){
+    private static void updateEvent(){
         ArrayList<String> venueNames = VenueDAO.getVenueNames();
         if(venueNames == null){
             System.out.println("There are no available venues yet!");

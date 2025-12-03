@@ -147,10 +147,8 @@ public class EventDAO {
     public static boolean eventExist(final String event_name){
         String search_query = "SELECT event_id FROM events WHERE event_name ILIKE ?";
 
-        try{
-            PreparedStatement search_stmt = connection.prepareStatement(search_query);
+        try(PreparedStatement search_stmt = connection.prepareStatement(search_query)){
             search_stmt.setString(1, event_name);
-
             try (ResultSet rs = search_stmt.executeQuery()) {
                 return rs.next();
             }
@@ -214,18 +212,17 @@ public class EventDAO {
                 WHERE event_name ILIKE ?;
                 """;
 
-        try {
-            PreparedStatement search_stmt = connection.prepareStatement(search_query);
+        try(PreparedStatement search_stmt = connection.prepareStatement(search_query)){
             search_stmt.setString(1, event_name);
-            ResultSet eventsSet = search_stmt.executeQuery();
+            try(ResultSet eventsSet = search_stmt.executeQuery()){
+                if (!eventsSet.next()) return null;
+                ArrayList<String> event = new ArrayList<>();
 
-            if (!eventsSet.next()) return null;
-            ArrayList<String> event = new ArrayList<>();
-
-            for (String column : search_columns) {
-                event.add(eventsSet.getString(column));
+                for (String column : search_columns) {
+                    event.add(eventsSet.getString(column));
+                }
+                return event;
             }
-            return event;
         } catch (SQLException e) {
             System.out.println("SELECT operation unsuccessful!");
             return null;
@@ -254,8 +251,7 @@ public class EventDAO {
         }
         update_query += String.format("WHERE event_name ILIKE '%s'", event_name);
 
-        try{
-            PreparedStatement update_stmt = connection.prepareStatement(update_query);
+        try(PreparedStatement update_stmt = connection.prepareStatement(update_query)){
             if(update_stmt.executeUpdate() == 1){
                 System.out.println("Update operation successful");
             }else{
@@ -269,8 +265,7 @@ public class EventDAO {
     public static void delete(final String event_name){
         String delete_query = "DELETE FROM events WHERE event_name ILIKE ?";
 
-        try{
-            PreparedStatement delete_stmt = connection.prepareStatement(delete_query);
+        try(PreparedStatement delete_stmt = connection.prepareStatement(delete_query)){
             delete_stmt.setString(1, event_name);
 
             if(delete_stmt.executeUpdate() == 1){
@@ -290,15 +285,15 @@ public class EventDAO {
                 WHERE event_name ILIKE ?
             """;
 
-        try{
-            PreparedStatement get_stmt = connection.prepareStatement(searchQuery);
+        try(PreparedStatement get_stmt = connection.prepareStatement(searchQuery);){
             get_stmt.setString(1, event_name);
-            ResultSet eventResult = get_stmt.executeQuery();
 
-            if(!eventResult.next()){
-                return -1;
+            try(ResultSet eventResult = get_stmt.executeQuery()){
+                if(!eventResult.next()){
+                    return -1;
+                }
+                return eventResult.getInt("event_id");
             }
-            return eventResult.getInt("event_id");
         }catch (SQLException e){
             return -1;
         }
@@ -311,15 +306,15 @@ public class EventDAO {
                 WHERE event_name ILIKE ?
             """;
 
-        try{
-            PreparedStatement search_stmt = connection.prepareStatement(search_query);
+        try(PreparedStatement search_stmt = connection.prepareStatement(search_query)){
             search_stmt.setString(1, event_name);
-            ResultSet eventResult = search_stmt.executeQuery();
 
-            if(!eventResult.next()){
-                return "not found";
+            try(ResultSet eventResult = search_stmt.executeQuery()){
+                if(!eventResult.next()){
+                    return "not found";
+                }
+                return eventResult.getString("event_status");
             }
-            return eventResult.getString("event_status");
         }catch (SQLException e){
             return "not found";
         }

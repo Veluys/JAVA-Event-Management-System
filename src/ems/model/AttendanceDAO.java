@@ -36,24 +36,22 @@ public class AttendanceDAO {
 
         ArrayList<ArrayList<String>> students = new ArrayList<>();
 
-        try{
-            PreparedStatement show_stmt = connection.prepareStatement(show_query);
+        try(PreparedStatement show_stmt = connection.prepareStatement(show_query)){
             show_stmt.setInt(1, event_id);
             show_stmt.setBoolean(2, hasAttended);
 
-            ResultSet student_set = show_stmt.executeQuery();
+            try(ResultSet student_set = show_stmt.executeQuery()){
+                if(!student_set.next()) return null;
+                do{
+                    ArrayList<String> student = new ArrayList<>();
 
-            if(!student_set.next()) return null;
-            do{
-                ArrayList<String> student = new ArrayList<>();
-
-                for(String column : show_columns){
-                    student.add(student_set.getString(column));
-                }
-                students.add(student);
-            } while(student_set.next());
-
-            return students;
+                    for(String column : show_columns){
+                        student.add(student_set.getString(column));
+                    }
+                    students.add(student);
+                } while(student_set.next());
+                return students;
+            }
         }catch (SQLException e){
             System.out.println("SELECT operation unsuccessful!");
             return null;
@@ -76,8 +74,7 @@ public class AttendanceDAO {
                     AND sr_code = ?
                 """;
 
-        try{
-            PreparedStatement update_stmt = connection.prepareStatement(update_query);
+        try(PreparedStatement update_stmt = connection.prepareStatement(update_query)){
             update_stmt.setBoolean(1, present);
             update_stmt.setInt(2, event_id);
             update_stmt.setString(3, sr_code);
