@@ -16,6 +16,7 @@ public class AttendanceDAO {
         return show(event_id, false);
     }
 
+    //helper function to show participants which is either an attendee or absentee
     private static ArrayList<ArrayList<String>> show(int event_id, boolean hasAttended){
         String[] show_columns = {"sr_code", "dept_shortname", "year_level", "full_name"};
         String show_query = """
@@ -66,6 +67,7 @@ public class AttendanceDAO {
         updateAttendance(event_id, participant_id, false);
     }
 
+    //helper function to update attendance status
     private static void updateAttendance(final int event_id, final String sr_code, final boolean present){
         String update_query = """
                 UPDATE registration

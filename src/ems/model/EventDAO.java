@@ -40,6 +40,8 @@ public class EventDAO {
         }
     }
 
+    //fetch event records that match a given status
+    //completed, ongoing, scheduled, upcoming
     public static ArrayList<ArrayList<String>> showEvents(String event_status){
         String[] show_columns = {"event_name", "event_date", "start_time", "end_time", "venue_name"};
         String show_query = get_base_show_query() + """
@@ -73,6 +75,7 @@ public class EventDAO {
         }
     }
 
+    //returns the base show query
     private static String get_base_show_query(){
         return """
             SELECT
@@ -87,6 +90,7 @@ public class EventDAO {
         """;
     }
 
+    //returns events in conflict with event details
     public static ArrayList<ArrayList<String>> eventsInConflict(final int event_id, final LocalDate event_date, final LocalTime start_time, final int venue_id){
         if(emptyCheck()) return null;
 
@@ -158,6 +162,7 @@ public class EventDAO {
         }
     }
 
+    //returns the unformatted record of the event
     public static ArrayList<String> searchRecord(final String event_name) {
         String[] search_columns = {"event_id", "event_name", "event_date", "start_time", "end_time", "venue_id", "venue_name"};
         String search_query = """
@@ -199,6 +204,7 @@ public class EventDAO {
         }
     }
 
+    //returns the formatted event record
     public static ArrayList<String> search(final String event_name) {
         String[] search_columns = {"event_name", "event_date", "start_time", "end_time", "venue_name"};
         String search_query = """
@@ -236,6 +242,7 @@ public class EventDAO {
 
         String update_query = "UPDATE events SET ";
 
+        //needed as we don't know what fields does the user wants to update
         for(Map.Entry<String, String> new_value : new_values.entrySet()){
             if(new_value.getKey().equals("venue_id")){
                 update_query += String.format("%s = %s", new_value.getKey(), new_value.getValue());
@@ -299,6 +306,8 @@ public class EventDAO {
         }
     }
 
+    //checks the status of an event
+    //completed, scheduled, ongoing, upcoming
     public static String checkStatus(String event_name){
         String search_query = """
                 SELECT event_status

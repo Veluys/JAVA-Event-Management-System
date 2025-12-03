@@ -15,6 +15,7 @@ public class EventController {
             Arrays.asList("Event Name", "Date", "Start Time", "End Time", "Venue")
     );
 
+    //acts as the primary function within this controller
     public static void execute(){
         while(true){
             Displayer.displayHeader("Events Page");

@@ -37,6 +37,7 @@ public class Main {
         }
     }
 
+    //used to set a connection to the database
     private static Connection getConnection(){
         final String username = "postgres";
         final String password = "byte";
@@ -52,6 +53,8 @@ public class Main {
 
         return connection;
     }
+
+    //close the connection to the database
     private static void closeConnection() {
         try{
             if (connection != null && !connection.isClosed()) {

@@ -3,8 +3,10 @@ package ems.view;
 import java.util.ArrayList;
 
 public class Displayer {
+    //Display width of the system
     protected static final int displayWidth = 150;
 
+    //helper function to displayHeaders
     private static void displayHeader(final String header,
                                final char upperLeftChar,
                                final char upperRightChar,
@@ -27,10 +29,12 @@ public class Displayer {
         System.out.println(lowerBorder);
     }
 
+    //function that displays the headers
     public static void displayHeader(final String header){
         displayHeader(header, '╔', '╗', '═','║', '╚','╝');
     }
 
+    //function that displays the subheaders
     public static void displaySubheader(final String header){
         displayHeader(header, '+', '+', '-','|', '+', '+');
     }
@@ -47,6 +51,7 @@ public class Displayer {
         System.out.print(prompt);
     }
 
+    //function for displaying records in a table structure
     public static void displayTable(final String tableName,
                                     final ArrayList<String> columnHeaders,
                                     final ArrayList<ArrayList<String>> records,
