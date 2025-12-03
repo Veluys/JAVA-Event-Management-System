@@ -285,7 +285,7 @@ public class EventDAO {
                 WHERE event_name ILIKE ?
             """;
 
-        try(PreparedStatement get_stmt = connection.prepareStatement(searchQuery);){
+        try(PreparedStatement get_stmt = connection.prepareStatement(searchQuery)){
             get_stmt.setString(1, event_name);
 
             try(ResultSet eventResult = get_stmt.executeQuery()){

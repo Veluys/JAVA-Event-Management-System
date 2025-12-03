@@ -3,7 +3,6 @@ package ems.model;
 import ems.Main;
 
 import java.sql.*;
-import java.util.ArrayList;
 
 public class StudentDao {
     final static Connection conn = Main.connection;
