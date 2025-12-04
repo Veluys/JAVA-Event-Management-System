@@ -54,7 +54,7 @@ public class AttendanceDAO {
     public boolean is_attendee(Registration reg_record) throws SQLException {
         String check_query = """
                 SELECT attended
-                FROM registration
+                FROM participant_details
                 WHERE event_id = ?
                     AND sr_code = ?
             """;

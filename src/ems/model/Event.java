@@ -2,8 +2,6 @@ package ems.model;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
 
 public class Event {
     private int event_id;
@@ -37,17 +35,6 @@ public class Event {
         this.end_time = end_time;
         this.venue_name = venue_name;
     }
-
-    /*public Event(HashMap<String, Object> event_record, boolean forDisplay){
-        if(!forDisplay){
-            this.event_id = Integer.parseInt(event_record.get("event_id").toString());
-        }
-        this.event_name = event_record.get("event_name").toString();
-        this.event_date = LocalDate.parse(event_record.get("event_date").toString(), DateTimeFormatter.ofPattern("MMM d, uuuu"));
-        this.start_time = LocalTime.parse(event_record.get("start_time").toString(), DateTimeFormatter.ofPattern("hh:mm a"));
-        this.end_time = LocalTime.parse(event_record.get("end_time").toString(), DateTimeFormatter.ofPattern("hh:mm a"));;
-        this.venue_id = Integer.parseInt(event_record.get("venue_id").toString());
-    }*/
 
     public void set_event_name(String event_name) {this.event_name = event_name;}
     public void set_event_date(LocalDate event_date) {this.event_date = event_date;}
