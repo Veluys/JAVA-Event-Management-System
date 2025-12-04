@@ -11,6 +11,7 @@ public class Event {
     private LocalDate event_date;
     private LocalTime start_time, end_time;
     private int venue_id;
+    private String venue_name;
 
     public Event(String event_name, LocalDate event_date, LocalTime start_time, LocalTime end_time, int venue_id){
         this.event_name = event_name;
@@ -29,7 +30,15 @@ public class Event {
         this.venue_id = venue_id;
     }
 
-    public Event(HashMap<String, Object> event_record, boolean forDisplay){
+    public Event(String event_name, LocalDate event_date, LocalTime start_time, LocalTime end_time, String venue_name){
+        this.event_name = event_name;
+        this.event_date = event_date;
+        this.start_time = start_time;
+        this.end_time = end_time;
+        this.venue_name = venue_name;
+    }
+
+    /*public Event(HashMap<String, Object> event_record, boolean forDisplay){
         if(!forDisplay){
             this.event_id = Integer.parseInt(event_record.get("event_id").toString());
         }
@@ -38,14 +47,14 @@ public class Event {
         this.start_time = LocalTime.parse(event_record.get("start_time").toString(), DateTimeFormatter.ofPattern("hh:mm a"));
         this.end_time = LocalTime.parse(event_record.get("end_time").toString(), DateTimeFormatter.ofPattern("hh:mm a"));;
         this.venue_id = Integer.parseInt(event_record.get("venue_id").toString());
-
-    }
+    }*/
 
     public void set_event_name(String event_name) {this.event_name = event_name;}
     public void set_event_date(LocalDate event_date) {this.event_date = event_date;}
     public void set_start_time(LocalTime start_time) {this.start_time = start_time;}
     public void set_end_time(LocalTime end_time) {this.end_time = end_time;}
     public void set_venue_id(int venue_id) {this.venue_id = venue_id;}
+    public void setVenue_name(String venue_name) {this.venue_name = venue_name;}
 
     public int get_event_id() {return event_id;}
     public String get_event_name() {return event_name;}
@@ -53,4 +62,5 @@ public class Event {
     public LocalTime get_start_time() {return start_time;}
     public LocalTime get_end_time() {return end_time;}
     public int get_venue_id() {return venue_id;}
+    public String getVenue_name() {return venue_name;}
 }
