@@ -3,7 +3,7 @@ package ems.dao;
 import java.sql.*;
 
 public class StudentDao {
-    private Connection conn;
+    private final Connection conn;
 
     public StudentDao(Connection conn) {
         this.conn = conn;

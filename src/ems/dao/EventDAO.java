@@ -6,7 +6,7 @@ import java.sql.*;
 import java.util.ArrayList;
 
 public class EventDAO {
-    private Connection conn;
+    private final Connection conn;
 
     public EventDAO(Connection conn) {
         this.conn = conn;

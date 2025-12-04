@@ -4,7 +4,7 @@ import java.sql.*;
 import java.util.ArrayList;
 
 public class VenueDAO {
-    private Connection conn;
+    private final Connection conn;
 
     public VenueDAO(Connection conn){
         this.conn = conn;

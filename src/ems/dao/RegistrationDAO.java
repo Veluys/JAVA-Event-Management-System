@@ -6,7 +6,7 @@ import java.sql.*;
 import java.util.ArrayList;
 
 public class RegistrationDAO {
-    private Connection conn;
+    private final Connection conn;
 
     public RegistrationDAO(Connection conn) {
         this.conn = conn;

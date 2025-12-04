@@ -10,12 +10,11 @@ import ems.view.Displayer;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.TreeSet;
 
 public class AttendanceController {
-    private EventDAO event_dao;
-    private RegistrationDAO reg_dao;
-    private AttendanceDAO att_dao;
+    private final EventDAO event_dao;
+    private final RegistrationDAO reg_dao;
+    private final AttendanceDAO att_dao;
     private Event selected_event;
     private ArrayList<ArrayList<String>> selected_event_details;
     private String selected_event_status;
@@ -179,7 +178,6 @@ public class AttendanceController {
         }catch (Exception e) {
             System.out.println("Fetching the attendance status failed!");
             Displayer.show_error(e);
-            return;
         }
     }
 
