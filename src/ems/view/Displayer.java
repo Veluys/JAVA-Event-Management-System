@@ -51,6 +51,10 @@ public class Displayer {
         System.out.print(prompt);
     }
 
+    public static void show_error(Exception err){
+        System.out.println(err.getMessage());
+    }
+
     //function for displaying records in a table structure
     public static void displayTable(final String tableName,
                                     final ArrayList<String> columnHeaders,

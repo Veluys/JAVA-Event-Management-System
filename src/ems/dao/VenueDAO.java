@@ -20,7 +20,7 @@ public class VenueDAO {
         try(PreparedStatement get_stmt = this.conn.prepareStatement(view_query)){
             ArrayList<String> venueNames = new ArrayList<>();
 
-            try(ResultSet venueSet = get_stmt.executeQuery(view_query)){
+            try(ResultSet venueSet = get_stmt.executeQuery()){
                 if(!venueSet.next()) return null;
 
                 do{
@@ -35,12 +35,12 @@ public class VenueDAO {
         String get_query = """
                  SELECT venue_id
                  FROM venues
-                 WHERE venue_name ILIKE ?;"
+                 WHERE venue_name ILIKE ?;
             """;
 
         try(PreparedStatement get_stmt = this.conn.prepareStatement(get_query)){
             get_stmt.setString(1, venue_name);
-            try(ResultSet eventResult = get_stmt.executeQuery(get_query)){
+            try(ResultSet eventResult = get_stmt.executeQuery()){
                 if(!eventResult.next()){
                     return -1;
                 }

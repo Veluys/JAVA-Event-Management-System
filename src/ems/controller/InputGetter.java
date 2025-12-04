@@ -13,24 +13,28 @@ import java.util.Scanner;
 public class InputGetter {
     private static final Scanner scanner = new Scanner(System.in);
 
-    public static int getNumberOption(final int highest, boolean allowBlank){
-        while (true){
-            Displayer.showPrompt("Enter the number of your option: ");
-            String input = scanner.nextLine().trim();
+    public static int getNumberOption(int highest, boolean allowBlank){
+        while(true){
+            System.out.print("Enter the number of your option: ");
+            String user_input = scanner.nextLine().trim();
 
-            if(allowBlank && input.isBlank()){
+            if(allowBlank && !user_input.isBlank()) {
                 return -1;
             }
 
+            int num;
             try{
-                int num = Integer.parseInt(input);
+                num = Integer.parseInt(user_input);
+
                 if(num < 1 || num > highest){
-                    throw new NumberFormatException();
+                    throw new Exception(String.format("Input invalid! Only positive integers between 1 and %d are allowed", highest));
                 }
-                return num;
-            }catch (NumberFormatException e){
-                System.out.println("Invalid input! Valid inputs are whole numbers including and between 1 and " + highest + "\n");
+            }catch (Exception e){
+                Displayer.show_error(e);
+                continue;
             }
+            System.out.println();
+            return num;
         }
     }
 
@@ -38,15 +42,17 @@ public class InputGetter {
         return getNumberOption(highest, false);
     }
 
-    public static String getLine(String prompt, boolean allowBlank) {
-        while (true) {
-            Displayer.showPrompt(prompt);
-            String text = scanner.nextLine().trim();
-            if (text.isBlank()) {
-                if (allowBlank) return "";
-                System.out.println("Input cannot be blank. Please try again.\n");
-            } else {
-                return text;
+    public static String getLine(String prompt, boolean allowBlank){
+        while (true){
+            System.out.print(prompt);
+            String user_input = scanner.nextLine().trim();
+
+            if(!user_input.isBlank()){
+                return user_input;
+            }else{
+                if(allowBlank){
+                    return " ";
+                }
             }
         }
     }

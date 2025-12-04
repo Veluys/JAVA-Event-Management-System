@@ -1,269 +1,344 @@
 package ems.controller;
 
-import ems.model.EventDAO;
-import ems.model.VenueDAO;
+import ems.model.Event;
+import ems.dao.EventDAO;
+import ems.dao.VenueDAO;
 import ems.view.Displayer;
 
+import java.sql.Connection;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
+import java.util.*;
 
 public class EventController {
-    private static final ArrayList<String> event_attributes = new ArrayList<>(
-            Arrays.asList("Event Name", "Date", "Start Time", "End Time", "Venue")
-    );
+    private final EventDAO event_dao;
+    private final VenueDAO venue_dao;
 
-    //acts as the primary function within this controller
-    public static void execute(){
-        while(true){
+    private final ArrayList<String> _VIEW_COLUMN_HEADERS = new ArrayList<>(Arrays.asList("Event Name", "Date", "Start Time", "End Time", "Venue"));
+    private final ArrayList<Double> _VIEW_COLUMN_SIZES = new ArrayList<>(Arrays.asList(0.30, 0.20, 0.15, 0.15, 0.20));
+
+    public EventController(Connection conn) {
+        this.event_dao = new EventDAO(conn);
+        this.venue_dao = new VenueDAO(conn);
+    }
+
+    public void execute() {
+        while (true) {
             Displayer.displayHeader("Events Page");
-            ArrayList<String> operations = new ArrayList<>(
-                    Arrays.asList("Add Events", "View Completed Events", "View Scheduled Events",
-                                  "View Upcoming Events", "View Ongoing Events", "Search Events",
-                                  "Update Events", "Delete Events", "Exit")
-            );
+
+            try {
+                if (venue_dao.empty_check()) {
+                    System.out.println("There are currently no venues!\n");
+                    return;
+                }
+            } catch (Exception e) {
+                Displayer.show_error(e);
+                return;
+            }
 
             Displayer.displaySubheader("Event Menu");
-            Displayer.showMenu("Select an operation:", operations);
-            int option = InputGetter.getNumberOption(operations.size());
-            System.out.println();
+            ArrayList<String> event_operations = new ArrayList<>(
+                    Arrays.asList("Add Events", "View Completed Events", "View Scheduled Events",
+                            "View Upcoming Events", "View Ongoing Events", "Search Events",
+                            "Update Events", "Delete Events", "Exit")
+            );
 
-            if(EventDAO.emptyCheck() && option > 1 && option != 9){
-                System.out.println("There are no events yet!");
-            }else{
-                switch (option){
-                    case 1 -> addEvent();
-                    case 2 -> viewEvents("completed", true);
-                    case 3 -> viewEvents("scheduled", true);
-                    case 4 -> viewEvents("upcoming", true);
-                    case 5 -> viewEvents("ongoing", true);
-                    case 6 -> searchEvent();
-                    case 7 -> updateEvent();
-                    case 8 -> deleteEvent();
-                    case 9 -> {return;}
+            Displayer.showMenu("Select an operation: ", event_operations);
+            int option = InputGetter.getNumberOption(event_operations.size());
+
+            try {
+                if (option >= 2 && option != 9 && this.event_dao.empty_check()) {
+                    System.out.println("There are currently no events!\n");
+                    return;
+                }
+            } catch (Exception e) {
+                Displayer.show_error(e);
+                return;
+            }
+
+            switch (option) {
+                case 1 -> addEvent();
+                case 2 -> viewEvents("completed");
+                case 3 -> viewEvents("scheduled");
+                case 4 -> viewEvents("upcoming");
+                case 5 -> viewEvents("ongoing");
+                case 6 -> searchEvent();
+                case 7 -> updateEvent();
+                case 8 -> deleteEvent();
+                case 9 -> {
+                    return;
                 }
             }
             System.out.println();
         }
     }
 
-    private static void addEvent(){
-        ArrayList<String> venueNames = VenueDAO.getVenueNames();
-        if(venueNames == null){
-            System.out.println("There are no available venues yet!");
+    private ArrayList<ArrayList<String>> get_matchedEvent(String event_name){
+        try {
+            return this.event_dao.display_search(event_name);
+        } catch (Exception e) {
+            System.out.println("Checking if event_name already exists failed!");
+            Displayer.show_error(e);
+            return null;
+        }
+    }
+
+    private ArrayList<ArrayList<String>> get_overlapped_events(Event event){
+        try {
+            return this.event_dao.view_overlapped_events(event);
+        } catch (Exception e) {
+            System.out.println("Checking for overlapped events failed!");
+            Displayer.show_error(e);
+            return null;
+        }
+    }
+
+    private ArrayList<String> get_venues(){
+        try {
+            return this.venue_dao.getVenueNames();
+        } catch (Exception e) {
+            System.out.println("Fetching venue names failed!");
+            Displayer.show_error(e);
+            return null;
+        }
+    }
+
+    private void addEvent() {
+        Displayer.displaySubheader("Adding Event");
+
+        ArrayList<String> venues = get_venues();
+        if(venues==null) return;
+
+        String event_name = InputGetter.getLine("Event name: ");
+        ArrayList<ArrayList<String>> matched_event = get_matchedEvent(event_name);
+
+        if (matched_event != null) {
+            System.out.printf("An event with an event name of '%s' already exists in the database!\n", event_name);
+            Displayer.displayTable("Matched Event Name", this._VIEW_COLUMN_HEADERS, matched_event, this._VIEW_COLUMN_SIZES);
             return;
         }
 
-        Displayer.displayHeader("Adding New Event");
-
-        String eventName = InputGetter.getLine("Event Name: ");
-        if(EventDAO.eventExist(eventName)){
-            System.out.printf("Error: Event Name '%s' already exists!\n", eventName);
-            return;
-        }
-
-        LocalDate date = InputGetter.getDate("Event Date");
-
-        if(date.isBefore(LocalDate.now()) || date.equals(LocalDate.now())){
-            System.out.println("Error: Event Date must be at least 1 day from now");
-            return;
-        }
-
+        LocalDate event_date = InputGetter.getDate("Event Date");
         LocalTime start_time = InputGetter.getTime("Start Time");
-        LocalTime end_time = InputGetter.getTime("End Time");
+        LocalTime end_time;
+        while (true) {
+            end_time = InputGetter.getTime("End Time");
 
-        if(end_time.isBefore(start_time) || end_time.equals(start_time)){
-            System.out.println("Error: End time must be after start time!");
+            try {
+                if (!end_time.isAfter(start_time)) {
+                    throw new InputMismatchException("Error! End Time is before Start Time!");
+                }
+            } catch (Exception e) {
+                Displayer.show_error(e);
+                continue;
+            }
+            break;
+        }
+
+        Displayer.showMenu("Venues: ", venues);
+        int venue_option = InputGetter.getNumberOption(venues.size()) - 1;
+
+        int venue_id;
+        try {
+            venue_id = this.venue_dao.getVenueId(venues.get(venue_option));
+        } catch (Exception e) {
+            System.out.println("Matching venue id for the selected venue name failed");
+            Displayer.show_error(e);
             return;
         }
 
-        Displayer.showMenu("Venues", venueNames);
-        int option = InputGetter.getNumberOption(venueNames.size());
-        int venue_id = VenueDAO.getVenueId(venueNames.get(option - 1));
+        Event new_event = new Event(event_name, event_date, start_time, end_time, venue_id);
 
-        ArrayList<ArrayList<String>> conflictEvents = EventDAO.eventsInConflict(-1, date, start_time, venue_id);
-        if(conflictEvents!= null){
+        ArrayList<ArrayList<String>> overlapped_events = get_overlapped_events(new_event);
+
+        if (overlapped_events != null) {
             System.out.println("The event can't be added to the database!");
-            ArrayList<Double> columnWidths = new ArrayList<>(
-                    Arrays.asList(0.30, 0.20, 0.15, 0.15, 0.20)
-            );
-            Displayer.displayTable("Overlapped Events", event_attributes, conflictEvents, columnWidths);
+            Displayer.displayTable("Overlapped Events", this._VIEW_COLUMN_HEADERS, overlapped_events, this._VIEW_COLUMN_SIZES);
             return;
         }
 
-        EventDAO.insert(eventName, date, start_time, end_time, venue_id);
+        try {
+            if (this.event_dao.insert_event(new_event)) {
+                System.out.println("New event was added successfully");
+            } else throw new Exception();
+        } catch (Exception e) {
+            System.out.println("Adding new event failed!");
+            Displayer.show_error(e);
+        }
     }
 
-    public static void viewEvents(String event_status, boolean displayNoneMsg){
+    private void viewEvents(String event_status) {
         ArrayList<ArrayList<String>> events = new ArrayList<>();
-
-        boolean isValidStatus = event_status.equalsIgnoreCase("upcoming") ||
-                                event_status.equalsIgnoreCase("scheduled") ||
-                                event_status.equalsIgnoreCase("ongoing") ||
-                                event_status.equalsIgnoreCase("completed");
-        if(isValidStatus){
-            events = EventDAO.showEvents(event_status);
-        }else{
-            System.out.println("Event status provided was invalid!");
-        }
-
-        if(events==null){
-            if(displayNoneMsg){
-                System.out.printf("There are no %s events yet.\n", event_status);
-            }
+        try {
+            events = this.event_dao.view_events(event_status);
+        } catch (Exception e) {
+            System.out.println("Fetching event records failed!");
+            Displayer.show_error(e);
             return;
         }
 
-        ArrayList<Double> columnWidths = new ArrayList<>(
-                Arrays.asList(0.30, 0.20, 0.15, 0.15, 0.20)
-        );
+        if (events == null) {
+            System.out.printf("There are currently no %s events!\n", event_status);
+            return;
+        }
 
-        String table_name = event_status.toUpperCase() + " EVENTS";
-        Displayer.displayTable(table_name, event_attributes, events, columnWidths);
+        String table_name = String.format("%s EVENTS", event_status.toUpperCase());
+        Displayer.displayTable(table_name, this._VIEW_COLUMN_HEADERS, events, this._VIEW_COLUMN_SIZES);
     }
 
-    private static void searchEvent(){
-        Displayer.displayHeader("Searching Event");
-        String eventName = InputGetter.getLine("Enter event name: ");
+    private void searchEvent() {
+        Displayer.displaySubheader("Search Event");
+
+        String event_name = InputGetter.getLine("Event Name: ");
         System.out.println();
 
-        ArrayList<String> matchedEvent = EventDAO.search(eventName);
-        ArrayList<ArrayList<String>> records = new ArrayList<>(
-                Arrays.asList(matchedEvent)
-        );
+        ArrayList<ArrayList<String>> matched_event = get_matchedEvent(event_name);
 
-        if(matchedEvent==null){
-            System.out.println("There are no events that matched the given event name!");
+        if (matched_event == null) {
+            System.out.printf("There are no records that matched the event name '%s'\n", event_name);
             return;
         }
 
-        ArrayList<Double> columnWidths = new ArrayList<>(
-                Arrays.asList(0.30, 0.20, 0.15, 0.15, 0.20)
-        );
-
-        Displayer.displayTable("Events", event_attributes, records, columnWidths);
+        Displayer.displayTable("Matched Event", this._VIEW_COLUMN_HEADERS, matched_event, this._VIEW_COLUMN_SIZES);
     }
 
-    private static void updateEvent(){
-        ArrayList<String> venueNames = VenueDAO.getVenueNames();
-        if(venueNames == null){
-            System.out.println("There are no available venues yet!");
+    private boolean is_manipulable(String event_name) {
+        String event_status;
+        try {
+            event_status = this.event_dao.check_status(event_name);
+        } catch (Exception e) {
+            System.out.println("Checking event status failed!");
+            Displayer.show_error(e);
+            return false;
+        }
+
+        if (event_status.equalsIgnoreCase("completed") || event_status.equalsIgnoreCase("ongoing")) {
+            System.out.println("Completed or ongoing events can't be manipulated!");
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    private void updateEvent() {
+        Displayer.displaySubheader("Updating Event");
+        String old_event_name = InputGetter.getLine("Event name: ");
+
+        Event upd_event;
+        try {
+            upd_event = this.event_dao.record_search(old_event_name);
+        } catch (Exception e) {
+            System.out.println("Searching event records failed!");
+            Displayer.show_error(e);
             return;
         }
 
-        Displayer.displayHeader("Updating Event");
-        String old_event_name = InputGetter.getLine("Enter event name: ");
-        System.out.println();
-
-        ArrayList<String> matchedEvent = EventDAO.searchRecord(old_event_name);
-
-        if(matchedEvent == null){
-            System.out.println("Event name of '" + old_event_name + "' doesn't exist!");
+        if (upd_event == null) {
+            System.out.printf("There are no records that matched the event name '%s' \n", old_event_name);
             return;
         }
 
-        boolean eventOngoing = EventDAO.checkStatus(old_event_name).equalsIgnoreCase("ongoing");
-        boolean eventCompleted = EventDAO.checkStatus(old_event_name).equalsIgnoreCase("completed");
-        if(eventOngoing){
-            System.out.println("Ongoing events can't be updated!");
+        if (!this.is_manipulable(old_event_name)) {
             return;
         }
 
-        if(eventCompleted){
-            System.out.println("Completed events can't be updated!");
-            return;
+        ArrayList<String> venues = get_venues();
+        if(venues==null) return;
+
+        System.out.println("Note: Only provide values to the field(s) you want to update. Otherwise simply press enter.");
+
+        String new_event_name = InputGetter.getLine("Event name: ", true);
+        if (!new_event_name.isBlank()) {
+            ArrayList<ArrayList<String>> matched_event = get_matchedEvent(new_event_name);
+
+            if (matched_event != null) {
+                System.out.printf("An event with an event name of '%s' already exists in the database\n", new_event_name);
+                Displayer.displayTable("Matched Event Name", this._VIEW_COLUMN_HEADERS, matched_event, this._VIEW_COLUMN_SIZES);
+                return;
+            } else {
+                upd_event.set_event_name(new_event_name);
+            }
         }
 
-        LinkedHashMap<String, String> new_values = new LinkedHashMap<>();
+        LocalDate event_date = InputGetter.getDate("Event Date", true);
+        if (event_date != null) upd_event.set_event_date(event_date);
 
-        System.out.println("Simply press enter to not update that field.");
+        LocalTime start_time = InputGetter.getTime("Start Time", true);
+        if (start_time != null) upd_event.set_start_time(start_time);
 
-        String new_event_name = InputGetter.getLine("New Event Name: ",true);
-        if(!new_event_name.isBlank()){
-            if(EventDAO.eventExist(new_event_name)){
-                System.out.println("Event name of '" + new_event_name + "' already exists!");
+        LocalTime end_time;
+        while (true) {
+            end_time = InputGetter.getTime("End Time", true);
+
+            if (end_time != null) {
+                try {
+                    if (!end_time.isAfter(upd_event.get_start_time())) {
+                        throw new InputMismatchException("Error! End Time is before Start Time!");
+                    }
+                } catch (Exception e) {
+                    Displayer.show_error(e);
+                    continue;
+                }
+            }
+            break;
+        }
+
+        Displayer.showMenu("Venues: ", venues);
+        int venue_option = InputGetter.getNumberOption(venues.size(), true);
+
+        if (venue_option != -1) {
+            try {
+                upd_event.set_venue_id(this.venue_dao.getVenueId(venues.get(venue_option - 1)));
+            } catch (Exception e) {
+                System.out.println("Matching venue id for the selected venue name failed");
+                Displayer.show_error(e);
                 return;
             }
-            new_values.put("event_name", new_event_name);
         }
 
-        LocalDate new_event_date = InputGetter.getDate("New Event Date",true);
-        if(new_event_date != null){
-            if(new_event_date.isBefore(LocalDate.now()) || new_event_date.equals(LocalDate.now())){
-                System.out.println("Error: Event Date must be at least 1 day from now");
-                return;
-            }
-            new_values.put("event_date", String.valueOf(new_event_date));
-        }
+        ArrayList<ArrayList<String>> overlapped_events = get_overlapped_events(upd_event);
 
-        LocalTime new_start_time = InputGetter.getTime("New Start Time",true);
-        if(new_start_time != null){
-            new_values.put("start_time", String.valueOf(new_start_time));
-        }
-
-        LocalTime new_end_time = InputGetter.getTime("New End Time",true);
-        if(new_end_time != null){
-            new_values.put("end_time", String.valueOf(new_end_time));
-        }
-
-        LocalTime check_start_time = new_start_time == null ?
-                LocalTime.parse(matchedEvent.get(3)) : new_start_time;
-        LocalTime check_end_time = new_end_time == null ?
-                LocalTime.parse(matchedEvent.get(4)) : new_end_time;
-
-        if(check_end_time.isBefore(check_start_time) || check_end_time.equals(check_start_time)){
-            System.out.println("Error: End time must be after start time!");
-            return;
-        }
-
-        Displayer.showMenu("Venues", venueNames);
-        int option = InputGetter.getNumberOption(venueNames.size(), true);
-        int new_venue_id = -1;
-        if(option != -1){
-            new_venue_id = VenueDAO.getVenueId(venueNames.get(option - 1));
-            new_values.put("venue_id", String.valueOf(new_venue_id));
-        }
-
-        int event_id = Integer.parseInt(matchedEvent.get(0));
-
-        LocalDate event_date = new_event_date == null ?
-                LocalDate.parse(matchedEvent.get(2)) : new_event_date;
-
-        LocalTime start_time = new_start_time == null ?
-                LocalTime.parse(matchedEvent.get(3)) : new_start_time;
-
-        int venue_id = new_venue_id == -1 ?
-                Integer.parseInt(matchedEvent.get(5)) : new_venue_id;
-
-        ArrayList<ArrayList<String>> conflictEvents =
-                EventDAO.eventsInConflict(event_id, event_date, start_time, venue_id);
-        if(conflictEvents!= null){
+        if (overlapped_events != null) {
             System.out.println("The event can't be updated!");
-            ArrayList<Double> columnWidths = new ArrayList<>(
-                    Arrays.asList(0.30, 0.20, 0.15, 0.15, 0.20)
-            );
-
-            Displayer.displayTable("Overlapped Events", event_attributes, conflictEvents, columnWidths);
+            Displayer.displayTable("Overlapped Events", this._VIEW_COLUMN_HEADERS, overlapped_events, this._VIEW_COLUMN_SIZES);
             return;
         }
 
-        EventDAO.update(new_values, old_event_name);
+        try {
+            if (this.event_dao.update_event(upd_event)) {
+                System.out.println("Event was updated successfully");
+            } else throw new Exception();
+        } catch (Exception e) {
+            System.out.printf("Updating the event record of %s failed!", old_event_name);
+            Displayer.show_error(e);
+        }
     }
 
-    private static void deleteEvent(){
-        Displayer.displayHeader("Deleting Event");
-        String event_name = InputGetter.getLine("Enter event name: ");
+    private void deleteEvent() {
+        Displayer.displaySubheader("Deleting Event");
+        System.out.println("Note: Deleting an event would also delete its participants!");
+
+        String event_name = InputGetter.getLine("Event name: ");
         System.out.println();
 
-        boolean eventOngoing = EventDAO.checkStatus(event_name).equalsIgnoreCase("ongoing");
-        if(eventOngoing){
-            System.out.println("Ongoing events can't be deleted!");
+        ArrayList<ArrayList<String>> matched_event = get_matchedEvent(event_name);
+
+        if (matched_event == null) {
+            System.out.printf("There are no records that matched the event name '%s' \n", event_name);
             return;
         }
 
-        System.out.println();
-        EventDAO.delete(event_name);
+        if (!this.is_manipulable(event_name)) {
+            return;
+        }
+
+        try {
+            if (this.event_dao.delete_event(event_name)) {
+                System.out.println("Event was deleted successfully");
+            } else throw new Exception();
+        } catch (Exception e) {
+            System.out.printf("Deleting the event record of %s failed!", event_name);
+            Displayer.show_error(e);
+        }
     }
 }

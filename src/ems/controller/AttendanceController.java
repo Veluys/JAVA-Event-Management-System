@@ -1,210 +1,244 @@
 package ems.controller;
 
-import ems.model.AttendanceDAO;
-import ems.model.EventDAO;
-import ems.model.RegistrationDAO;
+import ems.dao.AttendanceDAO;
+import ems.dao.EventDAO;
+import ems.dao.RegistrationDAO;
+import ems.model.Event;
+import ems.model.Registration;
 import ems.view.Displayer;
 
+import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.TreeSet;
 
 public class AttendanceController {
-    private static int eventIdSelected;
-    private static String event_name;
+    private EventDAO event_dao;
+    private RegistrationDAO reg_dao;
+    private AttendanceDAO att_dao;
+    private Event selected_event;
+    private ArrayList<ArrayList<String>> selected_event_details;
+    private String selected_event_status;
 
-    public static void execute() {
+    private final ArrayList<String> _VIEW_PARTICIPANTS_COL = new ArrayList<>(
+            Arrays.asList("Sr-Code", "Department", "Year Level", "Full Name")
+    );
+    private final ArrayList<Double> _VIEW_PARTICIPANTS_SIZE = new ArrayList<>(Arrays.asList(0.15, 0.20, 0.15, 0.50));
+
+    private final ArrayList<String> _VIEW_EVENT_COLUMN_HEADERS = new ArrayList<>(
+            Arrays.asList("Event Name", "Date", "Start Time", "End Time", "Venue")
+    );
+    private final ArrayList<Double> _VIEW_EVENT_COLUMN_SIZES = new ArrayList<>(Arrays.asList(0.30, 0.20, 0.15, 0.15, 0.20));
+
+    public AttendanceController(Connection conn){
+        this.event_dao = new EventDAO(conn);
+        this.reg_dao = new RegistrationDAO(conn);
+        this.att_dao = new AttendanceDAO(conn);
+    }
+
+    public void execute() {
         Displayer.displayHeader("Attendance Page");
-        if (EventDAO.emptyCheck()) {
-            System.out.println("There are no events yet!");
-            return;
-        }
 
-        event_name = InputGetter.getLine("Enter event name: ");
-        System.out.println();
-
-        eventIdSelected = EventDAO.getEventId(event_name);
-
-        if(eventIdSelected==-1){
-            System.out.println("There are no events that matched the given event name!");
-            return;
-        }
-
-        boolean should_loop = true;
-        while(should_loop){
-            String event_status = EventDAO.checkStatus(event_name);
-
-            boolean eventSelectedOngoing = event_status.equalsIgnoreCase("ongoing");
-            boolean eventSelectedCompleted = event_status.equalsIgnoreCase("completed");
-
-            if(eventSelectedOngoing){
-                if(!participantsExist()) return;
-                base_menu();
-                should_loop = menuForOnGoingEvent();
-            }else if(eventSelectedCompleted){
-                if(!participantsExist()) return;
-                base_menu();
-                should_loop = menuForCompletedEvent();
-            }else{
-                System.out.println("Attendance unavailable for non-completed and non-ongoing events");
+        try {
+            if (this.event_dao.empty_check()) {
+                System.out.println("There are currently no events!");
                 return;
             }
+        } catch (Exception e) {
+            Displayer.show_error(e);
+            return;
         }
+
+        String event_name = InputGetter.getLine("Event Name: ");
+        System.out.println();
+
+        try {
+            selected_event = this.event_dao.record_search(event_name);
+            this.selected_event_details = this.event_dao.display_search(event_name);
+        } catch (Exception e) {
+            System.out.println("Searching event records failed!");
+            Displayer.show_error(e);
+            return;
+        }
+
+        if (selected_event == null) {
+            System.out.printf("There are no records that matched the event name '%s'", event_name);
+            return;
+        }
+
+        try{
+            if(this.reg_dao.empty_check(selected_event.get_event_id())){
+                System.out.println("There are no participants for this event!");
+                return;
+            }
+        } catch (Exception e) {
+            System.out.println("Checking registration records failed!");
+            Displayer.show_error(e);
+            return;
+        }
+
+        if(!is_ongoing(event_name)){
+            return;
+        }
+
+        main_att_menu();
     }
 
-    private static void base_menu(){
-        Displayer.displayHeader("Attendance Page");
+    private boolean is_ongoing(String event_name){
+        try {
+            this.selected_event_status = this.event_dao.check_status(event_name);
+        } catch (Exception e) {
+            System.out.println("Checking event status failed!");
+            Displayer.show_error(e);
+            return false;
+        }
 
-        ArrayList<String> event_attributes = new ArrayList<>(
-                Arrays.asList("Event Name", "Date", "Start Time", "End Time", "Venue")
-        );
-        ArrayList<Double> columnWidths = new ArrayList<>(
-                Arrays.asList(0.30, 0.20, 0.15, 0.15, 0.20)
-        );
-
-        ArrayList<ArrayList<String>> selected_event = new ArrayList<>();
-        selected_event.add(EventDAO.search(event_name));
-
-        Displayer.displayTable("Currently Selected Event",event_attributes, selected_event, columnWidths);
-
-        Displayer.displaySubheader("Attendance Menu");
-    }
-
-    private static boolean participantsExist(){
-        if(RegistrationDAO.emptyCheck(eventIdSelected)){
-            System.out.println("There are no participants yet!");
+        if (!selected_event_status.equalsIgnoreCase("ongoing")) {
+            System.out.println("Attendance unavailable for non-ongoing events!");
             return false;
         }
         return true;
     }
 
-    private static boolean menuForOnGoingEvent(){
-        ArrayList<String> operations = new ArrayList<>(
-                Arrays.asList("View Attendees", "View Absentees", "Check Participant's Attendance",
-                        "Set as Present", "Reset as Absent", "Exit")
-        );
+    private void main_att_menu(){
+        while (true) {
+            Displayer.displayHeader("Attendance Page");
+            Displayer.displayTable("Selected Event", this._VIEW_EVENT_COLUMN_HEADERS,
+                    this.selected_event_details, this._VIEW_EVENT_COLUMN_SIZES);
 
-        Displayer.showMenu("Select an operation:", operations);
-        int option = InputGetter.getNumberOption(operations.size());
-        System.out.println();
+            Displayer.displaySubheader("Attendance Menu");
+            ArrayList<String> att_operations = new ArrayList<>(
+                    Arrays.asList("View Attendees", "View Absentees", "Search Participant",
+                            "Set as Present", "Reset as Absent", "Exit")
+            );
 
-        switch (option){
-            case 1 -> viewAttendees();
-            case 2 -> viewAbsentees();
-            case 3 -> checkAttendance();
-            case 4 -> markPresent();
-            case 5 -> markAbsent();
-            case 6 -> {return false;}
-        }
-        System.out.println();
-        return true;
-    }
+            Displayer.showMenu("Select an operation: ", att_operations);
+            int option = InputGetter.getNumberOption(att_operations.size());
 
-    private static boolean menuForCompletedEvent(){
-        ArrayList<String> operations = new ArrayList<>(
-                Arrays.asList("View Attendees", "View Absentees", "Check Participant's Attendance", "Exit")
-        );
-
-        Displayer.showMenu("Select an operation:", operations);
-        int option = InputGetter.getNumberOption(operations.size());
-        System.out.println();
-
-        switch (option){
-            case 1 -> viewAttendees();
-            case 2 -> viewAbsentees();
-            case 3 -> checkAttendance();
-            case 4 -> {return false;}
-        }
-        System.out.println();
-        return true;
-    }
-
-    private static void viewAttendees(){
-        Displayer.displayHeader("Viewing Attendees");
-        viewParticipants(AttendanceDAO.showAttendees(eventIdSelected), true);
-    }
-
-    private static void viewAbsentees(){
-        Displayer.displayHeader("Viewing Absentees");
-        viewParticipants(AttendanceDAO.showAbsentees(eventIdSelected), false);
-    }
-
-    private static void viewParticipants(ArrayList<ArrayList<String>> participants, boolean attendanceStatus){
-        if(participants == null){
-            if(attendanceStatus){
-                System.out.println("There are no attendees!");
-            }else{
-                System.out.println("There are no absentees!");
+            switch (option) {
+                case 1 -> view_attendance(true);
+                case 2 -> view_attendance(false);
+                case 3 -> get_attendance();
+                case 4 -> update_attendance(true);
+                case 5 -> update_attendance(false);
+                case 6 -> {
+                    return;
+                }
             }
-            return;
+            System.out.println();
         }
-
-        ArrayList<String> columnHeaders = new ArrayList<>(
-                Arrays.asList("Sr-Code", "Program", "Year Level", "Full Name")
-        );
-
-        ArrayList<Double> columnWidths = new ArrayList<>(
-                Arrays.asList(0.15, 0.20, 0.15, 0.50)
-        );
-
-        String table_name = attendanceStatus ? "Attendees" : "Absentees";
-        Displayer.displayTable(table_name, columnHeaders, participants, columnWidths);
     }
 
-    private static void checkAttendance(){
-        Displayer.displayHeader("Check Participant's Attendance");
+    private void view_attendance(boolean attended){
+        String participant_status = attended ? "Attendees" : "Absentees";
 
-        String sr_code = InputGetter.getLine("Enter the Sr-Code of the participant: ");
-        System.out.println();
+        Displayer.displaySubheader(String.format("Viewing %s", participant_status));
 
-        if(RegistrationDAO.search(eventIdSelected, sr_code) == null){
-            System.out.println("A participant with an Sr-Code of " + sr_code + " is not registered!");
+        ArrayList<ArrayList<String>> participants;
+        try{
+            participants = this.att_dao.view_attendance(this.selected_event.get_event_id(), attended);
+        }catch (Exception e) {
+            System.out.printf("Fetching records of %s failed!\n", participant_status);
+            Displayer.show_error(e);
             return;
         }
 
-        if(AttendanceDAO.checkAttendanceStatus(eventIdSelected, sr_code)){
-            System.out.println("The participant with an Sr-Code of " + sr_code + " is present.");
+        if(participants==null){
+            System.out.printf("There are currently no %s\n", participant_status);
+            return;
+        }
+
+        Displayer.displayTable(participant_status, this._VIEW_PARTICIPANTS_COL,
+                participants, this._VIEW_PARTICIPANTS_SIZE);
+    }
+
+    private void get_attendance(){
+        Displayer.displaySubheader("Finding Participant's Attendance");
+        String sr_code = InputGetter.getLine("Student Sr Code: ");
+        System.out.println();
+
+        Registration reg_record = new Registration(this.selected_event.get_event_id(), sr_code);
+
+        try{
+            if(this.reg_dao.search_registered(reg_record)==null){
+                System.out.printf("There are no participants with an Sr Code of '%s'", sr_code);
+                return;
+            }
+        }catch (Exception e) {
+            System.out.println("Fetching student or/and registration records failed!");
+            Displayer.show_error(e);
+            return;
+        }
+
+        try{
+            if(this.att_dao.is_attendee(reg_record)){
+                System.out.printf("The participant with an Sr Code of %s is an attendee", sr_code);
+            }else{
+                System.out.printf("The participant with an Sr Code of %s is an absentee", sr_code);
+            }
+        }catch (Exception e) {
+            System.out.println("Fetching the attendance status failed!");
+            Displayer.show_error(e);
+            return;
+        }
+    }
+
+    private boolean can_update(Registration reg_record, boolean setPresent){
+        try{
+            if(this.reg_dao.search_registered(reg_record)==null){
+                System.out.printf("There are no participants with an Sr Code of '%s'", reg_record.get_sr_code());
+                return false;
+            }
+        }catch (Exception e) {
+            System.out.println("Fetching student or/and registration records failed!");
+            Displayer.show_error(e);
+            return false;
+        }
+
+        boolean isPresent;
+        try{
+            isPresent = this.att_dao.is_attendee(reg_record);
+        }catch (Exception e) {
+            System.out.printf("Fetching records of %s failed!\n", reg_record.get_sr_code());
+            Displayer.show_error(e);
+            return false;
+        }
+
+        if(isPresent == setPresent){
+            System.out.printf("The participant with an Sr-Code of %s is already marked as an %s\n",
+                              reg_record.get_sr_code(), setPresent ? "attendee" : "absentee");
+            return false;
+        }
+        return true;
+    }
+
+    private void update_attendance(boolean setPresent){
+        if (setPresent){
+            Displayer.displaySubheader("Marking Participant as Present");
         }else{
-            System.out.println("The participant with an Sr-Code of " + sr_code + " is absent.");
+            Displayer.displaySubheader("Marking Participant as Absent");
         }
-    }
 
-    private static void markPresent(){
-        Displayer.displayHeader("Marking for Present");
-
-        String sr_code = InputGetter.getLine("Enter the Sr-Code of the participant: ");
+        String sr_code = InputGetter.getLine("Student Sr Code: ");
         System.out.println();
 
-        if(AttendanceDAO.checkAttendanceStatus(eventIdSelected, sr_code)){
-            System.out.println("The participant with an Sr-Code of " + sr_code + " already present!");
+        Registration reg_record = new Registration(this.selected_event.get_event_id(), sr_code);
+        if(!can_update(reg_record, setPresent)){
             return;
         }
 
-        if(RegistrationDAO.search(eventIdSelected, sr_code) == null){
-            System.out.println("A participant with an Sr-Code of " + sr_code + " is not registered!");
-            return;
+        try{
+            if(this.att_dao.update_attendance(reg_record, setPresent)){
+                String success_msg = String.format("The participant with an Sr Code of %s was successfully marked as an %s",
+                        reg_record.get_sr_code(), setPresent ? "attendee" : "absentee");
+
+                System.out.println(success_msg);
+            }else{
+                throw new Exception();
+            }
+        }catch (Exception e) {
+            System.out.printf("Updating attendance status of %s failed!", reg_record.get_sr_code());
+            Displayer.show_error(e);
         }
-        AttendanceDAO.markPresent(eventIdSelected, sr_code);
-
-        System.out.println("Participant '" + sr_code + "' was successfully marked as present.");
-    }
-
-    private static void markAbsent(){
-        Displayer.displayHeader("Marking for Absent");
-
-        String sr_code = InputGetter.getLine("Enter the Sr-Code of the participant: ");
-        System.out.println();
-
-        if(!AttendanceDAO.checkAttendanceStatus(eventIdSelected, sr_code)){
-            System.out.println("The participant with an Sr-Code of " + sr_code + " already absent!");
-            return;
-        }
-
-        if(RegistrationDAO.search(eventIdSelected, sr_code) == null){
-            System.out.println("A participant with an Sr-Code of " + sr_code + " is not registered!");
-            return;
-        }
-        AttendanceDAO.markAbsent(eventIdSelected, sr_code);
-
-        System.out.println("Participant '" + sr_code + "' was successfully marked as absent.");
     }
 }

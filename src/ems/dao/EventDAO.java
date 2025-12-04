@@ -1,6 +1,6 @@
-package ems.model;
+package ems.dao;
 
-import ;
+import ems.model.Event;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -142,13 +142,15 @@ public class EventDAO {
                         venue_id,
                         event_id
                     FROM events
-                    WHERE event_name ILIKE %s
+                    WHERE event_name ILIKE ?
                 """;
 
         try (PreparedStatement search_stmt = this.conn.prepareStatement(search_query)) {
+            search_stmt.setString(1, event_name);
             try (ResultSet search_rs = search_stmt.executeQuery()) {
                 if (search_rs.next()) {
                     return new Event(
+                            search_rs.getInt("event_id"),
                             search_rs.getString("event_name"),
                             search_rs.getDate("event_date").toLocalDate(),
                             search_rs.getTime("start_time").toLocalTime(),
@@ -179,6 +181,7 @@ public class EventDAO {
             update_stmt.setObject(3, upd_event.get_start_time());
             update_stmt.setObject(4, upd_event.get_end_time());
             update_stmt.setInt(5, upd_event.get_venue_id());
+            update_stmt.setInt(6, upd_event.get_event_id());
 
             update_stmt.executeUpdate();
             return true;
