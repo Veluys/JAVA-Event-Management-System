@@ -34,7 +34,7 @@ public class RegController {
     }
 
     public void execute(){
-        Displayer.displaySubheader("Registration Page");
+        Displayer.displayHeader("Registration Page");
 
         try{
             if(this.event_dao.empty_check()){
@@ -95,7 +95,7 @@ public class RegController {
         }
 
         while (true){
-            Displayer.displaySubheader("Registration Page");
+            Displayer.displayHeader("Registration Page");
             Displayer.displayTable("Selected Event", this._VIEW_EVENT_COLUMN_HEADERS,
                     this.eventSelectedDetails, this._VIEW_EVENT_COLUMN_SIZES);
 
