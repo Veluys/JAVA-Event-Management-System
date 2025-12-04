@@ -36,8 +36,9 @@ public class AttendanceDAO {
             try (ResultSet view_rs = view_stmt.executeQuery()) {
                 if (!view_rs.next()) return null;
 
-                ArrayList<String> participant = new ArrayList<>();
                 do {
+                    ArrayList<String> participant = new ArrayList<>();
+
                     participant.add(view_rs.getString("sr_code"));
                     participant.add(view_rs.getString("dept_shortname"));
                     participant.add(view_rs.getString("year_level"));

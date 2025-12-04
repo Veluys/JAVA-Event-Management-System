@@ -18,7 +18,7 @@ public class InputGetter {
             System.out.print("Enter the number of your option: ");
             String user_input = scanner.nextLine().trim();
 
-            if(allowBlank && !user_input.isBlank()) {
+            if(allowBlank && user_input.isBlank()) {
                 return -1;
             }
 

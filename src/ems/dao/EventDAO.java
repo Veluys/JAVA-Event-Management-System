@@ -55,9 +55,8 @@ public class EventDAO {
             ArrayList<ArrayList<String>> events = new ArrayList<>();
             try (ResultSet view_rs = view_stmt.executeQuery()) {
                 if (!view_rs.next()) return null;
-
-                ArrayList<String> event = new ArrayList<>();
                 do {
+                    ArrayList<String> event = new ArrayList<>();
                     event.add(view_rs.getString("event_name"));
                     event.add(view_rs.getString("event_date"));
                     event.add(view_rs.getString("start_time"));
@@ -116,8 +115,8 @@ public class EventDAO {
             try (ResultSet view_rs = view_stmt.executeQuery()) {
                 if (!view_rs.next()) return null;
 
-                ArrayList<String> matched_event = new ArrayList<>();
                 do {
+                    ArrayList<String> matched_event = new ArrayList<>();
                     matched_event.add(view_rs.getString("event_name"));
                     matched_event.add(view_rs.getString("event_date"));
                     matched_event.add(view_rs.getString("start_time"));
