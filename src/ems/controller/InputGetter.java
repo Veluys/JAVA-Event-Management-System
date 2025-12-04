@@ -70,17 +70,30 @@ public class InputGetter {
 
         while (true) {
             Displayer.showPrompt(prompt + " (Ex. January 1, 2001 or Jan 1, 2001): ");
-            String date = scanner.nextLine().trim();
+            String date_input = scanner.nextLine().trim();
 
-            if (date.isBlank()) {
+            if (date_input.isBlank()) {
                 if (allowBlank) return null;
                 else System.out.println("Input can't be blank!");
             }
             try {
-                return LocalDate.parse(date, shortDateFormat);
+                LocalDate short_date = LocalDate.parse(date_input, shortDateFormat);
+                if(!short_date.isAfter(LocalDate.now())){
+                    System.out.println("Event date must at least be 1 day from now!");
+                    continue;
+                }
+
+                return LocalDate.parse(date_input, shortDateFormat);
             } catch (DateTimeParseException e) {
+                LocalDate long_date = LocalDate.parse(date_input, longDateFormat);
+
+                if(!long_date.isAfter(LocalDate.now())){
+                    System.out.println("Event date must at least be 1 day from now!");
+                    continue;
+                }
+
                 try {
-                    return LocalDate.parse(date, longDateFormat);
+                    return LocalDate.parse(date_input, longDateFormat);
                 }catch (DateTimeParseException err){
                     System.out.println("Invalid date, please try again.");
                 }
