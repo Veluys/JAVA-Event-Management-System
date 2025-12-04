@@ -32,7 +32,7 @@ public class Main {
                 case 3 -> att_cntrl.execute();
                 case 4 -> {
                     closeConnection();
-                    Displayer.displayHeader("Thank you for using Plan_ET. Happy Planning!");
+                    Displayer.displayHeader("Thank you for using Plan-ET. Happy Planning!");
                     System.exit(0);
                 }
             }

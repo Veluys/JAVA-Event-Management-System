@@ -76,11 +76,76 @@ public class AttendanceController {
             return;
         }
 
-        if(!is_ongoing(event_name)){
+        try {
+            this.selected_event_status = this.event_dao.check_status(event_name);
+        } catch (Exception e) {
+            System.out.println("Checking event status failed!");
+            Displayer.show_error(e);
             return;
         }
 
-        main_att_menu();
+        boolean isOngoing = selected_event_status.equalsIgnoreCase("ongoing");
+        boolean completed = selected_event_status.equalsIgnoreCase("completed");
+
+        if (isOngoing || completed) {
+            attendance_menu(selected_event_status);
+            System.out.println();
+        }else{
+            System.out.println("Attendance unavailable for noncompleted or non-ongoing events!");
+        }
+    }
+
+    private void attendance_menu(String event_status){
+        boolean is_completed = event_status.equals("completed");
+
+        ArrayList<String> operations = new ArrayList<>();
+
+        if(is_completed){
+            operations.add("View Attendees");
+            operations.add("View Absentees");
+            operations.add("Search Participant");
+            operations.add("Exit");
+        }else{
+            operations.add("View Attendees");
+            operations.add("View Absentees");
+            operations.add("Search Participant");
+            operations.add("Set as Present");
+            operations.add("Reset as Absent");
+            operations.add("Exit");
+        }
+
+        while (true){
+            Displayer.displayHeader("Attendance Page");
+            Displayer.displayTable("Selected Event", this._VIEW_EVENT_COLUMN_HEADERS,
+                    this.selected_event_details, this._VIEW_EVENT_COLUMN_SIZES);
+
+            Displayer.displaySubheader("Attendance Menu");
+            Displayer.showMenu("Select an operation: ", operations);
+            int option = InputGetter.getNumberOption(operations.size());
+
+            if(is_completed){
+                switch (option){
+                    case 1 -> view_attendance(true);
+                    case 2 -> view_attendance(false);
+                    case 3 -> get_attendance();
+                    case 4 -> {
+                        return;
+                    }
+                }
+            }else{
+                switch (option){
+                    case 1 -> view_attendance(true);
+                    case 2 -> view_attendance(false);
+                    case 3 -> get_attendance();
+                    case 4 -> update_attendance(true);
+                    case 5 -> update_attendance(false);
+                    case 6 -> {
+                        return;
+                    }
+                }
+            }
+            System.out.println();
+        }
     }
 
     private boolean is_ongoing(String event_name){
