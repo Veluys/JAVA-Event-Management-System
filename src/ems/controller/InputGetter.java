@@ -16,7 +16,7 @@ public class InputGetter {
     public static int getNumberOption(int highest, boolean allowBlank){
         while(true){
             System.out.print("Enter the number of your option: ");
-            String user_input = scanner.nextLine().trim();
+            String user_input = scanner.nextLine();
 
             if(user_input.isBlank()){
                 if(allowBlank){
@@ -48,7 +48,7 @@ public class InputGetter {
     public static String getLine(String prompt, boolean allowBlank){
         while (true){
             System.out.print(prompt);
-            String user_input = scanner.nextLine().trim();
+            String user_input = scanner.nextLine();
 
             if(!user_input.isBlank()){
                 return user_input;
@@ -73,7 +73,7 @@ public class InputGetter {
 
         while (true) {
             Displayer.showPrompt(prompt + " (Ex. January 1, 2001 or Jan 1, 2001): ");
-            String date_input = scanner.nextLine().trim();
+            String date_input = scanner.nextLine();
 
             if (date_input.isBlank()) {
                 if (allowBlank) return null;
@@ -114,12 +114,13 @@ public class InputGetter {
 
         while (true) {
             Displayer.showPrompt(prompt + " (Ex. 7:00 am or 7 am): ");
-            String time = scanner.nextLine().trim().toUpperCase().replace(".", "");
+            String time = scanner.nextLine();
 
             if (time.isBlank()) {
                 if (allowBlank) return null;
                 else System.out.println("Input can't be blank!");
             } else {
+                time = time.toUpperCase().replace(".", "");
                 try {
                     return LocalTime.parse(time, timeFormat);
                 } catch (DateTimeParseException e) {
