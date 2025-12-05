@@ -168,8 +168,8 @@ public class EventDAO {
                     SET
                         event_name = ?,
                         event_date = ?,
-                        start_time = ?,
                         end_time = ?,
+                        start_time = ?,
                         venue_id = ?
                     WHERE event_id = ?
                 """;
@@ -177,8 +177,8 @@ public class EventDAO {
         try (PreparedStatement update_stmt = this.conn.prepareStatement(update_query)) {
             update_stmt.setString(1, upd_event.get_event_name());
             update_stmt.setObject(2, upd_event.get_event_date());
-            update_stmt.setObject(3, upd_event.get_start_time());
             update_stmt.setObject(4, upd_event.get_end_time());
+            update_stmt.setObject(3, upd_event.get_start_time());
             update_stmt.setInt(5, upd_event.get_venue_id());
             update_stmt.setInt(6, upd_event.get_event_id());
 
