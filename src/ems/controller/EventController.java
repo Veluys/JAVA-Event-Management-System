@@ -256,7 +256,7 @@ public class EventController {
         System.out.println("Note: Only provide values to the field(s) you want to update. Otherwise simply press enter.");
 
         String new_event_name = InputGetter.getLine("Event name: ", true);
-        if (!new_event_name.isBlank()) {
+        if (new_event_name != null) {
             ArrayList<ArrayList<String>> matched_event = get_matchedEvent(new_event_name);
 
             if (matched_event != null) {

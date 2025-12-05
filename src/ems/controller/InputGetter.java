@@ -54,7 +54,7 @@ public class InputGetter {
                 return user_input;
             }else{
                 if(allowBlank){
-                    return " ";
+                    return null;
                 }
             }
         }
