@@ -202,7 +202,7 @@ public class EventController {
         Displayer.displayTable("Matched Event", this._VIEW_COLUMN_HEADERS, matched_event, this._VIEW_COLUMN_SIZES);
     }
 
-    private boolean is_manipulable(String event_name) {
+    private boolean is_manipulable(String event_name, String operation) {
         String event_status;
         try {
             event_status = this.event_dao.check_status(event_name);
@@ -212,12 +212,20 @@ public class EventController {
             return false;
         }
 
-        if (event_status.equalsIgnoreCase("completed") || event_status.equalsIgnoreCase("ongoing")) {
-            System.out.println("Completed or ongoing events can't be manipulated!");
+        boolean is_completed = event_status.equalsIgnoreCase("completed");
+        boolean is_ongoing = event_status.equalsIgnoreCase("ongoing");
+
+        if(operation.equalsIgnoreCase("update") && is_completed){
+            System.out.println("Completed events can't be updated!");
             return false;
-        } else {
-            return true;
         }
+
+        if(operation.equalsIgnoreCase("delete") && is_ongoing){
+            System.out.println("Ongoing events can't be deleted!");
+            return false;
+        }
+
+        return true;
     }
 
     private void updateEvent() {
@@ -238,7 +246,7 @@ public class EventController {
             return;
         }
 
-        if (!this.is_manipulable(old_event_name)) {
+        if (!this.is_manipulable(old_event_name, "update")) {
             return;
         }
 
@@ -328,7 +336,7 @@ public class EventController {
             return;
         }
 
-        if (!this.is_manipulable(event_name)) {
+        if (!this.is_manipulable(event_name, "delete")) {
             return;
         }
 
