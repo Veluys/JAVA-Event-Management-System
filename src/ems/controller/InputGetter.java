@@ -18,8 +18,12 @@ public class InputGetter {
             System.out.print("Enter the number of your option: ");
             String user_input = scanner.nextLine().trim();
 
-            if(allowBlank && user_input.isBlank()) {
-                return -1;
+            if(user_input.isBlank()){
+                if(allowBlank){
+                    return -1;
+                }
+                System.out.println("Input can't be blank!");
+                continue;
             }
 
             int num;
@@ -33,7 +37,6 @@ public class InputGetter {
                 Displayer.show_error(e);
                 continue;
             }
-            System.out.println();
             return num;
         }
     }
